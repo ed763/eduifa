@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edu Ifa - Offline AI Learning Ecosystem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1.5s ease-out;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            color: #1a2a6c;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tagline {
+            font-size: 1.5rem;
+            color: #b21f1f;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        
+        .founder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .founder-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #1a2a6c, #fdbb2d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .founder-info {
+            text-align: left;
+        }
+        
+        .founder-name {
+            font-size: 1.8rem;
+            color: #1a2a6c;
+            margin-bottom: 5px;
+        }
+        
+        .founder-title {
+            color: #b21f1f;
+            font-style: italic;
+        }
+        
+        section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        h2 {
+            color: #1a2a6c;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            border-bottom: 3px solid #fdbb2d;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 5px solid #1a2a6c;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-card h3 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .feature-card p {
+            font-size: 1rem;
+            text-align: left;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .tech-item {
+            background: #1a2a6c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .impact-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            gap: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 200px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat:hover {
+            transform: scale(1.05);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            color: #1a2a6c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #b21f1f;
+            font-size: 1.2rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+        
+        .quote {
+            font-style: italic;
+            font-size: 1.3rem;
+            margin: 30px 0;
+            color: #fdbb2d;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            section {
+                padding: 25px;
+            }
+            
+            .founder {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Edu Ifa</h1>
+            <div class="tagline">The World's First Offline AI Learning Ecosystem</div>
+            <p>Born from a vision to make quality education possible anywhere in Ethiopia, even without internet access.</p>
+            
+            <div class="founder">
+                <div class="founder-img">ED</div>
+                <div class="founder-info">
+                    <div class="founder-name">Eden Daba</div>
+                    <div class="founder-title">Founder & High School Innovator</div>
+                </div>
+            </div>
+        </header>
+        
+        <section id="vision">
+            <h2>The Vision</h2>
+            <p>Edu Ifa was initiated in 2023 by Eden Daba, a passionate high school innovator. The project began as a small offline quiz generator and evolved into the world's first Offline AI Learning Ecosystem.</p>
+            <p>Designed to run entirely without the cloud, Edu Ifa uses a lightweight on-device AI model built through intelligent JSON structures and algorithms that understand, explain, and evaluate students' work in real time—without using any online API.</p>
+        </section>
+        
+        <section id="features">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>AI Tutor & Smart Quiz Master</h3>
+                    <p>Learners can input notes or upload lessons to instantly receive summaries, translations, and AI-generated quizzes.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Offline Class Meetings</h3>
+                    <p>Teachers and students connect via local Base6code or QR code—no internet required.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Voice-to-Text Inclusivity Engine</h3>
+                    <p>Converts speech into accurate notes, making learning accessible to all.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Gamified Learning</h3>
+                    <p>Students earn access to educational games only after achieving quiz goals, ensuring motivation and discipline.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Parental Control</h3>
+                    <p>Keeps families engaged by tracking progress and learning activities.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Offline Resource Library</h3>
+                    <p>Offers motivational materials that inspire consistency and ambition.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="technology">
+            <h2>Innovative Technology</h2>
+            <p>Edu Ifa's AI Tutor, Smart Quiz Master, Mind Map Generator, Trilingual Translator, and Teacher Connect tools all function through embedded local AI logic, proving that advanced technology can thrive without the internet.</p>
+            
+            <div class="tech-stack">
+                <div class="tech-item">On-Device AI Models</div>
+                <div class="tech-item">JSON Structures</div>
+                <div class="tech-item">Local Algorithms</div>
+                <div class="tech-item">Base6code Technology</div>
+                <div class="tech-item">Voice Recognition</div>
+                <div class="tech-item">Offline Processing</div>
+            </div>
+        </section>
+        
+        <section id="impact">
+            <h2>Transforming Education</h2>
+            <p class="quote">"This project doesn't just solve a problem—it demonstrates that with creativity and determination, Ethiopia's youth can engineer intelligent systems that transform digital challenges into opportunities for growth and equality."</p>
+            
+            <div class="impact-stats">
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Offline Operation</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Languages Supported</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Internet Required</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Learning Possibilities</div>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Edu Ifa - Empowering Ethiopian students through innovative offline AI technology</p>
+            <p>© 2023 Edu Ifa Initiative. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Animation for sections when they come into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('section');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Add pulse animation to founder image
+            const founderImg = document.querySelector('.founder-img');
+            setInterval(() => {
+                founderImg.classList.toggle('pulse');
+            }, 4000);
+        });
+    </script>
+</body>
+</html>

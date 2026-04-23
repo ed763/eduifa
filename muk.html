@@ -1,0 +1,840 @@
+<a href=""></a><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTok - Motivational Videos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            margin: 0 auto;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: transparent;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #FF0050, #00F2FE);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-icons i {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .video-feed {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+        }
+
+        .video-container {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            scroll-snap-align: start;
+            background: #000;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            z-index: 10;
+        }
+
+        .video-info {
+            margin-bottom: 80px;
+        }
+
+        .video-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .video-description {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+
+        .video-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .video-actions {
+            position: absolute;
+            right: 15px;
+            bottom: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            z-index: 20;
+        }
+
+        .action-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .action-button i {
+            font-size: 28px;
+            background: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-button span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .creator-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #FF0050;
+            overflow: hidden;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .creator-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .follow-btn {
+            background: #FF0050;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+            transition: background 0.3s ease;
+        }
+
+        .follow-btn:hover {
+            background: #e00045;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 414px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item.active i {
+            color: #FF0050;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+        }
+
+        /* Hide scrollbar */
+        .video-feed::-webkit-scrollbar {
+            display: none;
+        }
+
+        .video-feed {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Animation for like button */
+        @keyframes like {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .liked {
+            animation: like 0.5s ease;
+            color: #FF0050;
+        }
+
+        .play-pause-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        .play-pause-overlay i {
+            font-size: 80px;
+            color: white;
+        }
+
+        .video-container:hover .play-pause-overlay {
+            opacity: 1;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #FF0050;
+            animation: spin 1s ease-in-out infinite;
+            z-index: 15;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Double-tap heart animation */
+        @keyframes doubleTapHeart {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+
+        .double-tap-heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 100px;
+            color: #FF0050;
+            z-index: 30;
+            pointer-events: none;
+            animation: doubleTapHeart 1s ease-out forwards;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+        
+        /* Video progress bar */
+        .video-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 25;
+        }
+        
+        .video-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #FF0050;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="logo">EduTok</div>
+            <div class="nav-icons">
+                <i class="fas fa-search" id="search-btn"></i>
+                <i class="fas fa-inbox" id="inbox-btn"></i>
+            </div>
+        </div>
+
+        <div class="video-feed" id="video-feed">
+            <!-- Videos will be loaded dynamically -->
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" data-tab="for-you">
+                <i class="fas fa-home"></i>
+                <span>For You</span>
+            </div>
+            <div class="nav-item" data-tab="discover">
+                <i class="fas fa-search"></i>
+                <span>Discover</span>
+            </div>
+            <div class="nav-item" data-tab="upload">
+                <i class="fas fa-plus-square"></i>
+                <span>Upload</span>
+            </div>
+            <div class="nav-item" data-tab="inbox">
+                <i class="fas fa-inbox"></i>
+                <span>Inbox</span>
+            </div>
+            <div class="nav-item" data-tab="profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // TypeScript-style implementation with proper structure
+        class VideoData {
+            constructor(id, title, description, creator, avatar, videoSrc, likes, comments, shares) {
+                this.id = id;
+                this.title = title;
+                this.description = description;
+                this.creator = creator;
+                this.avatar = avatar;
+                this.videoSrc = videoSrc;
+                this.likes = likes;
+                this.comments = comments;
+                this.shares = shares;
+                this.isLiked = false;
+                this.isFollowing = false;
+            }
+
+            toggleLike() {
+                this.isLiked = !this.isLiked;
+                const currentLikes = parseInt(this.likes);
+                this.likes = this.isLiked 
+                    ? this.formatCount(currentLikes + 1)
+                    : this.formatCount(currentLikes - 1);
+            }
+
+            toggleFollow() {
+                this.isFollowing = !this.isFollowing;
+            }
+
+            formatCount(num) {
+                if (num >= 1000000) {
+                    return (num / 1000000).toFixed(1) + 'M';
+                } else if (num >= 1000) {
+                    return (num / 1000).toFixed(1) + 'K';
+                }
+                return num.toString();
+            }
+        }
+
+        // Action Types
+        const ActionType = {
+            LIKE: 'like',
+            COMMENT: 'comment',
+            SHARE: 'share',
+            MORE: 'more'
+        };
+
+        // Tab Types
+        const TabType = {
+            FOR_YOU: 'for-you',
+            DISCOVER: 'discover',
+            UPLOAD: 'upload',
+            INBOX: 'inbox',
+            PROFILE: 'profile'
+        };
+
+        // Main Application Class
+        class EduTokApp {
+            constructor() {
+                this.videoFeed = document.getElementById('video-feed');
+                this.toast = document.getElementById('toast');
+                this.videos = [];
+                this.currentTab = TabType.FOR_YOU;
+                
+                this.initializeApp();
+            }
+
+            initializeApp() {
+                this.loadVideoData();
+                this.renderVideos();
+                this.setupEventListeners();
+                this.setupIntersectionObserver();
+            }
+
+            loadVideoData() {
+                this.videos = [
+                    new VideoData(
+                        1,
+                        "Boost Your Study Motivation 📚",
+                        "Stay focused and achieve your academic goals with these powerful tips!",
+                        "@StudyMotivation",
+                        "SM",
+                        "c.mp4",
+                        "24.5K",
+                        "1.2K",
+                        "3.4K"
+                    ),
+                    new VideoData(
+                        2,
+                        "Ace Your Exams 🎯",
+                        "Proven strategies to help you excel in your exams and reduce stress.",
+                        "@ExamTips",
+                        "ET",
+                        "https://assets.mixkit.co/videos/preview/mixkit-young-woman-studying-on-her-laptop-while-sitting-on-51206-large.mp4",
+                        "18.7K",
+                        "856",
+                        "2.1K"
+                    ),
+                    new VideoData(
+                        3,
+                        "Master Your Time ⏰",
+                        "Learn how to manage your time effectively as a student and maximize productivity.",
+                        "@ProductiveMind",
+                        "PM",
+                        "https://assets.mixkit.co/videos/preview/mixkit-young-man-studying-on-his-laptop-51205-large.mp4",
+                        "32.1K",
+                        "2.3K",
+                        "4.8K"
+                    ),
+                    new VideoData(
+                        4,
+                        "Plan Your Career Path 🚀",
+                        "Essential advice for students planning their future careers and professional development.",
+                        "@CareerGuide",
+                        "CG",
+                        "https://assets.mixkit.co/videos/preview/mixkit-woman-studying-on-her-laptop-at-home-51204-large.mp4",
+                        "41.3K",
+                        "3.1K",
+                        "6.2K"
+                    )
+                ];
+            }
+
+            renderVideos() {
+                this.videoFeed.innerHTML = '';
+                
+                this.videos.forEach((video) => {
+                    const videoContainer = this.createVideoElement(video);
+                    this.videoFeed.appendChild(videoContainer);
+                });
+            }
+
+            createVideoElement(video) {
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'video-container';
+                videoContainer.setAttribute('data-video-id', video.id.toString());
+
+                videoContainer.innerHTML = `
+                    <video class="video-player" loop muted playsinline>
+                        <source src="${video.videoSrc}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="loading-spinner"></div>
+                    <div class="play-pause-overlay">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="video-progress">
+                        <div class="video-progress-bar"></div>
+                    </div>
+                    <div class="video-overlay">
+                        <div class="creator-info">
+                            <div class="creator-avatar">${video.avatar}</div>
+                            <div class="creator-name">${video.creator}</div>
+                            <button class="follow-btn">${video.isFollowing ? 'Following' : 'Follow'}</button>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${video.title}</div>
+                            <div class="video-description">${video.description}</div>
+                            <div class="video-stats">
+                                <span><i class="fas fa-music"></i> Study Focus Mix</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-actions">
+                        <div class="action-button" data-action="${ActionType.LIKE}">
+                            <i class="${video.isLiked ? 'fas' : 'far'} fa-heart"></i>
+                            <span>${video.likes}</span>
+                        </div>
+                        <div class="action-button" data-action="${ActionType.COMMENT}">
+                            <i class="far fa-comment"></i>
+                            <span>${video.comments}</span>
+                        </div>
+                        <div class="action-button" data-action="${ActionType.SHARE}">
+                            <i class="far fa-share-square"></i>
+                            <span>${video.shares}</span>
+                        </div>
+                        <div class="action-button" data-action="${ActionType.MORE}">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                    </div>
+                `;
+
+                return videoContainer;
+            }
+
+            setupEventListeners() {
+                // Video play/pause
+                document.addEventListener('click', (e) => {
+                    const videoContainer = e.target.closest('.video-container');
+                    
+                    if (!videoContainer) return;
+                    
+                    if (e.target.closest('.video-actions') || e.target.closest('.follow-btn')) {
+                        return;
+                    }
+                    
+                    this.handleVideoClick(videoContainer);
+                });
+                
+                // Video action buttons
+                document.addEventListener('click', (e) => {
+                    const button = e.target.closest('.action-button');
+                    
+                    if (button) {
+                        this.handleActionButtonClick(button);
+                    }
+                });
+                
+                // Follow buttons
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('follow-btn')) {
+                        this.handleFollowClick(e.target);
+                    }
+                });
+                
+                // Navigation
+                document.querySelectorAll('.nav-item').forEach((item) => {
+                    item.addEventListener('click', () => {
+                        this.handleTabClick(item);
+                    });
+                });
+                
+                // Header buttons
+                document.getElementById('search-btn').addEventListener('click', () => {
+                    this.showToast('Search feature coming soon!');
+                });
+                
+                document.getElementById('inbox-btn').addEventListener('click', () => {
+                    this.showToast('Inbox feature coming soon!');
+                });
+                
+                // Double tap to like
+                document.querySelectorAll('.video-container').forEach((container) => {
+                    let lastTap = 0;
+                    container.addEventListener('touchend', (e) => {
+                        const currentTime = new Date().getTime();
+                        const tapLength = currentTime - lastTap;
+                        
+                        if (tapLength < 500 && tapLength > 0) {
+                            this.handleDoubleTap(container);
+                        }
+                        lastTap = currentTime;
+                    });
+                });
+            }
+
+            handleVideoClick(videoContainer) {
+                const video = videoContainer.querySelector('.video-player');
+                const playOverlay = videoContainer.querySelector('.play-pause-overlay');
+                this.togglePlayPause(video, playOverlay);
+            }
+
+            handleActionButtonClick(button) {
+                const action = button.getAttribute('data-action');
+                const videoContainer = button.closest('.video-container');
+                const videoId = parseInt(videoContainer.getAttribute('data-video-id'));
+                const video = this.videos.find(v => v.id === videoId);
+                
+                switch(action) {
+                    case ActionType.LIKE:
+                        this.handleLike(video, button);
+                        break;
+                    case ActionType.COMMENT:
+                        this.showComments(video);
+                        break;
+                    case ActionType.SHARE:
+                        this.shareVideo(video);
+                        break;
+                    case ActionType.MORE:
+                        this.showMoreOptions(video);
+                        break;
+                }
+            }
+
+            handleFollowClick(button) {
+                const videoContainer = button.closest('.video-container');
+                const videoId = parseInt(videoContainer.getAttribute('data-video-id'));
+                const video = this.videos.find(v => v.id === videoId);
+                
+                this.toggleFollow(video, button);
+            }
+
+            handleTabClick(item) {
+                const tab = item.getAttribute('data-tab');
+                this.switchTab(tab, item);
+            }
+
+            handleDoubleTap(container) {
+                const videoId = parseInt(container.getAttribute('data-video-id'));
+                const video = this.videos.find(v => v.id === videoId);
+                const likeButton = container.querySelector('[data-action="like"]');
+                
+                this.handleLike(video, likeButton);
+                
+                // Show heart animation
+                const heart = document.createElement('div');
+                heart.className = 'double-tap-heart';
+                heart.innerHTML = '<i class="fas fa-heart"></i>';
+                container.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 1000);
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        const container = entry.target;
+                        const video = container.querySelector('.video-player');
+                        const playOverlay = container.querySelector('.play-pause-overlay');
+                        
+                        if (entry.isIntersecting) {
+                            this.playVideo(video, playOverlay);
+                        } else {
+                            this.pauseVideo(video, playOverlay);
+                        }
+                    });
+                }, { threshold: 0.7 });
+                
+                document.querySelectorAll('.video-container').forEach((container) => {
+                    observer.observe(container);
+                });
+            }
+
+            playVideo(video, playOverlay) {
+                video.play().catch((e) => {
+                    console.log('Autoplay prevented:', e);
+                });
+                playOverlay.innerHTML = '<i class="fas fa-pause"></i>';
+                playOverlay.style.opacity = '0';
+                
+                // Update progress bar
+                video.addEventListener('timeupdate', () => {
+                    const progress = (video.currentTime / video.duration) * 100;
+                    const progressBar = video.closest('.video-container').querySelector('.video-progress-bar');
+                    progressBar.style.width = `${progress}%`;
+                });
+            }
+
+            pauseVideo(video, playOverlay) {
+                video.pause();
+                playOverlay.innerHTML = '<i class="fas fa-play"></i>';
+                playOverlay.style.opacity = '0';
+            }
+
+            togglePlayPause(video, playOverlay) {
+                if (video.paused) {
+                    this.playVideo(video, playOverlay);
+                    playOverlay.style.opacity = '1';
+                    setTimeout(() => {
+                        playOverlay.style.opacity = '0';
+                    }, 1000);
+                } else {
+                    this.pauseVideo(video, playOverlay);
+                    playOverlay.style.opacity = '1';
+                }
+            }
+
+            handleLike(video, button) {
+                video.toggleLike();
+                const icon = button.querySelector('i');
+                const count = button.querySelector('span');
+                
+                if (video.isLiked) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas', 'liked');
+                } else {
+                    icon.classList.remove('fas', 'liked');
+                    icon.classList.add('far');
+                }
+                
+                count.textContent = video.likes;
+            }
+
+            toggleFollow(video, button) {
+                video.toggleFollow();
+                
+                if (video.isFollowing) {
+                    button.textContent = 'Following';
+                    button.style.background = '#333';
+                    this.showToast(`You are now following ${video.creator}`);
+                } else {
+                    button.textContent = 'Follow';
+                    button.style.background = '#FF0050';
+                    this.showToast(`You unfollowed ${video.creator}`);
+                }
+            }
+
+            showComments(video) {
+                alert(`💬 Comments for: ${video.title}\n\nStudents could discuss:\n• Study tips\n• Questions about the content\n• Share their experiences`);
+            }
+
+            shareVideo(video) {
+                alert(`📤 Share: ${video.title}\n\nOptions:\n• Copy link\n• Share to classroom\n• Send to friends`);
+            }
+
+            showMoreOptions(video) {
+                this.showToast('More options coming soon!');
+            }
+
+            switchTab(tab, item) {
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach((navItem) => {
+                    navItem.classList.remove('active');
+                });
+                item.classList.add('active');
+                
+                this.currentTab = tab;
+                
+                // Handle tab switching
+                switch(tab) {
+                    case TabType.FOR_YOU:
+                        this.showToast('For You feed loaded');
+                        break;
+                    case TabType.DISCOVER:
+                        this.showToast('Discover feature coming soon!');
+                        break;
+                    case TabType.UPLOAD:
+                        this.showToast('Upload feature coming soon!');
+                        break;
+                    case TabType.INBOX:
+                        this.showToast('Inbox feature coming soon!');
+                        break;
+                    case TabType.PROFILE:
+                        this.showToast('Profile feature coming soon!');
+                        break;
+                }
+            }
+
+            showToast(message) {
+                this.toast.textContent = message;
+                this.toast.classList.add('show');
+                
+                setTimeout(() => {
+                    this.toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new EduTokApp();
+        });
+    </script>
+</body>
+</html>

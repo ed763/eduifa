@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enhanced Study Notepad with Pen Tool</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #6b8cbc;
+      --accent-color: #ff6b6b;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      transition: background-color 0.3s, color 0.3s;
+      line-height: 1.6;
+    }
+
+    .notepad-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      border: 1px solid #e0e0e0;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: 28px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: var(--border-radius);
+    }
+
+    .toolbar select,
+    .toolbar input[type="color"],
+    .toolbar button {
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ced4da;
+      background-color: var(--primary-color);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .toolbar button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+
+    .toolbar button:active {
+      transform: translateY(0);
+    }
+
+    .toolbar .divider {
+      width: 1px;
+      background-color: #ccc;
+      margin: 0 5px;
+    }
+
+    .editor-container {
+      position: relative;
+      width: 100%;
+      min-height: 400px;
+      border: 1px solid #ced4da;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+
+    .editor {
+      width: 100%;
+      min-height: 400px;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #000;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    #drawingCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      z-index: 10;
+      display: none;
+    }
+
+    .drawing-tools {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f1f3f4;
+      border-radius: var(--border-radius);
+    }
+
+    .drawing-tools button {
+      padding: 8px 12px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ced4da;
+      background-color: white;
+      color: #333;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .drawing-tools button.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .drawing-tools button:hover {
+      background-color: #e9ecef;
+    }
+
+    .drawing-tools button.active:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .pen-size {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pen-size input {
+      width: 60px;
+    }
+
+    .editor.dark-mode {
+      background-color: #2b2b2b;
+      color: #fff;
+      border-color: #444;
+    }
+
+    pre {
+      background-color: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    pre.dark-mode {
+      background-color: #3c3c3c;
+    }
+
+    .ai-section {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      background-color: #f8f9fa;
+      border: 1px solid #e0e0e0;
+    }
+
+    .ai-section h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ai-section input,
+    .ai-section button {
+      margin-top: 10px;
+      padding: 12px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ced4da;
+    }
+
+    .ai-section button {
+      background-color: var(--accent-color);
+      color: white;
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+      transition: var(--transition);
+    }
+
+    .ai-section button:hover {
+      background-color: #ff5252;
+    }
+
+    #aiResult {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      min-height: 40px;
+      transition: var(--transition);
+    }
+
+    .answer-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-top: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .confidence-meter {
+      height: 8px;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      background-color: var(--success-color);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .stats-section {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .stat-label {
+      color: #6c757d;
+    }
+
+    .flashcard-section {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      background-color: #f8f9fa;
+      border: 1px solid #e0e0e0;
+    }
+
+    .flashcard {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .flashcard:hover {
+      transform: translateY(-5px);
+    }
+
+    .flashcard-controls {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .flashcard-controls button {
+      padding: 10px 20px;
+      border-radius: var(--border-radius);
+      border: none;
+      background-color: var(--primary-color);
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .flashcard-controls button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .notes-list {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: var(--border-radius);
+    }
+
+    .notes-list h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+
+    .saved-notes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .saved-note {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .saved-note:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .saved-note-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .saved-note-preview {
+      font-size: 12px;
+      color: #6c757d;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    .notepad-container.dark-mode {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      border-color: #333;
+    }
+
+    .toolbar.dark-mode {
+      background-color: #2d2d2d;
+    }
+
+    .ai-section.dark-mode {
+      background-color: #2d2d2d;
+      border-color: #444;
+    }
+
+    .answer-card.dark-mode {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+    }
+
+    .stats-section.dark-mode {
+      background-color: #2d2d2d;
+    }
+
+    .flashcard-section.dark-mode {
+      background-color: #2d2d2d;
+      border-color: #444;
+    }
+
+    .flashcard.dark-mode {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+    }
+
+    .notes-list.dark-mode {
+      background-color: #2d2d2d;
+    }
+
+    .saved-note.dark-mode {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+    }
+
+    .drawing-tools.dark-mode {
+      background-color: #2d2d2d;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .toolbar {
+        justify-content: center;
+      }
+      
+      .stats-section {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .flashcard-controls {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .saved-notes {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Loading animation */
+    .loader {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .confidence-score {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    
+    .source-sentences {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px dashed #ccc;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .source-sentences.dark-mode {
+      color: #aaa;
+      border-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<div class="notepad-container" id="notepad">
+  <h1>🖊️ Enhanced Study Notepad</h1>
+  
+  <div class="toolbar" id="toolbar">
+    <select id="fontSize">
+      <option value="12px">12px</option>
+      <option value="14px">14px</option>
+      <option value="16px" selected>16px</option>
+      <option value="18px">18px</option>
+      <option value="20px">20px</option>
+      <option value="24px">24px</option>
+    </select>
+    
+    <input type="color" id="fontColor" value="#000000" title="Text Color" />
+    <input type="color" id="backgroundColor" value="#ffffff" title="Background Color" />
+    
+    <div class="divider"></div>
+    
+    <button onclick="insertTable()" title="Insert Table">📊 Table</button>
+    <button onclick="insertCode()" title="Insert Code Block">💻 Code</button>
+    <button onclick="insertImage()" title="Insert Image">🖼️ Image</button>
+    
+    <div class="divider"></div>
+    
+    <button onclick="textAlign('left')" title="Align Left">⬅️ Left</button>
+    <button onclick="textAlign('center')" title="Align Center">↔️ Center</button>
+    <button onclick="textAlign('right')" title="Align Right">➡️ Right</button>
+    <button onclick="insertBulletList()" title="Bullet List">• Bullets</button>
+    
+    <div class="divider"></div>
+    
+    <button onclick="saveDocument()" title="Save Notes">💾 Save</button>
+    <button onclick="clearEditor()" title="Clear All">🧹 Clear</button>
+    <button onclick="toggleDarkMode()" id="darkToggle" title="Toggle Dark Mode">🌙 Dark Mode</button>
+  </div>
+
+  <div class="drawing-tools" id="drawingTools">
+    <button id="penTool" class="active" onclick="activatePenTool()">✏️ Pen</button>
+    <button id="highlighterTool" onclick="activateHighlighterTool()">🖍️ Highlighter</button>
+    <button id="eraserTool" onclick="activateEraserTool()">🧽 Eraser</button>
+    <button id="textTool" onclick="activateTextTool()">📝 Text</button>
+    <div class="pen-size">
+      <label for="penSize">Size:</label>
+      <input type="range" id="penSize" min="1" max="20" value="3">
+    </div>
+    <input type="color" id="penColor" value="#000000">
+    <button onclick="clearDrawing()">🗑️ Clear Drawing</button>
+  </div>
+
+  <div class="editor-container">
+    <div
+      id="editor"
+      class="editor"
+      contenteditable="true"
+      ondrop="dropFile(event)"
+      ondragover="allowDrop(event)"
+      spellcheck="true"
+      aria-label="Editable study notes area"
+      placeholder="Start typing your study notes here..."
+    ></div>
+    <canvas id="drawingCanvas"></canvas>
+  </div>
+
+  <div class="stats-section" id="statsSection">
+    <div class="stat-item">
+      <div class="stat-value" id="wordCount">0</div>
+      <div class="stat-label">Words</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="charCount">0</div>
+      <div class="stat-label">Characters</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="sentenceCount">0</div>
+      <div class="stat-label">Sentences</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="topicCount">0</div>
+      <div class="stat-label">Topics</div>
+    </div>
+  </div>
+
+  <div class="notes-list" id="notesList">
+    <h3>📁 Saved Notes</h3>
+    <div class="saved-notes" id="savedNotes">
+      <!-- Saved notes will appear here -->
+    </div>
+  </div>
+
+  <div class="ai-section" id="aiSection">
+    <h3>🤖 Smart Quiz Assistant</h3>
+    <p>Ask questions about your notes and get answers based on what you've studied!</p>
+    
+    <input
+      type="text"
+      id="aiQuestion"
+      placeholder="Enter your question here"
+      aria-label="AI question input"
+    />
+    <button onclick="checkQuizAnswer()" id="askAIButton">Check Answer</button>
+    
+    <div id="aiResult" role="region" aria-live="polite"></div>
+  </div>
+
+  <div class="flashcard-section" id="flashcardSection">
+    <h3>📚 Auto-generated Flashcards</h3>
+    <p>Click the flashcard to reveal the answer. Flashcards are generated from your notes.</p>
+    
+    <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
+      <div id="flashcardFront">Click "Generate Flashcards" to start</div>
+      <div id="flashcardBack" style="display: none;"></div>
+    </div>
+    
+    <div class="flashcard-controls">
+      <button onclick="generateFlashcards()">Generate Flashcards</button>
+      <button onclick="previousFlashcard()">Previous</button>
+      <button onclick="nextFlashcard()">Next</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // DOM Elements
+  const editor = document.getElementById("editor");
+  const drawingCanvas = document.getElementById("drawingCanvas");
+  const ctx = drawingCanvas.getContext("2d");
+  const fontSizeSelector = document.getElementById("fontSize");
+  const fontColorPicker = document.getElementById("fontColor");
+  const backgroundColorPicker = document.getElementById("backgroundColor");
+  const aiQuestionInput = document.getElementById("aiQuestion");
+  const aiResultDiv = document.getElementById("aiResult");
+  const askAIButton = document.getElementById("askAIButton");
+  const savedNotesDiv = document.getElementById("savedNotes");
+  
+  // Statistics elements
+  const wordCountEl = document.getElementById("wordCount");
+  const charCountEl = document.getElementById("charCount");
+  const sentenceCountEl = document.getElementById("sentenceCount");
+  const topicCountEl = document.getElementById("topicCount");
+  
+  // Flashcard elements
+  const flashcardFront = document.getElementById("flashcardFront");
+  const flashcardBack = document.getElementById("flashcardBack");
+  const flashcard = document.getElementById("flashcard");
+  
+  // Drawing tools
+  const penSizeInput = document.getElementById("penSize");
+  const penColorInput = document.getElementById("penColor");
+  
+  // App state
+  let flashcards = [];
+  let currentFlashcardIndex = 0;
+  let isFlashcardFlipped = false;
+  let isDrawing = false;
+  let currentTool = 'pen';
+  let lastX = 0;
+  let lastY = 0;
+  
+  // Knowledge base for AI assistant
+  let knowledgeBase = {
+    concepts: {},
+    relationships: [],
+    definitions: {}
+  };
+
+  // Initialize the app
+  window.onload = () => {
+    // Set up canvas
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Load saved content
+    const saved = localStorage.getItem("currentNote");
+    if (saved) {
+      editor.innerHTML = saved;
+      loadDrawing();
+    }
+    
+    // Load saved notes list
+    loadSavedNotes();
+    
+    // Update statistics
+    updateStatistics();
+    
+    // Add event listeners
+    editor.addEventListener("input", updateStatistics);
+    
+    // Load saved flashcards
+    const savedFlashcards = localStorage.getItem("studyFlashcards");
+    if (savedFlashcards) {
+      flashcards = JSON.parse(savedFlashcards);
+      if (flashcards.length > 0) {
+        displayFlashcard(0);
+      }
+    }
+    
+    // Build initial knowledge base
+    buildKnowledgeBase();
+    
+    // Set up drawing events
+    setupDrawingEvents();
+  };
+
+  // Set up canvas drawing events
+  function setupDrawingEvents() {
+    drawingCanvas.addEventListener('mousedown', startDrawing);
+    drawingCanvas.addEventListener('mousemove', draw);
+    drawingCanvas.addEventListener('mouseup', stopDrawing);
+    drawingCanvas.addEventListener('mouseout', stopDrawing);
+    
+    // Touch events for mobile devices
+    drawingCanvas.addEventListener('touchstart', handleTouchStart);
+    drawingCanvas.addEventListener('touchmove', handleTouchMove);
+    drawingCanvas.addEventListener('touchend', stopDrawing);
+  }
+
+  // Handle touch start
+  function handleTouchStart(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousedown', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    drawingCanvas.dispatchEvent(mouseEvent);
+  }
+
+  // Handle touch move
+  function handleTouchMove(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousemove', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    drawingCanvas.dispatchEvent(mouseEvent);
+  }
+
+  // Resize canvas to match editor
+  function resizeCanvas() {
+    const rect = editor.getBoundingClientRect();
+    drawingCanvas.width = rect.width;
+    drawingCanvas.height = rect.height;
+  }
+
+  // Start drawing
+  function startDrawing(e) {
+    isDrawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  }
+
+  // Draw on canvas
+  function draw(e) {
+    if (!isDrawing) return;
+    
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(e.offsetX, e.offsetY);
+    
+    if (currentTool === 'pen') {
+      ctx.strokeStyle = penColorInput.value;
+      ctx.lineWidth = penSizeInput.value;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    } else if (currentTool === 'highlighter') {
+      ctx.strokeStyle = 'rgba(255, 255, 0, 0.3)';
+      ctx.lineWidth = 15;
+      ctx.lineCap = 'round';
+    } else if (currentTool === 'eraser') {
+      ctx.strokeStyle = '#f9f9f9';
+      ctx.lineWidth = 20;
+      ctx.lineCap = 'round';
+    }
+    
+    ctx.stroke();
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+    
+    // Save drawing to localStorage
+    saveDrawing();
+  }
+
+  // Stop drawing
+  function stopDrawing() {
+    isDrawing = false;
+  }
+
+  // Save drawing to localStorage
+  function saveDrawing() {
+    const dataURL = drawingCanvas.toDataURL();
+    localStorage.setItem('currentDrawing', dataURL);
+  }
+
+  // Load drawing from localStorage
+  function loadDrawing() {
+    const savedDrawing = localStorage.getItem('currentDrawing');
+    if (savedDrawing) {
+      const img = new Image();
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = savedDrawing;
+    }
+  }
+
+  // Clear drawing
+  function clearDrawing() {
+    ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+    localStorage.removeItem('currentDrawing');
+  }
+
+  // Activate pen tool
+  function activatePenTool() {
+    currentTool = 'pen';
+    updateActiveTool('penTool');
+    drawingCanvas.style.display = 'block';
+    editor.style.pointerEvents = 'none';
+  }
+
+  // Activate highlighter tool
+  function activateHighlighterTool() {
+    currentTool = 'highlighter';
+    updateActiveTool('highlighterTool');
+    drawingCanvas.style.display = 'block';
+    editor.style.pointerEvents = 'none';
+  }
+
+  // Activate eraser tool
+  function activateEraserTool() {
+    currentTool = 'eraser';
+    updateActiveTool('eraserTool');
+    drawingCanvas.style.display = 'block';
+    editor.style.pointerEvents = 'none';
+  }
+
+  // Activate text tool
+  function activateTextTool() {
+    currentTool = 'text';
+    updateActiveTool('textTool');
+    drawingCanvas.style.display = 'none';
+    editor.style.pointerEvents = 'auto';
+    editor.focus();
+  }
+
+  // Update active tool button
+  function updateActiveTool(activeId) {
+    document.querySelectorAll('.drawing-tools button').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.getElementById(activeId).classList.add('active');
+  }
+
+  // Save current note
+  function saveDocument() {
+    const content = editor.innerHTML;
+    const title = prompt("Enter a title for your note:", "My Study Note");
+    
+    if (title) {
+      const note = {
+        title: title,
+        content: content,
+        drawing: drawingCanvas.toDataURL(),
+        timestamp: new Date().toISOString()
+      };
+      
+      // Save to localStorage
+      let savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+      savedNotes.push(note);
+      localStorage.setItem('savedNotes', JSON.stringify(savedNotes));
+      
+      // Also save as current note
+      localStorage.setItem('currentNote', content);
+      saveDrawing();
+      
+      // Update saved notes list
+      loadSavedNotes();
+      
+      showNotification("Note saved successfully!", "success");
+    }
+  }
+
+  // Load saved notes list
+  function loadSavedNotes() {
+    const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+    savedNotesDiv.innerHTML = '';
+    
+    if (savedNotes.length === 0) {
+      savedNotesDiv.innerHTML = '<p>No saved notes yet. Save your first note to see it here.</p>';
+      return;
+    }
+    
+    savedNotes.forEach((note, index) => {
+      const noteEl = document.createElement('div');
+      noteEl.className = 'saved-note' + (document.body.classList.contains('dark-mode') ? ' dark-mode' : '');
+      noteEl.innerHTML = `
+        <div class="saved-note-title">${note.title}</div>
+        <div class="saved-note-preview">${note.content.substring(0, 50)}...</div>
+      `;
+      noteEl.addEventListener('click', () => loadNote(index));
+      savedNotesDiv.appendChild(noteEl);
+    });
+  }
+
+  // Load a specific note
+  function loadNote(index) {
+    const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+    if (savedNotes[index]) {
+      const note = savedNotes[index];
+      editor.innerHTML = note.content;
+      
+      // Load drawing if exists
+      if (note.drawing) {
+        const img = new Image();
+        img.onload = function() {
+          ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = note.drawing;
+      }
+      
+      // Update current note
+      localStorage.setItem('currentNote', note.content);
+      
+      // Update statistics
+      updateStatistics();
+      
+      showNotification("Note loaded successfully!", "success");
+    }
+  }
+
+  // Update document statistics
+  function updateStatistics() {
+    const text = editor.innerText || "";
+    
+    // Word count
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    wordCountEl.textContent = words;
+    
+    // Character count
+    charCountEl.textContent = text.length;
+    
+    // Sentence count
+    const sentences = text.split(/[\.\?\!]+/).filter(s => s.trim().length > 0);
+    sentenceCountEl.textContent = sentences.length;
+    
+    // Topic count (estimate based on headings and paragraph breaks)
+    const topics = text.split(/\n\n+/).filter(p => p.trim().length > 0);
+    topicCountEl.textContent = topics.length;
+    
+    // Update knowledge base when content changes
+    buildKnowledgeBase();
+  }
+
+  // Build a knowledge base from the notes
+  function buildKnowledgeBase() {
+    const text = editor.innerText || "";
+    if (!text.trim()) return;
+    
+    // Reset knowledge base
+    knowledgeBase = {
+      concepts: {},
+      relationships: [],
+      definitions: {}
+    };
+    
+    // Extract sentences
+    const sentences = text.split(/[\.\?\!]+/).map(s => s.trim()).filter(s => s.length > 5);
+    
+    // Process each sentence to extract concepts and relationships
+    sentences.forEach(sentence => {
+      // Extract potential concepts (nouns and important terms)
+      const words = sentence.split(/\s+/);
+      const concepts = words.filter(word => 
+        word.length > 3 && 
+        !isCommonWord(word.toLowerCase())
+      );
+      
+      // Store concepts with their context
+      concepts.forEach(concept => {
+        const cleanConcept = concept.toLowerCase().replace(/[^\w]/g, '');
+        if (!knowledgeBase.concepts[cleanConcept]) {
+          knowledgeBase.concepts[cleanConcept] = [];
+        }
+        knowledgeBase.concepts[cleanConcept].push(sentence);
+      });
+      
+      // Extract potential definitions (sentences with "is", "are", "means", "defined as")
+      if (sentence.match(/\b(is|are|means|defined as|refers to)\b/i)) {
+        const parts = sentence.split(/\b(is|are|means|defined as|refers to)\b/i);
+        if (parts.length >= 3) {
+          const term = parts[0].trim().toLowerCase().replace(/[^\w\s]/g, '');
+          const definition = parts[2].trim();
+          knowledgeBase.definitions[term] = definition;
+        }
+      }
+    });
+  }
+
+  // Check if a word is a common word
+  function isCommonWord(word) {
+    const commonWords = [
+      'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'your', 
+      'with', 'this', 'that', 'have', 'from', 'they', 'each', 'which', 'their',
+      'will', 'other', 'about', 'out', 'many', 'then', 'them', 'these', 'some',
+      'would', 'into', 'than', 'first', 'water', 'people', 'could', 'been',
+      'where', 'after', 'most'
+    ];
+    return commonWords.includes(word);
+  }
+
+  // Enhanced Q&A function with better matching
+  function checkQuizAnswer() {
+    const question = aiQuestionInput.value.trim();
+    const result = aiResultDiv;
+
+    if (!question) {
+      showResult("❗ Please enter a question.", "warning");
+      return;
+    }
+
+    // Show loading state
+    askAIButton.innerHTML = '<span class="loader"></span> Thinking...';
+    askAIButton.disabled = true;
+
+    // Simulate processing time for better UX
+    setTimeout(() => {
+      const answer = findAnswerInNotes(question);
+      showAnswerResult(question, answer);
+      
+      // Reset button
+      askAIButton.innerHTML = 'Get Answer';
+      askAIButton.disabled = false;
+    }, 800);
+  }
+
+  // Find answer using multiple strategies
+  function findAnswerInNotes(question) {
+    const questionLower = question.toLowerCase();
+    const text = editor.innerText || "";
+    const sentences = text.split(/[\.\?\!]+/).map(s => s.trim()).filter(s => s.length > 0);
+    
+    // Strategy 1: Direct definition lookup
+    const definitionAnswer = findDefinition(questionLower);
+    if (definitionAnswer) {
+      return {
+        answer: definitionAnswer.answer,
+        confidence: 0.9,
+        sources: definitionAnswer.sources,
+        strategy: "Definition match"
+      };
+    }
+    
+    // Strategy 2: Keyword matching with scoring
+    const keywordAnswer = findByKeywords(questionLower, sentences);
+    if (keywordAnswer.confidence > 0.6) {
+      return keywordAnswer;
+    }
+    
+    // Fallback: No good answer found
+    return {
+      answer: "I couldn't find a specific answer to your question in your notes. Try rephrasing or adding more detailed notes on this topic.",
+      confidence: 0,
+      sources: [],
+      strategy: "No match found"
+    };
+  }
+
+  // Find definition of a term
+  function findDefinition(question) {
+    // Check if question is asking for a definition
+    const definitionPatterns = [
+      /what (is|are) (.+)/,
+      /define (.+)/,
+      /meaning of (.+)/,
+      /what does (.+) mean/
+    ];
+    
+    let term = null;
+    for (const pattern of definitionPatterns) {
+      const match = question.match(pattern);
+      if (match) {
+        term = match[1] || match[2];
+        break;
+      }
+    }
+    
+    // Also check for simple term queries
+    if (!term && question.split(' ').length <= 3) {
+      term = question;
+    }
+    
+    if (term) {
+      const cleanTerm = term.toLowerCase().replace(/[^\w\s]/g, '');
+      
+      // Check explicit definitions
+      if (knowledgeBase.definitions[cleanTerm]) {
+        return {
+          answer: knowledgeBase.definitions[cleanTerm],
+          sources: [knowledgeBase.definitions[cleanTerm]]
+        };
+      }
+      
+      // Check concept sentences
+      if (knowledgeBase.concepts[cleanTerm] && knowledgeBase.concepts[cleanTerm].length > 0) {
+        return {
+          answer: knowledgeBase.concepts[cleanTerm][0],
+          sources: knowledgeBase.concepts[cleanTerm].slice(0, 2)
+        };
+      }
+    }
+    
+    return null;
+  }
+
+  // Find answer by keyword matching with scoring
+  function findByKeywords(question, sentences) {
+    const questionWords = question.split(/\s+/).filter(word => 
+      word.length > 3 && !isCommonWord(word)
+    );
+    
+    if (questionWords.length === 0) {
+      return {
+        answer: "Please ask a more specific question with key terms from your notes.",
+        confidence: 0,
+        sources: [],
+        strategy: "No keywords"
+      };
+    }
+    
+    // Score each sentence based on keyword matches
+    const scoredSentences = sentences.map(sentence => {
+      const sentenceLower = sentence.toLowerCase();
+      let score = 0;
+      let matchedKeywords = [];
+      
+      questionWords.forEach(word => {
+        if (sentenceLower.includes(word)) {
+          score += 1;
+          matchedKeywords.push(word);
+          
+          // Bonus for exact matches at word boundaries
+          if (sentenceLower.match(new RegExp(`\\b${word}\\b`))) {
+            score += 0.5;
+          }
+        }
+      });
+      
+      return {
+        sentence,
+        score,
+        matchedKeywords,
+        coverage: score / questionWords.length
+      };
+    }).filter(item => item.score > 0);
+    
+    // Sort by score and coverage
+    scoredSentences.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return b.coverage - a.coverage;
+    });
+    
+    if (scoredSentences.length > 0) {
+      const bestMatch = scoredSentences[0];
+      const confidence = Math.min(0.9, bestMatch.coverage * 0.8 + bestMatch.score / 10);
+      
+      return {
+        answer: bestMatch.sentence,
+        confidence: confidence,
+        sources: scoredSentences.slice(0, 3).map(s => s.sentence),
+        strategy: `Keyword match (${bestMatch.matchedKeywords.join(', ')})`
+      };
+    }
+    
+    return {
+      answer: "No matching information found in your notes.",
+      confidence: 0,
+      sources: [],
+      strategy: "No keyword matches"
+    };
+  }
+
+  // Display the answer result
+  function showAnswerResult(question, answerData) {
+    aiResultDiv.innerHTML = "";
+    
+    const answerCard = document.createElement("div");
+    answerCard.className = "answer-card" + (document.body.classList.contains("dark-mode") ? " dark-mode" : "");
+    
+    const questionEl = document.createElement("div");
+    questionEl.innerHTML = `<strong>Q:</strong> ${question}`;
+    questionEl.style.marginBottom = "10px";
+    answerCard.appendChild(questionEl);
+    
+    const answerEl = document.createElement("div");
+    answerEl.innerHTML = `<strong>A:</strong> ${answerData.answer}`;
+    answerEl.style.marginBottom = "10px";
+    answerEl.style.whiteSpace = "pre-line";
+    answerCard.appendChild(answerEl);
+    
+    // Add confidence meter
+    if (answerData.confidence > 0) {
+      const confidenceDiv = document.createElement("div");
+      confidenceDiv.className = "confidence-score";
+      
+      const confidenceText = document.createElement("span");
+      confidenceText.textContent = `Confidence: ${Math.round(answerData.confidence * 100)}%`;
+      
+      const confidenceMeter = document.createElement("div");
+      confidenceMeter.className = "confidence-meter";
+      
+      const confidenceFill = document.createElement("div");
+      confidenceFill.className = "confidence-fill";
+      confidenceFill.style.width = `${answerData.confidence * 100}%`;
+      confidenceFill.style.backgroundColor = 
+        answerData.confidence > 0.7 ? "var(--success-color)" : 
+        answerData.confidence > 0.4 ? "var(--warning-color)" : "var(--danger-color)";
+      
+      confidenceMeter.appendChild(confidenceFill);
+      confidenceDiv.appendChild(confidenceText);
+      confidenceDiv.appendChild(confidenceMeter);
+      
+      answerCard.appendChild(confidenceDiv);
+    }
+    
+    // Add source sentences if available
+    if (answerData.sources && answerData.sources.length > 0) {
+      const sourcesDiv = document.createElement("div");
+      sourcesDiv.className = "source-sentences" + (document.body.classList.contains("dark-mode") ? " dark-mode" : "");
+      
+      const sourcesTitle = document.createElement("div");
+      sourcesTitle.textContent = "Based on your notes:";
+      sourcesTitle.style.fontWeight = "bold";
+      sourcesTitle.style.marginBottom = "5px";
+      sourcesDiv.appendChild(sourcesTitle);
+      
+      answerData.sources.forEach((source, index) => {
+        const sourceEl = document.createElement("div");
+        sourceEl.textContent = `${index + 1}. ${source}`;
+        sourceEl.style.marginBottom = "5px";
+        sourceEl.style.fontSize = "13px";
+        sourcesDiv.appendChild(sourceEl);
+      });
+      
+      answerCard.appendChild(sourcesDiv);
+    }
+    
+    // Add strategy info
+    const strategyEl = document.createElement("div");
+    strategyEl.style.marginTop = "10px";
+    strategyEl.style.fontSize = "12px";
+    strategyEl.style.color = "#666";
+    strategyEl.textContent = `Strategy: ${answerData.strategy}`;
+    answerCard.appendChild(strategyEl);
+    
+    aiResultDiv.appendChild(answerCard);
+  }
+
+  function showResult(message, type) {
+    aiResultDiv.innerHTML = "";
+    aiResultDiv.textContent = message;
+    aiResultDiv.style.color = type === "warning" ? "orange" : "red";
+    aiResultDiv.style.padding = "15px";
+    aiResultDiv.style.borderRadius = "var(--border-radius)";
+    aiResultDiv.style.backgroundColor = type === "warning" ? "#fff3cd" : "#f8d7da";
+  }
+
+  // Flashcard functions
+  function generateFlashcards() {
+    const text = editor.innerText || "";
+    if (!text.trim()) {
+      showNotification("Please add some notes first to generate flashcards.", "warning");
+      return;
+    }
+    
+    // Split text into sentences
+    const sentences = text.split(/[\.\?\!]+/).map(s => s.trim()).filter(s => s.length > 10);
+    
+    if (sentences.length < 2) {
+      showNotification("Not enough content to generate flashcards. Add more notes.", "warning");
+      return;
+    }
+    
+    // Create flashcards from sentences
+    flashcards = [];
+    for (let i = 0; i < sentences.length - 1; i += 2) {
+      if (i + 1 < sentences.length) {
+        flashcards.push({
+          front: sentences[i],
+          back: sentences[i + 1]
+        });
+      }
+    }
+    
+    // Save flashcards
+    localStorage.setItem("studyFlashcards", JSON.stringify(flashcards));
+    
+    // Display first flashcard
+    currentFlashcardIndex = 0;
+    displayFlashcard(0);
+    
+    showNotification(`Generated ${flashcards.length} flashcards from your notes!`, "success");
+  }
+
+  function displayFlashcard(index) {
+    if (flashcards.length === 0) return;
+    
+    // Reset to front side
+    isFlashcardFlipped = false;
+    flashcardFront.style.display = "block";
+    flashcardBack.style.display = "none";
+    
+    // Update content
+    flashcardFront.textContent = flashcards[index].front;
+    flashcardBack.textContent = flashcards[index].back;
+  }
+
+  function flipFlashcard() {
+    if (flashcards.length === 0) return;
+    
+    isFlashcardFlipped = !isFlashcardFlipped;
+    if (isFlashcardFlipped) {
+      flashcardFront.style.display = "none";
+      flashcardBack.style.display = "block";
+    } else {
+      flashcardFront.style.display = "block";
+      flashcardBack.style.display = "none";
+    }
+  }
+
+  function nextFlashcard() {
+    if (flashcards.length === 0) return;
+    
+    currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.length;
+    displayFlashcard(currentFlashcardIndex);
+  }
+
+  function previousFlashcard() {
+    if (flashcards.length === 0) return;
+    
+    currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcards.length) % flashcards.length;
+    displayFlashcard(currentFlashcardIndex);
+  }
+
+  // Show notification
+  function showNotification(message, type) {
+    const notification = document.createElement("div");
+    notification.textContent = message;
+    notification.style.position = "fixed";
+    notification.style.top = "20px";
+    notification.style.right = "20px";
+    notification.style.padding = "15px 20px";
+    notification.style.borderRadius = "var(--border-radius)";
+    notification.style.color = "white";
+    notification.style.zIndex = "1000";
+    notification.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+    notification.style.transition = "opacity 0.3s ease";
+    
+    // Set background color based on type
+    if (type === "success") {
+      notification.style.backgroundColor = "var(--success-color)";
+    } else if (type === "error") {
+      notification.style.backgroundColor = "var(--danger-color)";
+    } else if (type === "warning") {
+      notification.style.backgroundColor = "var(--warning-color)";
+    } else {
+      notification.style.backgroundColor = "var(--primary-color)";
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+      notification.style.opacity = "0";
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  // Toggle dark mode
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    document.getElementById("notepad").classList.toggle("dark-mode");
+    document.getElementById("toolbar").classList.toggle("dark-mode");
+    document.getElementById("aiSection").classList.toggle("dark-mode");
+    document.getElementById("flashcardSection").classList.toggle("dark-mode");
+    document.getElementById("notesList").classList.toggle("dark-mode");
+    document.getElementById("drawingTools").classList.toggle("dark-mode");
+    editor.classList.toggle("dark-mode");
+    flashcard.classList.toggle("dark-mode");
+    document.querySelectorAll("pre").forEach(pre => pre.classList.toggle("dark-mode"));
+    document.querySelectorAll(".saved-note").forEach(note => note.classList.toggle("dark-mode"));
+    
+    const toggleBtn = document.getElementById("darkToggle");
+    toggleBtn.textContent = document.body.classList.contains("dark-mode")
+      ? "☀️ Light Mode"
+      : "🌙 Dark Mode";
+      
+    // Save preference
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+  }
+
+  // Load dark mode preference
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const darkModePref = localStorage.getItem("darkMode");
+    if (darkModePref === "true") {
+      toggleDarkMode();
+    }
+  });
+
+  // Allow pressing Enter to ask question
+  aiQuestionInput.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      checkQuizAnswer();
+    }
+  });
+
+  // Other editor functions (insertTable, insertCode, etc.)
+  fontSizeSelector.addEventListener("change", () => {
+    document.execCommand("fontSize", false, "7");
+    const fontElements = editor.getElementsByTagName("font");
+    for (let el of fontElements) {
+      if (el.size === "7") {
+        el.removeAttribute("size");
+        el.style.fontSize = fontSizeSelector.value;
+      }
+    }
+  });
+
+  fontColorPicker.addEventListener("change", () => {
+    document.execCommand("foreColor", false, fontColorPicker.value);
+  });
+
+  backgroundColorPicker.addEventListener("change", () => {
+    editor.style.backgroundColor = backgroundColorPicker.value;
+  });
+
+  function insertTable() {
+    const rows = prompt("Number of rows?");
+    const cols = prompt("Number of columns?");
+    if (!rows || !cols) return;
+    let tableHTML = '<table border="1" style="border-collapse: collapse; width: 100%;">';
+    for (let r = 0; r < rows; r++) {
+      tableHTML += "<tr>";
+      for (let c = 0; c < cols; c++) {
+        tableHTML += '<td contenteditable="true" style="padding: 8px; border: 1px solid #ccc;"></td>';
+      }
+      tableHTML += "</tr>";
+    }
+    tableHTML += "</table><br/>";
+    document.execCommand("insertHTML", false, tableHTML);
+  }
+
+  function insertCode() {
+    const codeHTML = '<pre contenteditable="true">Insert your code here</pre><br/>';
+    document.execCommand("insertHTML", false, codeHTML);
+  }
+
+  function insertImage() {
+    const url = prompt("Image URL?");
+    if (url) {
+      const imgHTML = `<img src="${url}" alt="Image" style="max-width: 100%; border-radius: 4px;" />`;
+      document.execCommand("insertHTML", false, imgHTML);
+    }
+  }
+
+  function textAlign(align) {
+    document.execCommand("justify" + align.charAt(0).toUpperCase() + align.slice(1));
+  }
+
+  function insertBulletList() {
+    document.execCommand("insertUnorderedList");
+  }
+
+  function clearEditor() {
+    if (confirm("Clear all notes? This action cannot be undone.")) {
+      editor.innerHTML = "";
+      clearDrawing();
+      localStorage.removeItem("currentNote");
+      updateStatistics();
+      showNotification("All notes cleared", "info");
+    }
+  }
+
+  function allowDrop(event) {
+    event.preventDefault();
+  }
+
+  function dropFile(event) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (files.length === 0) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const imgHTML = `<img src="${e.target.result}" alt="Dropped Image" style="max-width: 100%; border-radius: 4px;" />`;
+      document.execCommand("insertHTML", false, imgHTML);
+    };
+    reader.readAsDataURL(files[0]);
+  }
+</script>
+
+</body>
+</html>

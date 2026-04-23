@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VidNotes - Smart Video Learning</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --primary:black;
+      --primary-light: #8A78F8;
+      --secondary: green;
+      --accent: #4ECDC4;
+      --dark: #1A1D2E;
+      --light: #F8FAFF;
+      --text: #2D3748;
+      --light-text: #718096;
+      --card-bg: #FFFFFF;
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --radius: 16px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 20px;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      transform: rotate(-5deg);
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 2.8rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      font-size: 1.2rem;
+      color: var(--light-text);
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 900px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .card-icon {
+      width: 45px;
+      height: 45px;
+      background: var(--primary-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-right: 15px;
+    }
+
+    h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 1.6rem;
+      color: var(--dark);
+    }
+
+    .file-upload-area {
+      border: 2px dashed var(--primary-light);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+      margin-bottom: 25px;
+      transition: var(--transition);
+      background: rgba(108, 77, 246, 0.03);
+      cursor: pointer;
+    }
+
+    .file-upload-area:hover {
+      background: rgba(108, 77, 246, 0.08);
+      border-color: var(--primary);
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 5px 15px rgba(108, 77, 246, 0.3);
+    }
+
+    .btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(108, 77, 246, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      box-shadow: none;
+    }
+
+    .btn-outline:hover {
+      background: var(--primary-light);
+      color: white;
+    }
+
+    .video-container {
+      position: relative;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      background: var(--dark);
+    }
+
+    .video-controls {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background: rgba(26, 29, 46, 0.8);
+      color: white;
+    }
+
+    .speed-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .speed-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .speed-btn.active {
+      background: var(--accent);
+      color: var(--dark);
+    }
+
+    .speed-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .note-input-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .note-input {
+      width: 100%;
+      min-height: 140px;
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      resize: vertical;
+      transition: var(--transition);
+    }
+
+    .note-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.1);
+    }
+
+    .timestamp-btn {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .timestamp-btn:hover {
+      background: #ff5a7a;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.1);
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .note-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      transition: var(--transition);
+      border-left: 4px solid var(--accent);
+    }
+
+    .note-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .note-title {
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 1.1rem;
+    }
+
+    .note-time {
+      color: var(--light-text);
+      font-size: 14px;
+    }
+
+    .note-content {
+      margin-bottom: 15px;
+      color: var(--text);
+    }
+
+    .note-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .tag {
+      background: var(--primary-light);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      font-size: 14px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .action-edit {
+      background: rgba(108, 77, 246, 0.1);
+      color: var(--primary);
+    }
+
+    .action-delete {
+      background: rgba(255, 122, 138, 0.1);
+      color: var(--secondary);
+    }
+
+    .action-edit:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .action-delete:hover {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--light-text);
+    }
+
+    .empty-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: #e2e8f0;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--light-text);
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px 18px 14px 50px;
+      border: 1px solid #e2e8f0;
+      border-radius: 30px;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.1);
+    }
+
+    .alert {
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .alert-success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-left: 4px solid #4caf50;
+    }
+
+    .alert-error {
+      background: #ffebee;
+      color: #c62828;
+      border-left: 4px solid #f44336;
+    }
+
+    .video-info {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(108, 77, 246, 0.05);
+      border-radius: 10px;
+    }
+
+    .video-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+      color: var(--dark);
+    }
+
+    .video-details {
+      color: var(--light-text);
+      font-size: 14px;
+    }
+
+    .floating-action {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: var(--secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 6px 20px rgba(255, 122, 138, 0.4);
+      cursor: pointer;
+      transition: var(--transition);
+      z-index: 100;
+    }
+
+    .floating-action:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(255, 122, 138, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-film"></i>
+        </div>
+        <h1>VidNotes</h1>
+      </div>
+      <p class="tagline">Transform your videos into interactive learning experiences. Take notes, track insights, and master content.</p>
+    </header>
+
+    <div class="main-content">
+      <!-- Video Section -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-play-circle"></i>
+          </div>
+          <h2>Learning Studio</h2>
+        </div>
+        
+        <div class="file-upload-area" id="uploadArea">
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <h3>Select a Video from Your Device</h3>
+          <p>Drag & drop or click to browse files</p>
+          <input type="file" id="videoFile" class="file-input" accept="video/*">
+          <p class="video-details" style="margin-top: 15px; font-size: 14px;">Supported: MP4, WebM, MOV</p>
+        </div>
+        
+        <div id="videoInfo" class="video-info" style="display: none;">
+          <div class="video-title" id="currentVideoTitle">Current Video</div>
+          <div class="video-details" id="videoDetails">Details will appear here</div>
+        </div>
+        
+        <div class="video-container" id="videoContainer" style="display: none;">
+          <video id="videoPlayer" controls>
+            Your browser does not support the video tag.
+          </video>
+          <div class="video-controls">
+            <div>
+              <span>Playback Speed:</span>
+            </div>
+            <div class="speed-controls">
+              <button class="speed-btn" onclick="changePlaybackSpeed(0.5)">0.5x</button>
+              <button class="speed-btn active" onclick="changePlaybackSpeed(1)">1x</button>
+              <button class="speed-btn" onclick="changePlaybackSpeed(1.5)">1.5x</button>
+              <button class="speed-btn" onclick="changePlaybackSpeed(2)">2x</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="alert alert-success" id="videoAlert"></div>
+        
+        <div class="form-group">
+          <label for="noteTitle"><i class="fas fa-heading"></i> Note Title</label>
+          <input type="text" id="noteTitle" placeholder="Give your note a title...">
+        </div>
+        
+        <div class="form-group">
+          <label for="noteCategory"><i class="fas fa-tags"></i> Category</label>
+          <select id="noteCategory">
+            <option value="concept">Key Concept</option>
+            <option value="question">Question</option>
+            <option value="insight">Insight</option>
+            <option value="summary">Summary</option>
+            <option value="reference">Reference</option>
+          </select>
+        </div>
+        
+        <div class="note-input-container">
+          <label for="studentNote"><i class="fas fa-sticky-note"></i> Your Notes</label>
+          <textarea class="note-input" id="studentNote" placeholder="Jot down your thoughts, questions, or insights..."></textarea>
+          <button class="timestamp-btn" onclick="addTimestamp()" id="timestampBtn" style="display: none;">
+            <i class="fas fa-clock"></i> Add Timestamp
+          </button>
+        </div>
+        
+        <button class="btn" onclick="saveNote()">
+          <i class="fas fa-plus-circle"></i> Save Note
+        </button>
+      </div>
+      
+      <!-- Notes Section -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <h2>My Notes</h2>
+        </div>
+        
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchNotes" placeholder="Search your notes...">
+        </div>
+        
+        <div id="savedNotesArea">
+          <div class="empty-state">
+            <i class="fas fa-clipboard empty-icon"></i>
+            <h3>No Notes Yet</h3>
+            <p>Your notes will appear here once you start learning</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <div class="floating-action" onclick="scrollToVideo()">
+    <i class="fas fa-video"></i>
+  </div>
+
+  <script>
+    let currentVideo = document.getElementById('videoPlayer');
+    let notes = JSON.parse(localStorage.getItem('vidNotes')) || [];
+    
+    // Initialize the app
+    window.onload = function() {
+      loadNotes();
+      
+      // Set up file upload
+      const uploadArea = document.getElementById('uploadArea');
+      const fileInput = document.getElementById('videoFile');
+      
+      uploadArea.addEventListener('click', () => {
+        fileInput.click();
+      });
+      
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = 'rgba(108, 77, 246, 0.1)';
+        uploadArea.style.borderColor = 'var(--primary)';
+      });
+      
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.background = 'rgba(108, 77, 246, 0.03)';
+        uploadArea.style.borderColor = 'var(--primary-light)';
+      });
+      
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = 'rgba(108, 77, 246, 0.03)';
+        uploadArea.style.borderColor = 'var(--primary-light)';
+        
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          handleVideoSelection();
+        }
+      });
+      
+      fileInput.addEventListener('change', handleVideoSelection);
+      
+      // Set up search functionality
+      document.getElementById('searchNotes').addEventListener('input', loadNotes);
+    };
+    
+    function handleVideoSelection() {
+      const fileInput = document.getElementById('videoFile');
+      const file = fileInput.files[0];
+      
+      if (!file) return;
+      
+      if (!file.type.startsWith('video/')) {
+        showAlert('Please select a valid video file.', 'error', 'videoAlert');
+        return;
+      }
+      
+      const videoURL = URL.createObjectURL(file);
+      currentVideo.src = videoURL;
+      
+      // Show video container and controls
+      document.getElementById('videoContainer').style.display = 'block';
+      document.getElementById('timestampBtn').style.display = 'flex';
+      document.getElementById('uploadArea').style.display = 'none';
+      
+      // Show video info
+      document.getElementById('videoInfo').style.display = 'block';
+      document.getElementById('currentVideoTitle').textContent = file.name;
+      document.getElementById('videoDetails').textContent = 
+        `Size: ${(file.size / (1024 * 1024)).toFixed(2)} MB | Type: ${file.type}`;
+      
+      showAlert('Video loaded successfully! Start taking notes.', 'success', 'videoAlert');
+    }
+    
+    function showAlert(message, type, elementId) {
+      const alert = document.getElementById(elementId);
+      alert.textContent = message;
+      alert.className = `alert alert-${type}`;
+      alert.style.display = 'block';
+      
+      setTimeout(() => {
+        alert.style.display = 'none';
+      }, 4000);
+    }
+    
+    function changePlaybackSpeed(speed) {
+      if (currentVideo) {
+        currentVideo.playbackRate = speed;
+        
+        // Update active button
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        showAlert(`Playback speed set to ${speed}x`, 'success', 'videoAlert');
+      }
+    }
+    
+    function addTimestamp() {
+      if (!currentVideo) return;
+      
+      const timestamp = formatTime(currentVideo.currentTime);
+      const noteTextarea = document.getElementById('studentNote');
+      const currentText = noteTextarea.value;
+      
+      noteTextarea.value = currentText + ` [${timestamp}] `;
+      showAlert(`Timestamp ${timestamp} added!`, 'success', 'videoAlert');
+    }
+    
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+    
+    function saveNote() {
+      const noteTitle = document.getElementById('noteTitle').value.trim();
+      const noteCategory = document.getElementById('noteCategory').value;
+      const noteContent = document.getElementById('studentNote').value.trim();
+      
+      if (!noteTitle) {
+        showAlert('Please add a title for your note.', 'error', 'videoAlert');
+        return;
+      }
+      
+      if (!noteContent) {
+        showAlert('Please write something in your note.', 'error', 'videoAlert');
+        return;
+      }
+
+      const timestamp = currentVideo ? formatTime(currentVideo.currentTime) : 'N/A';
+      const videoTitle = document.getElementById('currentVideoTitle').textContent;
+      
+      notes.push({
+        id: Date.now(),
+        title: noteTitle,
+        content: noteContent,
+        category: noteCategory,
+        timestamp: timestamp,
+        video: videoTitle,
+        date: new Date().toLocaleDateString('en-US', { 
+          weekday: 'short', 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      });
+      
+      localStorage.setItem('vidNotes', JSON.stringify(notes));
+      showAlert('Note saved successfully!', 'success', 'videoAlert');
+      
+      // Reset form
+      document.getElementById('noteTitle').value = '';
+      document.getElementById('studentNote').value = '';
+      
+      loadNotes();
+    }
+    
+    function loadNotes() {
+      const savedNotesArea = document.getElementById('savedNotesArea');
+      const searchTerm = document.getElementById('searchNotes').value.toLowerCase();
+
+      if (notes.length === 0) {
+        savedNotesArea.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-clipboard empty-icon"></i>
+            <h3>No Notes Yet</h3>
+            <p>Your notes will appear here once you start learning</p>
+          </div>
+        `;
+        return;
+      }
+
+      const filteredNotes = notes.filter(note => 
+        note.title.toLowerCase().includes(searchTerm) || 
+        note.content.toLowerCase().includes(searchTerm) ||
+        note.category.toLowerCase().includes(searchTerm) ||
+        note.video.toLowerCase().includes(searchTerm)
+      );
+      
+      if (filteredNotes.length === 0) {
+        savedNotesArea.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-search empty-icon"></i>
+            <h3>No Matching Notes</h3>
+            <p>Try a different search term</p>
+          </div>
+        `;
+        return;
+      }
+      
+      savedNotesArea.innerHTML = '<div class="notes-grid"></div>';
+      const notesGrid = savedNotesArea.querySelector('.notes-grid');
+      
+      filteredNotes.forEach((note, index) => {
+        const noteCard = document.createElement('div');
+        noteCard.className = 'note-card';
+        noteCard.innerHTML = `
+          <div class="note-header">
+            <div class="note-title">${note.title}</div>
+            <div class="note-time">${note.timestamp}</div>
+          </div>
+          <div class="note-tags">
+            <span class="tag">${getCategoryLabel(note.category)}</span>
+          </div>
+          <div class="note-content">${note.content}</div>
+          <div class="video-details" style="margin-bottom: 10px;">
+            <i class="fas fa-video"></i> ${note.video}
+          </div>
+          <div class="note-actions">
+            <button class="action-btn action-edit" onclick="editNote(${note.id})">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="action-btn action-delete" onclick="deleteNote(${note.id})">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+          <div class="note-time" style="margin-top: 10px; font-size: 12px;">
+            <i class="far fa-calendar"></i> ${note.date}
+          </div>
+        `;
+        notesGrid.appendChild(noteCard);
+      });
+    }
+    
+    function getCategoryLabel(category) {
+      const labels = {
+        'concept': 'Key Concept',
+        'question': 'Question',
+        'insight': 'Insight',
+        'summary': 'Summary',
+        'reference': 'Reference'
+      };
+      return labels[category] || 'Note';
+    }
+    
+    function editNote(noteId) {
+      const noteIndex = notes.findIndex(note => note.id === noteId);
+      if (noteIndex === -1) return;
+      
+      const note = notes[noteIndex];
+      document.getElementById('noteTitle').value = note.title;
+      document.getElementById('noteCategory').value = note.category;
+      document.getElementById('studentNote').value = note.content;
+      
+      // Remove the note being edited
+      notes.splice(noteIndex, 1);
+      localStorage.setItem('vidNotes', JSON.stringify(notes));
+      loadNotes();
+      
+      showAlert('Note loaded for editing!', 'success', 'videoAlert');
+    }
+    
+    function deleteNote(noteId) {
+      if (confirm('Are you sure you want to delete this note?')) {
+        notes = notes.filter(note => note.id !== noteId);
+        localStorage.setItem('vidNotes', JSON.stringify(notes));
+        loadNotes();
+        showAlert('Note deleted!', 'success', 'videoAlert');
+      }
+    }
+    
+    function scrollToVideo() {
+      document.querySelector('.card').scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  </script>
+</body>
+</html>

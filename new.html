@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduConnect Offline | Teacher-Student Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* === EDUCATIONAL THEME COLORS === */
+    :root {
+      --teacher-primary: #2C3E50;
+      --teacher-secondary: #1A252F;
+      --student-primary: #3498DB;
+      --student-secondary: #2980B9;
+      --success: #27AE60;
+      --warning: #F39C12;
+      --danger: #E74C3C;
+      --light: #ECF0F1;
+      --dark: #2C3E50;
+      --gray-100: #F8F9FA;
+      --gray-200: #E9ECEF;
+      --gray-300: #DEE2E6;
+      --gray-600: #6C757D;
+      --gray-800: #343A40;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+      --radius: 10px;
+      --transition: all 0.3s ease;
+    }
+    
+    /* === BASE STYLES === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* === HEADER === */
+    .header {
+      background: linear-gradient(135deg, var(--teacher-primary) 0%, var(--teacher-secondary) 100%);
+      color: white;
+      border-radius: var(--radius);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .logo {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--teacher-primary);
+      font-size: 1.5rem;
+    }
+    
+    .header-text h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.2rem;
+    }
+    
+    .header-text p {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+    
+    .role-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .teacher-badge {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .student-badge {
+      background: var(--student-primary);
+    }
+    
+    /* === ROLE SELECTION === */
+    .role-selection {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .role-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2px solid transparent;
+    }
+    
+    .role-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .role-card.active {
+      border-color: var(--teacher-primary);
+    }
+    
+    .role-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 2rem;
+    }
+    
+    .teacher-icon {
+      background: rgba(44, 62, 80, 0.1);
+      color: var(--teacher-primary);
+    }
+    
+    .student-icon {
+      background: rgba(52, 152, 219, 0.1);
+      color: var(--student-primary);
+    }
+    
+    /* === CONNECTION SETUP === */
+    .connection-section {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+    
+    .section-title {
+      font-size: 1.4rem;
+      color: var(--teacher-primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .connection-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--teacher-primary);
+      box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+    }
+    
+    /* === CONNECTION STATUS === */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+    
+    .status-connected {
+      background: rgba(39, 174, 96, 0.1);
+      border: 1px solid var(--success);
+    }
+    
+    .status-disconnected {
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid var(--danger);
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .dot-connected {
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+    
+    .dot-disconnected {
+      background: var(--danger);
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    /* === MAIN CONTENT AREA === */
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .content-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      height: 100%;
+    }
+    
+    /* === CHAT AREA === */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 400px;
+    }
+    
+    .chat-header {
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: 1rem;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-track {
+      background: var(--gray-200);
+      border-radius: 10px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: var(--gray-600);
+      border-radius: 10px;
+    }
+    
+    .message {
+      margin-bottom: 1rem;
+      max-width: 80%;
+    }
+    
+    .message-teacher {
+      margin-left: auto;
+      text-align: right;
+    }
+    
+    .message-student {
+      margin-right: auto;
+    }
+    
+    .message-bubble {
+      padding: 0.8rem 1rem;
+      border-radius: 18px;
+      display: inline-block;
+    }
+    
+    .teacher-bubble {
+      background: var(--teacher-primary);
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+    
+    .student-bubble {
+      background: var(--student-primary);
+      color: white;
+      border-bottom-left-radius: 5px;
+    }
+    
+    .system-bubble {
+      background: var(--gray-200);
+      color: var(--gray-800);
+      margin: 0 auto;
+      text-align: center;
+      display: block;
+      max-width: 90%;
+    }
+    
+    .message-sender {
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      margin-bottom: 0.2rem;
+    }
+    
+    .chat-input-area {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    /* === TESTING AREA === */
+    .testing-container {
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .test-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .test-question {
+      flex: 1;
+      background: var(--gray-100);
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+    
+    .test-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .test-option {
+      padding: 0.8rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .test-option:hover {
+      background: var(--gray-200);
+    }
+    
+    .test-option.selected {
+      background: rgba(52, 152, 219, 0.1);
+      border-color: var(--student-primary);
+    }
+    
+    .test-option.correct {
+      background: rgba(39, 174, 96, 0.1);
+      border-color: var(--success);
+    }
+    
+    .test-option.incorrect {
+      background: rgba(231, 76, 60, 0.1);
+      border-color: var(--danger);
+    }
+    
+    /* === TEST CREATOR === */
+    .test-creator {
+      background: var(--gray-100);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      margin-top: 1rem;
+    }
+    
+    /* === STUDENT LIST === */
+    .student-list {
+      margin-top: 1rem;
+    }
+    
+    .student-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .student-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    
+    .student-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--student-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    
+    .student-status {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    /* === RESULTS DASHBOARD === */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .result-card {
+      background: white;
+      padding: 1rem;
+      border-radius: var(--radius);
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    
+    .result-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .result-value.high {
+      color: var(--success);
+    }
+    
+    .result-value.medium {
+      color: var(--warning);
+    }
+    
+    .result-value.low {
+      color: var(--danger);
+    }
+    
+    /* === BUTTONS === */
+    .btn {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: var(--teacher-primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--teacher-secondary);
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background: var(--student-primary);
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--student-secondary);
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--teacher-primary);
+      color: var(--teacher-primary);
+    }
+    
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .btn-block {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    /* === UTILITY CLASSES === */
+    .hidden {
+      display: none !important;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .mb-1 { margin-bottom: 1rem; }
+    .mb-2 { margin-bottom: 2rem; }
+    .mt-1 { margin-top: 1rem; }
+    .mt-2 { margin-top: 2rem; }
+    
+    /* === TOAST NOTIFICATION === */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: white;
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    
+    .toast-success {
+      border-left: 4px solid var(--success);
+    }
+    
+    .toast-success .toast-icon {
+      background: rgba(39, 174, 96, 0.1);
+      color: var(--success);
+    }
+    
+    .toast-error {
+      border-left: 4px solid var(--danger);
+    }
+    
+    .toast-error .toast-icon {
+      background: rgba(231, 76, 60, 0.1);
+      color: var(--danger);
+    }
+    
+    /* === RESPONSIVE DESIGN === */
+    @media (max-width: 992px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .connection-form {
+        grid-template-columns: 1fr;
+      }
+      
+      .role-selection {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+      
+      .test-controls {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .chat-input-area {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-container">
+        <div class="logo">
+          <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <div class="header-text">
+          <h1>EduConnect Offline</h1>
+          <p>Teacher-Student Connection & Testing Platform</p>
+        </div>
+      </div>
+      <div class="role-badge teacher-badge" id="roleBadge">
+        <i class="fas fa-user-tie"></i> Teacher Mode
+      </div>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="role-selection" id="roleSelection">
+      <div class="role-card active" onclick="switchRole('teacher')">
+        <div class="role-icon teacher-icon">
+          <i class="fas fa-user-tie"></i>
+        </div>
+        <h3>Teacher</h3>
+        <p>Create tests, monitor students, and provide feedback</p>
+        <button class="btn btn-primary mt-1 btn-block">Select Teacher Mode</button>
+      </div>
+      <div class="role-card" onclick="switchRole('student')">
+        <div class="role-icon student-icon">
+          <i class="fas fa-user-graduate"></i>
+        </div>
+        <h3>Student</h3>
+        <p>Take tests, receive instructions, and submit answers</p>
+        <button class="btn btn-secondary mt-1 btn-block">Select Student Mode</button>
+      </div>
+    </div>
+
+    <!-- Connection Section -->
+    <div class="connection-section">
+      <h2 class="section-title">
+        <i class="fas fa-wifi"></i> Connection Setup
+      </h2>
+      
+      <div class="connection-status status-connected" id="connectionStatus">
+        <div class="status-dot dot-connected"></div>
+        <div>
+          <strong>Connected</strong>
+          <div class="text-muted" id="connectionInfo">Teacher: Dr. Smith | Students: 3 connected</div>
+        </div>
+      </div>
+
+      <!-- Teacher Connection Form -->
+      <div id="teacherConnectionForm">
+        <div class="connection-form">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Teacher Name</label>
+              <input type="text" class="form-control" id="teacherName" value="Dr. Sarah Johnson">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              <select class="form-control" id="subject">
+                <option>Mathematics</option>
+                <option>Science</option>
+                <option>English</option>
+                <option>History</option>
+                <option>Computer Science</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label class="form-label">Generate Session Code</label>
+              <div class="button-group">
+                <input type="text" class="form-control mb-1" id="sessionCode" value="MATH-2024-001" readonly>
+                <button class="btn btn-outline" onclick="generateCode()">
+                  <i class="fas fa-redo"></i> New Code
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Share via</label>
+              <div class="button-group">
+                <button class="btn btn-outline" onclick="shareQR()">
+                  <i class="fas fa-qrcode"></i> QR Code
+                </button>
+                <button class="btn btn-outline" onclick="shareFile()">
+                  <i class="fas fa-file-export"></i> File
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="student-list" id="studentList">
+          <h3 class="section-title">
+            <i class="fas fa-users"></i> Connected Students
+          </h3>
+          <div class="student-item">
+            <div class="student-info">
+              <div class="student-avatar">AJ</div>
+              <div>
+                <strong>Alex Johnson</strong>
+                <div class="text-muted">Grade 10 | Score: 85%</div>
+              </div>
+            </div>
+            <div class="student-status">
+              <div class="status-dot dot-connected"></div>
+              <span>Active</span>
+            </div>
+          </div>
+          <div class="student-item">
+            <div class="student-info">
+              <div class="student-avatar">MS</div>
+              <div>
+                <strong>Maria Smith</strong>
+                <div class="text-muted">Grade 10 | Score: 92%</div>
+              </div>
+            </div>
+            <div class="student-status">
+              <div class="status-dot dot-connected"></div>
+              <span>Active</span>
+            </div>
+          </div>
+          <div class="student-item">
+            <div class="student-info">
+              <div class="student-avatar">TW</div>
+              <div>
+                <strong>Thomas Wilson</strong>
+                <div class="text-muted">Grade 10 | Score: 78%</div>
+              </div>
+            </div>
+            <div class="student-status">
+              <div class="status-dot dot-connected"></div>
+              <span>Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Connection Form -->
+      <div id="studentConnectionForm" class="hidden">
+        <div class="connection-form">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Student Name</label>
+              <input type="text" class="form-control" id="studentName" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Grade/Class</label>
+              <input type="text" class="form-control" id="studentGrade" placeholder="Grade 10">
+            </div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label class="form-label">Enter Session Code</label>
+              <input type="text" class="form-control" id="enterSessionCode" placeholder="MATH-2024-001">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Or Import Session File</label>
+              <div class="button-group">
+                <button class="btn btn-outline" onclick="importSession()">
+                  <i class="fas fa-file-import"></i> Import File
+                </button>
+                <input type="file" id="sessionFile" class="hidden" accept=".json,.txt">
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-block mt-2" onclick="connectToTeacher()">
+          <i class="fas fa-plug"></i> Connect to Teacher
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Chat Area -->
+      <div class="content-card">
+        <div class="chat-container">
+          <div class="chat-header">
+            <h3 class="section-title">
+              <i class="fas fa-comments"></i> Live Communication
+            </h3>
+          </div>
+          
+          <div class="chat-messages" id="chatMessages">
+            <div class="message message-teacher">
+              <div class="message-sender">Dr. Johnson</div>
+              <div class="message-bubble teacher-bubble">
+                Welcome to today's math session. We'll be covering algebra.
+              </div>
+            </div>
+            
+            <div class="message message-student">
+              <div class="message-sender">Alex</div>
+              <div class="message-bubble student-bubble">
+                Ready to begin, teacher!
+              </div>
+            </div>
+            
+            <div class="message">
+              <div class="message-bubble system-bubble">
+                Test "Algebra Basics" has been assigned
+              </div>
+            </div>
+            
+            <div class="message message-teacher">
+              <div class="message-sender">Dr. Johnson</div>
+              <div class="message-bubble teacher-bubble">
+                Complete the test within 20 minutes. Good luck!
+              </div>
+            </div>
+          </div>
+          
+          <div class="chat-input-area">
+            <input type="text" class="form-control" id="chatInput" placeholder="Type your message...">
+            <button class="btn btn-primary" onclick="sendChatMessage()">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testing Area -->
+      <div class="content-card">
+        <div class="testing-container">
+          <div class="chat-header">
+            <h3 class="section-title">
+              <i class="fas fa-clipboard-check"></i> Testing & Assessment
+            </h3>
+          </div>
+          
+          <!-- Teacher Test Controls -->
+          <div id="teacherTestControls">
+            <div class="test-controls">
+              <button class="btn btn-primary" onclick="createNewTest()">
+                <i class="fas fa-plus"></i> New Test
+              </button>
+              <button class="btn btn-success" onclick="assignTest()">
+                <i class="fas fa-paper-plane"></i> Assign Test
+              </button>
+              <button class="btn btn-outline" onclick="viewResults()">
+                <i class="fas fa-chart-bar"></i> View Results
+              </button>
+            </div>
+            
+            <div class="test-creator">
+              <h4>Create Test Question</h4>
+              <div class="form-group">
+                <input type="text" class="form-control" id="testQuestion" placeholder="Enter question">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control mb-1" placeholder="Option A">
+                <input type="text" class="form-control mb-1" placeholder="Option B">
+                <input type="text" class="form-control mb-1" placeholder="Option C">
+                <input type="text" class="form-control" placeholder="Option D">
+              </div>
+              <div class="form-group">
+                <select class="form-control" id="correctAnswer">
+                  <option>Select correct answer</option>
+                  <option value="0">Option A</option>
+                  <option value="1">Option B</option>
+                  <option value="2">Option C</option>
+                  <option value="3">Option D</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="addQuestion()">
+                <i class="fas fa-save"></i> Add Question
+              </button>
+            </div>
+          </div>
+          
+          <!-- Student Test Interface -->
+          <div id="studentTestInterface" class="hidden">
+            <div class="test-question">
+              <h4>Question 1 of 5</h4>
+              <p>What is the solution to 2x + 5 = 15?</p>
+            </div>
+            
+            <div class="test-options">
+              <div class="test-option" onclick="selectAnswer(0)">
+                x = 5
+              </div>
+              <div class="test-option selected" onclick="selectAnswer(1)">
+                x = 10
+              </div>
+              <div class="test-option" onclick="selectAnswer(2)">
+                x = 7.5
+              </div>
+              <div class="test-option" onclick="selectAnswer(3)">
+                x = 20
+              </div>
+            </div>
+            
+            <div class="test-controls mt-2">
+              <button class="btn btn-outline" onclick="prevQuestion()">
+                <i class="fas fa-arrow-left"></i> Previous
+              </button>
+              <button class="btn btn-secondary" onclick="nextQuestion()">
+                Next <i class="fas fa-arrow-right"></i>
+              </button>
+              <button class="btn btn-success" onclick="submitTest()">
+                <i class="fas fa-check"></i> Submit Test
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Dashboard -->
+    <div class="connection-section" id="resultsDashboard">
+      <h2 class="section-title">
+        <i class="fas fa-chart-line"></i> Performance Dashboard
+      </h2>
+      
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="result-value high">85%</div>
+          <div>Average Score</div>
+        </div>
+        <div class="result-card">
+          <div class="result-value">3/3</div>
+          <div>Students Completed</div>
+        </div>
+        <div class="result-card">
+          <div class="result-value medium">72%</div>
+          <div>Question 3 Accuracy</div>
+        </div>
+        <div class="result-card">
+          <div class="result-value">18:45</div>
+          <div>Average Time</div>
+        </div>
+      </div>
+      
+      <div class="mt-2">
+        <h4>Detailed Results</h4>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background: var(--gray-100);">
+                <th style="padding: 0.8rem; text-align: left;">Student</th>
+                <th style="padding: 0.8rem; text-align: left;">Score</th>
+                <th style="padding: 0.8rem; text-align: left;">Time</th>
+                <th style="padding: 0.8rem; text-align: left;">Status</th>
+                <th style="padding: 0.8rem; text-align: left;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--gray-200);">
+                <td style="padding: 0.8rem;">Alex Johnson</td>
+                <td style="padding: 0.8rem;"><span class="result-value high">85%</span></td>
+                <td style="padding: 0.8rem;">17:32</td>
+                <td style="padding: 0.8rem;"><span style="color: var(--success);">Completed</span></td>
+                <td style="padding: 0.8rem;">
+                  <button class="btn btn-sm btn-outline">Review</button>
+                </td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--gray-200);">
+                <td style="padding: 0.8rem;">Maria Smith</td>
+                <td style="padding: 0.8rem;"><span class="result-value high">92%</span></td>
+                <td style="padding: 0.8rem;">15:18</td>
+                <td style="padding: 0.8rem;"><span style="color: var(--success);">Completed</span></td>
+                <td style="padding: 0.8rem;">
+                  <button class="btn btn-sm btn-outline">Review</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 0.8rem;">Thomas Wilson</td>
+                <td style="padding: 0.8rem;"><span class="result-value medium">78%</span></td>
+                <td style="padding: 0.8rem;">23:25</td>
+                <td style="padding: 0.8rem;"><span style="color: var(--success);">Completed</span></td>
+                <td style="padding: 0.8rem;">
+                  <button class="btn btn-sm btn-outline">Review</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-2 text-muted">
+      <p><strong>EduConnect Offline</strong> | Teacher-Student Platform | No Internet Required</p>
+      <p style="font-size: 0.9rem;">All data is stored locally. Share via QR code or file transfer.</p>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast toast-success" id="toast">
+    <div class="toast-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <div>
+      <strong id="toastTitle">Success</strong>
+      <div id="toastMessage">Operation completed successfully</div>
+    </div>
+  </div>
+
+  <script>
+    // ========== GLOBAL VARIABLES ==========
+    let currentRole = 'teacher';
+    let students = [
+      { id: 1, name: 'Alex Johnson', grade: 'Grade 10', score: 85, connected: true },
+      { id: 2, name: 'Maria Smith', grade: 'Grade 10', score: 92, connected: true },
+      { id: 3, name: 'Thomas Wilson', grade: 'Grade 10', score: 78, connected: true }
+    ];
+    
+    let testQuestions = [
+      {
+        id: 1,
+        question: 'What is the solution to 2x + 5 = 15?',
+        options: ['x = 5', 'x = 10', 'x = 7.5', 'x = 20'],
+        correctAnswer: 1
+      },
+      {
+        id: 2,
+        question: 'Simplify: 3(x + 4) - 2x',
+        options: ['x + 12', '3x + 10', 'x + 4', '5x + 4'],
+        correctAnswer: 0
+      },
+      {
+        id: 3,
+        question: 'Solve for y: 2y - 8 = 4',
+        options: ['y = 2', 'y = 6', 'y = 12', 'y = 4'],
+        correctAnswer: 1
+      }
+    ];
+    
+    let currentQuestion = 0;
+    let studentAnswers = {};
+    
+    // ========== INITIALIZATION ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      updateUI();
+      loadFromLocalStorage();
+    });
+    
+    // ========== ROLE MANAGEMENT ==========
+    function switchRole(role) {
+      currentRole = role;
+      
+      // Update role cards
+      document.querySelectorAll('.role-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      document.querySelector(`.role-card:nth-child(${role === 'teacher' ? 1 : 2})`).classList.add('active');
+      
+      // Update header badge
+      const roleBadge = document.getElementById('roleBadge');
+      if (role === 'teacher') {
+        roleBadge.innerHTML = '<i class="fas fa-user-tie"></i> Teacher Mode';
+        roleBadge.className = 'role-badge teacher-badge';
+      } else {
+        roleBadge.innerHTML = '<i class="fas fa-user-graduate"></i> Student Mode';
+        roleBadge.className = 'role-badge student-badge';
+      }
+      
+      updateUI();
+      saveToLocalStorage();
+      showToast(`Switched to ${role} mode`, 'success');
+    }
+    
+    function updateUI() {
+      const isTeacher = currentRole === 'teacher';
+      
+      // Show/hide forms
+      document.getElementById('teacherConnectionForm').classList.toggle('hidden', !isTeacher);
+      document.getElementById('studentConnectionForm').classList.toggle('hidden', isTeacher);
+      
+      // Show/hide test interfaces
+      document.getElementById('teacherTestControls').classList.toggle('hidden', !isTeacher);
+      document.getElementById('studentTestInterface').classList.toggle('hidden', isTeacher);
+      
+      // Update connection info
+      const connectionInfo = document.getElementById('connectionInfo');
+      if (isTeacher) {
+        connectionInfo.textContent = `Teacher: ${document.getElementById('teacherName').value} | Students: ${students.length} connected`;
+      } else {
+        connectionInfo.textContent = 'Connected to teacher session';
+      }
+      
+      // Update student list for teacher
+      updateStudentList();
+    }
+    
+    // ========== CONNECTION MANAGEMENT ==========
+    function generateCode() {
+      const subjects = ['MATH', 'SCI', 'ENG', 'HIST', 'CS'];
+      const subject = subjects[Math.floor(Math.random() * subjects.length)];
+      const code = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('sessionCode').value = `${subject}-2024-${code}`;
+      showToast('New session code generated', 'success');
+    }
+    
+    function shareQR() {
+      const sessionCode = document.getElementById('sessionCode').value;
+      // In a real implementation, this would generate a QR code
+      showToast(`QR code for ${sessionCode} generated`, 'success');
+      
+      // Simulate QR code display
+      alert(`Session Code: ${sessionCode}\n\nStudents can scan this code to join your session.`);
+    }
+    
+    function shareFile() {
+      const sessionData = {
+        teacher: document.getElementById('teacherName').value,
+        subject: document.getElementById('subject').value,
+        code: document.getElementById('sessionCode').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      const dataStr = JSON.stringify(sessionData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `edusession-${sessionData.code}.json`;
+      link.click();
+      
+      showToast('Session file exported', 'success');
+    }
+    
+    function importSession() {
+      document.getElementById('sessionFile').click();
+    }
+    
+    document.getElementById('sessionFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const sessionData = JSON.parse(e.target.result);
+            document.getElementById('enterSessionCode').value = sessionData.code;
+            showToast('Session file imported successfully', 'success');
+          } catch (error) {
+            showToast('Error importing session file', 'error');
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
+    
+    function connectToTeacher() {
+      const studentName = document.getElementById('studentName').value;
+      const sessionCode = document.getElementById('enterSessionCode').value;
+      
+      if (!studentName || !sessionCode) {
+        showToast('Please enter your name and session code', 'error');
+        return;
+      }
+      
+      // Update connection status
+      document.getElementById('connectionStatus').className = 'connection-status status-connected';
+      document.getElementById('connectionInfo').textContent = `Connected as ${studentName}`;
+      
+      showToast(`Connected to teacher session: ${sessionCode}`, 'success');
+      
+      // Simulate receiving test from teacher
+      setTimeout(() => {
+        addChatMessage('system', 'Test "Algebra Basics" has been assigned to you');
+        showToast('New test received from teacher', 'info');
+      }, 1000);
+    }
+    
+    // ========== CHAT FUNCTIONALITY ==========
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      const sender = currentRole === 'teacher' ? 
+        document.getElementById('teacherName').value : 
+        document.getElementById('studentName').value || 'Student';
+      
+      addChatMessage(currentRole, message, sender);
+      input.value = '';
+      
+      // Auto-scroll to bottom
+      const chatMessages = document.getElementById('chatMessages');
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      // Simulate response if teacher
+      if (currentRole === 'teacher') {
+        setTimeout(() => {
+          const responses = [
+            'Good question! Let me explain...',
+            'Excellent point!',
+            'I see you\'re making progress.',
+            'Remember to check your calculations.'
+          ];
+          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+          addChatMessage('student', randomResponse, 'Student');
+        }, 1500);
+      } else {
+        // If student, simulate teacher response
+        setTimeout(() => {
+          const responses = [
+            'Thank you for your question.',
+            'Good work on that problem!',
+            'Let me review your answer.',
+            'Keep up the good work!'
+          ];
+          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+          addChatMessage('teacher', randomResponse, 'Teacher');
+        }, 1500);
+      }
+    }
+    
+    function addChatMessage(type, message, sender = null) {
+      const chatMessages = document.getElementById('chatMessages');
+      
+      const messageDiv = document.createElement('div');
+      
+      if (type === 'system') {
+        messageDiv.className = 'message';
+        messageDiv.innerHTML = `<div class="message-bubble system-bubble">${message}</div>`;
+      } else {
+        const isTeacher = type === 'teacher';
+        messageDiv.className = `message message-${isTeacher ? 'teacher' : 'student'}`;
+        messageDiv.innerHTML = `
+          <div class="message-sender">${sender}</div>
+          <div class="message-bubble ${isTeacher ? 'teacher-bubble' : 'student-bubble'}">${message}</div>
+        `;
+      }
+      
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // ========== TEST MANAGEMENT ==========
+    function createNewTest() {
+      // Clear test creator form
+      document.getElementById('testQuestion').value = '';
+      const options = document.querySelectorAll('.test-creator input[type="text"]');
+      options.forEach((input, index) => {
+        if (index > 0) input.value = ''; // Skip first input (question)
+      });
+      document.getElementById('correctAnswer').selectedIndex = 0;
+      
+      showToast('New test template created', 'success');
+    }
+    
+    function addQuestion() {
+      const question = document.getElementById('testQuestion').value;
+      const options = [
+        document.querySelector('.test-creator input:nth-of-type(2)').value,
+        document.querySelector('.test-creator input:nth-of-type(3)').value,
+        document.querySelector('.test-creator input:nth-of-type(4)').value,
+        document.querySelector('.test-creator input:nth-of-type(5)').value
+      ];
+      const correctAnswer = parseInt(document.getElementById('correctAnswer').value);
+      
+      if (!question || options.some(opt => !opt) || isNaN(correctAnswer)) {
+        showToast('Please fill all fields', 'error');
+        return;
+      }
+      
+      testQuestions.push({
+        id: testQuestions.length + 1,
+        question,
+        options,
+        correctAnswer
+      });
+      
+      createNewTest(); // Reset form
+      showToast('Question added to test', 'success');
+      
+      // Notify students
+      addChatMessage('system', 'New test question added by teacher');
+    }
+    
+    function assignTest() {
+      if (testQuestions.length === 0) {
+        showToast('Create at least one question first', 'error');
+        return;
+      }
+      
+      // Notify all students
+      addChatMessage('system', `Test "${document.getElementById('subject').value} Quiz" has been assigned`);
+      addChatMessage('teacher', 'Complete the test within 20 minutes. Good luck!', 
+                     document.getElementById('teacherName').value);
+      
+      // Update student status
+      students.forEach(student => {
+        student.testAssigned = true;
+        student.testCompleted = false;
+        student.score = null;
+      });
+      
+      updateStudentList();
+      showToast('Test assigned to all students', 'success');
+    }
+    
+    function viewResults() {
+      // Scroll to results dashboard
+      document.getElementById('resultsDashboard').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // ========== STUDENT TEST FUNCTIONS ==========
+    function selectAnswer(index) {
+      // Remove selected class from all options
+      document.querySelectorAll('.test-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked option
+      event.target.classList.add('selected');
+      
+      // Store answer
+      studentAnswers[currentQuestion] = index;
+    }
+    
+    function nextQuestion() {
+      if (currentQuestion < testQuestions.length - 1) {
+        currentQuestion++;
+        displayQuestion();
+      }
+    }
+    
+    function prevQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        displayQuestion();
+      }
+    }
+    
+    function displayQuestion() {
+      if (currentQuestion >= testQuestions.length) return;
+      
+      const question = testQuestions[currentQuestion];
+      const questionDiv = document.querySelector('.test-question');
+      const optionsDiv = document.querySelector('.test-options');
+      
+      questionDiv.innerHTML = `
+        <h4>Question ${currentQuestion + 1} of ${testQuestions.length}</h4>
+        <p>${question.question}</p>
+      `;
+      
+      optionsDiv.innerHTML = '';
+      question.options.forEach((option, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'test-option';
+        if (studentAnswers[currentQuestion] === index) {
+          optionDiv.classList.add('selected');
+        }
+        optionDiv.textContent = option;
+        optionDiv.onclick = () => selectAnswer(index);
+        optionsDiv.appendChild(optionDiv);
+      });
+    }
+    
+    function submitTest() {
+      if (Object.keys(studentAnswers).length < testQuestions.length) {
+        if (!confirm('You haven\'t answered all questions. Submit anyway?')) {
+          return;
+        }
+      }
+      
+      // Calculate score
+      let correct = 0;
+      testQuestions.forEach((question, index) => {
+        if (studentAnswers[index] === question.correctAnswer) {
+          correct++;
+        }
+      });
+      
+      const score = Math.round((correct / testQuestions.length) * 100);
+      
+      // Show results
+      alert(`Test submitted!\n\nScore: ${score}%\nCorrect: ${correct}/${testQuestions.length}`);
+      
+      // Notify teacher
+      const studentName = document.getElementById('studentName').value || 'Student';
+      addChatMessage('system', `${studentName} submitted test with score: ${score}%`);
+      
+      showToast('Test submitted to teacher', 'success');
+    }
+    
+    // ========== STUDENT LIST MANAGEMENT ==========
+    function updateStudentList() {
+      if (currentRole !== 'teacher') return;
+      
+      const studentList = document.getElementById('studentList');
+      // In a real implementation, this would update the student list dynamically
+    }
+    
+    // ========== NOTIFICATION SYSTEM ==========
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastMessage = document.getElementById('toastMessage');
+      
+      // Set content
+      toastTitle.textContent = type === 'success' ? 'Success' : 'Error';
+      toastMessage.textContent = message;
+      
+      // Set style
+      toast.className = `toast toast-${type}`;
+      
+      // Show toast
+      toast.classList.add('show');
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+    
+    // ========== LOCAL STORAGE ==========
+    function saveToLocalStorage() {
+      const data = {
+        currentRole,
+        students,
+        testQuestions,
+        teacherName: document.getElementById('teacherName').value,
+        subject: document.getElementById('subject').value,
+        sessionCode: document.getElementById('sessionCode').value
+      };
+      
+      localStorage.setItem('eduConnectData', JSON.stringify(data));
+    }
+    
+    function loadFromLocalStorage() {
+      const saved = localStorage.getItem('eduConnectData');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          currentRole = data.currentRole || 'teacher';
+          students = data.students || students;
+          testQuestions = data.testQuestions || testQuestions;
+          
+          document.getElementById('teacherName').value = data.teacherName || 'Dr. Sarah Johnson';
+          document.getElementById('subject').value = data.subject || 'Mathematics';
+          document.getElementById('sessionCode').value = data.sessionCode || 'MATH-2024-001';
+          
+          updateUI();
+        } catch (e) {
+          console.error('Error loading saved data:', e);
+        }
+      }
+    }
+    
+    // Auto-save every 30 seconds
+    setInterval(saveToLocalStorage, 30000);
+    
+    // Initialize
+    generateCode();
+  </script>
+</body>
+</html>

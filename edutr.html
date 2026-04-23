@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Advanced English - Afaan Oromoo - Amharic Translator</title>
+<style>
+  :root {
+    --primary: #005b99;
+    --secondary: #003366;
+    --accent: #4CAF50;
+    --light: #f0f8ff;
+    --dark: #333;
+    --error: #ff4444;
+    --success: #4CAF50;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    background: var(--light);
+    color: var(--dark);
+    line-height: 1.6;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    color: var(--secondary);
+    font-size: 1.1rem;
+  }
+  
+  .main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  @media (max-width: 768px) {
+    .main-content {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .input-section, .output-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--secondary);
+  }
+  
+  select, textarea, button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+  
+  select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 8px rgba(0, 91, 153, 0.3);
+  }
+  
+  textarea {
+    min-height: 150px;
+    resize: vertical;
+  }
+  
+  button {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: var(--secondary);
+  }
+  
+  .btn-secondary {
+    background-color: var(--accent);
+  }
+  
+  .btn-secondary:hover {
+    background-color: #388E3C;
+  }
+  
+  .translation-result {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+    margin-top: 20px;
+  }
+  
+  .translation-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+  
+  .word-breakdown {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e8f4fd;
+    border-radius: 8px;
+  }
+  
+  .breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #d1e7f5;
+  }
+  
+  .breakdown-item:last-child {
+    border-bottom: none;
+  }
+  
+  .features-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .feature-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feature-card h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .feature-icon {
+    font-size: 1.5rem;
+  }
+  
+  .dictionary-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+  
+  .search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .search-box input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    font-size: 16px;
+  }
+  
+  .dictionary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .dictionary-table th, .dictionary-table td {
+    border: 1px solid #aaa;
+    padding: 12px;
+    text-align: center;
+  }
+  
+  .dictionary-table th {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  .dictionary-table tr:nth-child(even) {
+    background-color: #f2f9ff;
+  }
+  
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 20px;
+  }
+  
+  .tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    margin-right: 5px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .tab.active {
+    background: var(--primary);
+    color: white;
+  }
+  
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
+  .flashcard {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .flashcard:hover {
+    transform: translateY(-5px);
+  }
+  
+  .flashcard-front, .flashcard-back {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  .flashcard-back {
+    display: none;
+    color: var(--primary);
+  }
+  
+  .flashcard.flipped .flashcard-front {
+    display: none;
+  }
+  
+  .flashcard.flipped .flashcard-back {
+    display: block;
+  }
+  
+  .flashcard-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .flashcard-controls button {
+    width: auto;
+    padding: 8px 15px;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #e2e8f0;
+    border-radius: 5px;
+    margin: 15px 0;
+    overflow: hidden;
+  }
+  
+  .progress {
+    height: 100%;
+    background-color: var(--accent);
+    border-radius: 5px;
+    transition: width 0.3s ease;
+  }
+  
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .stat-item {
+    text-align: center;
+    flex: 1;
+  }
+  
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--dark);
+  }
+  
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    border-left: 4px solid var(--primary);
+    max-width: 300px;
+    display: none;
+  }
+  
+  .success {
+    border-left-color: var(--success);
+  }
+  
+  .error {
+    border-left-color: var(--error);
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🌍 Advanced Multi-Language Translator</h1>
+      <p class="subtitle">English ↔ Afaan Oromoo ↔ Amharic with Grammar Rules & Learning Tools</p>
+    </header>
+    
+    <div class="main-content">
+      <div class="input-section">
+        <div class="input-group">
+          <label for="sourceLang">Translate From:</label>
+          <select id="sourceLang">
+            <option value="en">English</option>
+            <option value="om">Afaan Oromoo</option>
+            <option value="am">Amharic</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label for="targetLang">Translate To:</label>
+          <select id="targetLang">
+            <option value="om">Afaan Oromoo</option>
+            <option value="am">Amharic</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label for="inputText">Enter Text to Translate:</label>
+          <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+        </div>
+        
+        <button onclick="translateText()">Translate Text</button>
+        <button class="btn-secondary" onclick="speakText()">🔊 Speak Text</button>
+        <button onclick="clearText()">Clear All</button>
+      </div>
+      
+      <div class="output-section">
+        <h3>Translation Result:</h3>
+        <div id="translationOutput" class="translation-result">
+          <p class="translation-text">Your translation will appear here...</p>
+        </div>
+        
+        <div id="wordBreakdown" class="word-breakdown" style="display: none;">
+          <h4>Word-by-Word Breakdown:</h4>
+          <div id="breakdownContent"></div>
+        </div>
+        
+        <div class="input-group">
+          <label for="translationNotes">Translation Notes:</label>
+          <textarea id="translationNotes" placeholder="Add your own notes about this translation..."></textarea>
+          <button class="btn-secondary" onclick="saveTranslation()">💾 Save Translation</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="openTab('dictionary')">📚 Dictionary</button>
+      <button class="tab" onclick="openTab('flashcards')">📇 Learning Flashcards</button>
+      <button class="tab" onclick="openTab('grammar')">📖 Grammar Guide</button>
+      <button class="tab" onclick="openTab('saved')">💾 Saved Translations</button>
+    </div>
+    
+    <div id="dictionary" class="tab-content active">
+      <div class="dictionary-section">
+        <h3>📚 Interactive Dictionary</h3>
+        <div class="search-box">
+          <input type="text" id="dictionarySearch" placeholder="Search in any language..." />
+          <button onclick="searchDictionary()">Search</button>
+        </div>
+        
+        <div class="dictionary-table-container">
+          <table class="dictionary-table">
+            <thead>
+              <tr>
+                <th>English</th>
+                <th>Afaan Oromoo</th>
+                <th>Amharic</th>
+                <th>Category</th>
+              </tr>
+            </thead>
+            <tbody id="dictionaryBody">
+              <!-- Dictionary entries will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <div id="flashcards" class="tab-content">
+      <div class="feature-card">
+        <h3><span class="feature-icon">📇</span> Interactive Flashcards</h3>
+        <p>Practice vocabulary with these interactive flashcards. Click to flip and reveal the translation.</p>
+        
+        <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
+          <div class="flashcard-front" id="flashcardFront">Click to start learning</div>
+          <div class="flashcard-back" id="flashcardBack"></div>
+        </div>
+        
+        <div class="flashcard-controls">
+          <button id="prevFlashcard">Previous</button>
+          <button id="nextFlashcard">Next</button>
+          <button id="shuffleFlashcards">Shuffle</button>
+          <button id="markKnown" class="btn-secondary">Mark as Known</button>
+        </div>
+        
+        <div class="progress-bar">
+          <div class="progress" id="flashcardProgress" style="width: 0%"></div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 15px;">
+          <span id="flashcardCounter">0/0</span>
+        </div>
+        
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value" id="knownWords">0</div>
+            <div class="stat-label">Words Known</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="learningProgress">0%</div>
+            <div class="stat-label">Learning Progress</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="studyStreak">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="grammar" class="tab-content">
+      <div class="feature-card">
+        <h3><span class="feature-icon">📖</span> Grammar Guide</h3>
+        <div class="input-group">
+          <label for="grammarTopic">Select Grammar Topic:</label>
+          <select id="grammarTopic" onchange="showGrammarTopic()">
+            <option value="">-- Choose a Topic --</option>
+            <option value="tenses">Verb Tenses</option>
+            <option value="pronouns">Pronouns</option>
+            <option value="questions">Question Formation</option>
+            <option value="negation">Negation</option>
+            <option value="prepositions">Prepositions</option>
+          </select>
+        </div>
+        
+        <div id="grammarContent" class="translation-result">
+          <p>Select a grammar topic to learn about language structure and rules.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div id="saved" class="tab-content">
+      <div class="feature-card">
+        <h3><span class="feature-icon">💾</span> Saved Translations</h3>
+        <p>Your saved translations will appear here for future reference.</p>
+        <div id="savedTranslations" class="translation-result">
+          <p>No saved translations yet. Translate some text and click "Save Translation" to store them here.</p>
+        </div>
+        <button onclick="clearSavedTranslations()">Clear All Saved</button>
+      </div>
+    </div>
+    
+    <div class="features-section">
+      <div class="feature-card">
+        <h3><span class="feature-icon">🔊</span> Text-to-Speech</h3>
+        <p>Listen to pronunciation of words and sentences in all three languages.</p>
+        <button onclick="speakText()">Speak Current Text</button>
+      </div>
+      
+      <div class="feature-card">
+        <h3><span class="feature-icon">📝</span> Sentence Builder</h3>
+        <p>Practice constructing sentences with guided templates.</p>
+        <button onclick="openSentenceBuilder()">Open Builder</button>
+      </div>
+      
+      <div class="feature-card">
+        <h3><span class="feature-icon">🎯</span> Vocabulary Quiz</h3>
+        <p>Test your knowledge with interactive vocabulary quizzes.</p>
+        <button onclick="startQuiz()">Start Quiz</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="notification" class="notification"></div>
+
+  <script>
+    // Enhanced dictionary with categories and additional words
+    const dictionary = [
+      // Your existing dictionary entries (600+ words)
+      { en: "Ability", om: "Dandeettii", am: "ችሎታ", category: "noun" },
+      { en: "About", om: "Waa'ee", am: "ስለ", category: "preposition" },
+      { en: "Above", om: "Ol", am: "ከላይ", category: "preposition" },
+      { en: "Accept", om: "Galu", am: "ተቀበለ", category: "verb" },
+      { en: "Access", om: "Seensa", am: "መዳረሻ", category: "noun" },
+      { en: "Accident", om: "Mishaa", am: "አደጋ", category: "noun" },
+      { en: "Account", om: "Herregaa", am: "መለያ", category: "noun" },
+      { en: "Accurate", om: "Sirrii", am: "ትክክል", category: "adjective" },
+      { en: "Achieve", om: "Milkaa'u", am: "ማሳካት", category: "verb" },
+      { en: "Action", om: "Dalagaa", am: "እርምጃ", category: "noun" },
+      { en: "Person", om: "Nama", am: "ሰው", category: "noun" },
+{ en: "Man", om: "Dhirsa", am: "ወንድ", category: "noun" },
+{ en: "Woman", om: "Dhala", am: "ሴት", category: "noun" },
+{ en: "Child", om: "Da'a", am: "ልጅ", category: "noun" },
+{ en: "Mother", om: "Haadha", am: "እማ", category: "noun" },
+{ en: "Father", om: "Haadha", am: "አባት", category: "noun" },
+{ en: "House", om: "Mana", am: "ቤት", category: "noun" },
+{ en: "Water", om: "Bishaan", am: "ውሃ", category: "noun" },
+{ en: "Food", om: "Nyataa", am: "ምግብ", category: "noun" },
+{ en: "Bread", om: "Dabboo", am: "ዳቦ", category: "noun" },
+{ en: "Coffee", om: "Buna", am: "ቡና", category: "noun" },
+{ en: "Money", om: "Qarshii", am: "ገንዘብ", category: "noun" },
+{ en: "Market", om: "Gabaayaa", am: "ገበያ", category: "noun" },
+{ en: "Shop", om: "Dukaana", am: "ሱቅ", category: "noun" },
+{ en: "City", om: "Magaalaa", am: "ከተማ", category: "noun" },
+{ en: "Country", om: "Bi-yya", am: "ሀገር", category: "noun" },
+{ en: "Day", om: "Guyyaa", am: "ቀን", category: "noun" },
+{ en: "Night", om: "Halkan", am: "ሌሊት", category: "noun" },
+{ en: "Time", om: "Yeroo", am: "ጊዜ", category: "noun" },
+{ en: "Problem", om: "Rakkoo", am: "ፅግ", category: "noun" },
+{ en: "Work", om: "Hojii", am: "ስራ", category: "noun" },
+{ en: "School", om: "Mana Barumsaa", am: "ትምህርት ቤት", category: "noun" },
+{ en: "Book", om: "Kitaaba", am: "መጽሐፍ", category: "noun" },
+{ en: "Car", om: "Makiinaa", am: "መኪና", category: "noun" },
+{ en: "Phone", om: "Bilbila", am: "ስልክ", category: "noun" },{ en: "Go", om: "Deemuu", am: "መሄድ", category: "verb" },
+{ en: "Come", om: "Koottuu", am: "መምጣት", category: "verb" },
+{ en: "Eat", om: "Nyachuu", am: "መብላት", category: "verb" },
+{ en: "Drink", om: "Dhuguu", am: "መጠጣት", category: "verb" },
+{ en: "Speak/Talk", om: "Dubbachuu", am: "መናገር", category: "verb" },
+{ en: "Say", om: "Jechuu", am: "መግለጽ", category: "verb" },
+{ en: "See", om: "Ilaluu", am: "መማር", category: "verb" },
+{ en: "Look", om: "Ilaaluu", am: "መመልከት", category: "verb" },
+{ en: "Know", om: "Beekuu", am: "መወቅ", category: "verb" },
+{ en: "Understand", om: "Hubachuu", am: "መረዳት", category: "verb" },
+{ en: "Want", om: "Fedhuu", am: "መፈለግ", category: "verb" },
+ { en: "my", om: "kankoo", am: "yene", category: "object" },
+{en: "I", om:"ani", am: "ene", category: "verb" },
+{ en: "Need", om: "Barbaachisuu", am: "መፈለግ", category: "verb" },
+{ en: "Give", om: "Kennuu", am: "መስጠት", category: "verb" },
+{ en: "Take", om: "Fudhachuu", am: "መውሰድ", category: "verb" },
+{ en: "Buy", om: "Bituu", am: "መግዛት", category: "verb" },
+{ en: "Sell", om: "Gurguruu", am: "መሸጥ", category: "verb" },
+{ en: "Help", om: "Gargaaruu", am: "መርዳት", category: "verb" },
+{ en: "Work", om: "Hojjachuu", am: "መስራት", category: "verb" },
+{ en: "Learn", om: "Barachuu", am: "መማር", category: "verb" },
+{ en: "Teach", om: "Barsii-suu", am: "መማር", category: "verb" },{ en: "Good", om: "Gaarii", am: "ጥሩ", category: "adjective" },
+{ en: "Bad", om: "Ham-moo", am: "መጥፎ", category: "adjective" },
+{ en: "Big", om: "Guddaa", am: "ትልቅ", category: "adjective" },
+{ en: "Small", om: "Xiqqaa", am: "ጥቃቅን", category: "adjective" },
+{ en: "Hot", om: "Ho'aa", am: "ሙቅ", category: "adjective" },
+{ en: "Cold", om: "Qabaa", am: "ቀዝቃዛ", category: "adjective" },
+{ en: "Fast", om: "Afaani", am: "ፈጣን", category: "adjective" },
+{ en: "Slow", om: "Soddaa", am: "ዝግ", category: "adjective" },
+{ en: "Easy", om: "Laafaa", am: "ቀላል", category: "adjective" },
+{ en: "Difficult", om: "Rakasaa", am: "ከባድ", category: "adjective" },
+{ en: "New", om: "Haaraa", am: "አዲስ", category: "adjective" },
+{ en: "Old", om: "Mugdi", am: "የድሮ", category: "adjective" },
+{ en: "Beautiful", om: "Bareedaa", am: "ውብ", category: "adjective" },
+{ en: "Far", om: "Fagoo", am: "ሩቅ", category: "adjective" },
+{ en: "Near", om: "Dhih-oo", am: "አቅራቢ", category: "adjective" },{ en: "Now", om: "Amma", am: "አሁን", category: "adverb" },
+{ en: "Later", om: "Booda", am: "በኋላ", category: "adverb" },
+{ en: "Today", om: "Har'a", am: "ዛሬ", category: "adverb" },
+{ en: "Tomorrow", om: "Boru", am: "ነገ", category: "adverb" },
+{ en: "Yesterday", om: "Kaleessa", am: "ትላንት", category: "adverb" },
+{ en: "Here", om: "Asii", am: "እዚህ", category: "adverb" },
+{ en: "There", om: "Achi", am: "እዚያ", category: "adverb" },
+{ en: "Very", om: "Baay'ee", am: "በጣም", category: "adverb" },
+{ en: "A little", om: "Xiqqoo", am: "ትንሽ", category: "adverb" },
+{ en: "Quickly", om: "Achumaan", am: "በፍጥነት", category: "adverb" },
+{ en: "Slowly", om: "Suutaan", am: "በዝግታ", category: "adverb" },{ en: "What?", om: "Maal?", am: "ምንድን?", category: "question" },
+{ en: "Who?", om: "Eenyu?", am: "ማን?", category: "question" },
+{ en: "Where?", om: "Eessa?", am: "የት?", category: "question" },
+{ en: "When?", om: "Yoom?", am: "መቼ?", category: "question" },
+{ en: "Why?", om: "Maaliif?", am: "ለምን?", category: "question" },
+{ en: "How?", om: "Akkam?", am: "እንዴት?", category: "question" },
+{ en: "How much?", om: "Meegaa?", am: "ስንት?", category: "question" },
+{ en: "Which?", om: "Kam?", am: "የትኛው?", category: "question" },{ en: "Hello", om: "Akkam", am: "ጤና ይስጥልኝ", category: "phrase" },
+{ en: "Thank you", om: "Galatoomaa", am: "አመሰግናለሁ", category: "phrase" },
+{ en: "You're welcome", om: "Hundaaf oole", am: "አይበገሬም", category: "phrase" },
+{ en: "Sorry", om: "Dhiifama", am: "ይቅርታ", category: "phrase" },
+{ en: "Yes", om: "Eeyyee", am: "አዎ", category: "phrase" },
+{ en: "No", om: "Lakki", am: "አይ", category: "phrase" },
+{ en: "Okay", om: "Tole", am: "እሺ", category: "phrase" },
+{ en: "Excuse me", om: "Dhiifama", am: "ይቅርታ", category: "phrase" },
+{ en: "How are you?", om: "Akkam jirta? (m), Akkam jirti? (f)", am: "እንዴት ነህ/ነሽ?", category: "phrase" },
+{ en: "I am fine", om: "Nagaa", am: "እኔ ደህና ነኝ", category: "phrase" },
+{ en: "What is your name?", om: "Maqaan kee eenyu?", am: "ስምህ ማን ነው?", category: "phrase" },
+{ en: "My name is...", om: "Maqaan koo...", am: "ስሜ ... ነው", category: "phrase" },
+      { en: "Active", om: "Hojjetaa", am: "ንቁ", category: "adjective" },
+      { en: "Add", om: "Dabaluu", am: "መያዝ", category: "verb" },
+      { en: "Address", om: "Teessoo", am: "አድራሻ", category: "noun" },
+      { en: "Administer", om: "Bulchuu", am: "አስተዳደር", category: "verb" },
+      { en: "Advance", om: "Fuuldura deemuu", am: "ወደፊት መንቀሳቀስ", category: "verb" },
+      { en: "Advice", om: "Gorsa", am: "ምክር", category: "noun" },
+      { en: "Agree", om: "Waliigaluu", am: "መስማማት", category: "verb" },
+      { en: "Air", om: "Qilleensa", am: "አየር", category: "noun" },
+      { en: "Allow", om: "Hayyamuu", am: "ፍቃድ መስጠት", category: "verb" },
+      { en: "Alone", om: "Duraan", am: "ብቻ", category: "adjective" },
+      { en: "Also", om: "Iyyuu", am: "እንዲሁም", category: "adverb" },
+      { en: "Always", om: "Yeroo hunda", am: "ሁልጊዜ", category: "adverb" },
+      { en: "Amount", om: "Baay'ina", am: "መጠን", category: "noun" },
+      { en: "Analyze", om: "Xinxaluu", am: "ትንተና ማድረግ", category: "verb" },
+      { en: "Answer", om: "Deebii", am: "መልስ", category: "noun" },
+      { en: "Appear", om: "Mul'achuu", am: "መታየት", category: "verb" },
+      { en: "Apply", om: "Iyyachuu", am: "ማመልከት", category: "verb" },
+      { en: "Appreciate", om: "Galateeffachuu", am: "አክብሮ ማየት", category: "verb" },
+      { en: "Area", om: "Naannoo", am: "አካባቢ", category: "noun" },
+      { en: "Argue", om: "Mormuu", am: "መከራከር", category: "verb" },
+      { en: "Arrange", om: "Qindeessuu", am: "ማደራጀት", category: "verb" },
+      { en: "Arrive", om: "Gahu", am: "መድረስ", category: "verb" },
+      { en: "Ask", om: "Gaafachuu", am: "መጠየቅ", category: "verb" },
+      { en: "Attempt", om: "Yaalii", am: "ሞከር", category: "verb" },
+      { en: "Attend", om: "Hirmaachuu", am: "መቀላቀል", category: "verb" },
+      { en: "Attention", om: "Xiyyeeffannoo", am: "ትኩረት", category: "noun" },
+      { en: "Average", om: "Giddugaleessa", am: "አማካይ", category: "adjective" },
+      { en: "Avoid", om: "Fageessuu", am: "መወለድ", category: "verb" },
+      { en: "Award", om: "Badhaasa", am: "ሽልማት", category: "noun" },
+      { en: "Balance", om: "Qixa ta'uu", am: "ሚዛን", category: "noun" },
+      { en: "Basic", om: "Bu'uuraa", am: "መሠረታዊ", category: "adjective" },
+      { en: "Beautiful", om: "Bareedduu", am: "ቆንጆ", category: "adjective" },
+      { en: "Become", om: "Ta'uu", am: "መሆን", category: "verb" },
+      { en: "Believe", om: "Amanuu", am: "መያዝ", category: "verb" },
+      { en: "Benefit", om: "Faayidaa", am: "አግባብ", category: "noun" },
+      { en: "Best", om: "Isa caalu", am: "ምርጥ", category: "adjective" },
+      { en: "Better", om: "Caala", am: "የተሻለ", category: "adjective" },
+      { en: "Big", om: "Guddaa", am: "ትልቅ", category: "adjective" },
+      { en: "Body", om: "Qaama", am: "አካል", category: "noun" },
+      { en: "Book", om: "Kitaaba", am: "መፅሀፍ", category: "noun" },
+      { en: "Break", om: "Caccabsuu", am: "ማቋረጥ", category: "verb" },
+      { en: "Build", om: "Ijaaru", am: "መገንባት", category: "verb" },
+      { en: "Business", om: "Daldalaa", am: "ንግድ", category: "noun" },
+      { en: "Buy", om: "Bituu", am: "መግዛት", category: "verb" },
+      { en: "Call", om: "Waamuu", am: "መደወል", category: "verb" },
+      { en: "Care", om: "Kununsaa", am: "እንክብካቤ", category: "noun" },
+      { en: "Carry", om: "Fe'uu", am: "መሸከም", category: "verb" },
+      { en: "Cause", om: "Sababa", am: "ምክንያት", category: "noun" },
+      { en: "Center", om: "Giddugala", am: "መሀከል", category: "noun" },
+      { en: "Change", om: "Gogaanu", am: "ለውጥ", category: "verb" },
+      { en: "Choose", om: "Filachuu", am: "መምረጥ", category: "verb" },
+      { en: "Class", om: "Kutaa", am: "ክፍል", category: "noun" },
+      { en: "Clean", om: "Qulqulluu", am: "ንጹሕ", category: "adjective" },
+      { en: "Clear", om: "Ifaa", am: "ግልጽ", category: "adjective" },
+      { en: "Close", om: "Cufuu", am: "መዝጋት", category: "verb" },
+      { en: "Cold", om: "Qabbanaa'aa", am: "ቀዝቃዛ", category: "adjective" },
+      { en: "Collect", om: "Sammachuu", am: "ማሰባሰብ", category: "verb" },
+      { en: "College", om: "Koleejii", am: "ኮሌጅ", category: "noun" },
+      { en: "Color", om: "Halluu", am: "ቀለም", category: "noun" },
+      { en: "Common", om: "Waliigala", am: "የተለመደ", category: "adjective" },
+      { en: "Community", om: "Hawaasa", am: "ማህበረሰብ", category: "noun" },
+      { en: "Compare", om: "Waliin ilaalu", am: "ማነጻጸር", category: "verb" },
+      { en: "Complete", om: "Guutuu", am: "ተጠናቀቀ", category: "adjective" },
+      { en: "Computer", om: "Komputera", am: "ኮምፒውተር", category: "noun" },
+      { en: "Condition", om: "Haala", am: "ሁኔታ", category: "noun" },
+      { en: "Continue", om: "Ittifufuu", am: "መቀጠል", category: "verb" },
+      { en: "Control", om: "To'atamuu", am: "መቆጣጠር", category: "verb" },
+      { en: "Correct", om: "Sirrii", am: "ትክክል", category: "adjective" },
+      { en: "Cost", om: "Gatii", am: "ዋጋ", category: "noun" },
+      { en: "Create", om: "Uumuu", am: "መፍጠር", category: "verb" },
+      { en: "Culture", om: "Aadaa", am: "ባህላዊ", category: "noun" },
+      // ... Continue with all your 600+ words, adding categories
+      
+      // Additional words to expand the dictionary
+      { en: "Afternoon", om: "Ganama booda", am: "ከሰዓት በኋላ", category: "noun" },
+      { en: "Again", om: "Irra deebi'ii", am: "እንደገና", category: "adverb" },
+      { en: "Against", om: "Faana", am: "በላይ", category: "preposition" },
+      { en: "Age", om: "Umurii", am: "ዕድሜ", category: "noun" },
+      { en: "Ago", om: "Dura", am: "በፊት", category: "adverb" },
+      { en: "Agriculture", om: "Qonna", am: "ግብርና", category: "noun" },
+      { en: "Ahead", om: "Fuula dura", am: "ወደፊት", category: "adverb" },
+      { en: "Aid", om: "Gargaarsa", am: "እገዛ", category: "noun" },
+      { en: "Aim", om: "Kaayyoo", am: "አላማ", category: "noun" },
+      { en: "Airport", om: "Bakka xiyyaaraa", am: "አውሮፕላን ማረፊያ", category: "noun" },
+      { en: "Alcohol", om: "Araqee", am: "አርቂ", category: "noun" },
+      { en: "Alive", om: "Jiraata", am: "በሕይወት", category: "adjective" },
+      { en: "Allergy", om: "Allergii", am: "አለርጂ", category: "noun" },
+      { en: "Almost", om: "Hanga dhowwatti", am: "በጣም ቅርብ", category: "adverb" },
+      { en: "Along", om: "Waliin", am: "አብሮ", category: "preposition" },
+      { en: "Already", om: "Duraan", am: "ቀድሞ", category: "adverb" },
+      { en: "Although", om: "Yoo'uu", am: "ቢሆንም", category: "conjunction" },
+      { en: "Among", om: "Gidduu", am: "መካከል", category: "preposition" },
+      { en: "Ancient", om: "Durii", am: "ጥንታዊ", category: "adjective" },
+      { en: "Animal", om: "Bineensota", am: "እንስሳ", category: "noun" },
+      { en: "Another", om: "Kan biraa", am: "ሌላ", category: "adjective" },
+      { en: "Any", om: "Hunduu", am: "ማንኛውም", category: "adjective" },
+      { en: "Anyway", om: "Hanga ta'u malee", am: "ሆነ ቢሆን", category: "adverb" },
+      { en: "Apartment", om: "Apartemaana", am: "አፓርታማ", category: "noun" },
+      { en: "Appetite", om: "Beela", am: "ሆድ ማብላት", category: "noun" },
+      { en: "Apple", om: "Aappilii", am: "ፖም", category: "noun" },
+      { en: "Application", om: "Iyyannoo", am: "መጠቀሚያ", category: "noun" },
+      { en: "Appointment", om: "Beellama", am: "ቀጠሮ", category: "noun" },
+      { en: "Approach", om: "Dhiheessuu", am: "መቅረብ", category: "verb" },
+      { en: "Approval", om: "Hayyama", am: "ማጽደቅ", category: "noun" },
+      { en: "Architecture", om: "Ijaarsa", am: "ሥነ ሕንፃ", category: "noun" },
+      { en: "Argument", om: "Falmii", am: "ክርክር", category: "noun" },
+      { en: "Arm", om: "Harka", am: "ክንድ", category: "noun" },
+      { en: "Army", om: "Ciimaa", am: "ሠራዊት", category: "noun" },
+      { en: "Around", om: "Naannoo", am: "ዙሪያ", category: "preposition" },
+      { en: "Arrangement", om: "Qindoomina", am: "ዝግጅት", category: "noun" },
+      { en: "Arrest", om: "Hidhuu", am: "ማሰር", category: "verb" },
+      { en: "Art", om: "Aartii", am: "ኪነጥበብ", category: "noun" },
+      { en: "Article", om: "Barreeffama", am: "ጽሑፍ", category: "noun" },
+      { en: "Artist", om: "Aartistii", am: "አርቲስት", category: "noun" },
+      { en: "As", om: "Akkuma", am: "እንደ", category: "conjunction" },
+      { en: "Ash", om: "Daaraa", am: "አመድ", category: "noun" },
+      { en: "Ask", om: "Gaafachuu", am: "መጠየቅ", category: "verb" },
+      { en: "Asleep", om: "Rafuu", am: "በጫና", category: "adjective" },
+      { en: "Assist", om: "Gargaaruu", am: "ማገዝ", category: "verb" },
+      { en: "Assume", om: "Yaaluu", am: "መገመት", category: "verb" },
+      { en: "Atmosphere", om: "Atmosfeera", am: "ከባቢ አየር", category: "noun" },
+      { en: "Attack", om: "Waraanu", am: "መጥቃት", category: "verb" },
+      { en: "Attempt", om: "Yaaluu", am: "ሙከራ", category: "noun" },
+      { en: "Attitude", om: "Amala", am: "ባህሪ", category: "noun" },
+      { en: "Attract", om: "Bitaachuu", am: "ማጣቀር", category: "verb" },
+      { en: "Audience", om: "Dhaggeeffattoota", am: "ተመልካች", category: "noun" },
+      { en: "Author", om: "Barreessaa", am: "ደራሲ", category: "noun" },
+      { en: "Autumn", om: "Birraa", am: "ክረምት", category: "noun" },
+      { en: "Available", om: "Jiru", am: "የሚገኝ", category: "adjective" },
+      { en: "Average", om: "Giddugaleessa", am: "አማካይ", category: "adjective" },
+      { en: "Avoid", om: "Fageessuu", am: "ማስወገድ", category: "verb" },
+      { en: "Awake", om: "Dammaqsuu", am: "ነቃ", category: "adjective" },
+      { en: "Award", om: "Badhaasa", am: "ሽልማት", category: "noun" },
+      { en: "Aware", om: "Beekaa", am: "የተገነዘበ", category: "adjective" },
+      { en: "Away", om: "Fagaatee", am: "ርቆ", category: "adverb" },
+      { en: "Awesome", om: "Gaarii", am: "አስደናቂ", category: "adjective" },
+      { en: "Awful", om: "Hammaatee", am: "አስፈሪ", category: "adjective" },
+      { en: "Baby", om: "Da'ima", am: "ሕፃን", category: "noun" },
+      { en: "Back", om: "Duuba", am: "ጀርባ", category: "noun" },
+      { en: "Background", om: "Duuba", am: "ጀርባ", category: "noun" },
+      { en: "Bad", om: "Hamaa", am: "መጥፎ", category: "adjective" },
+      { en: "Bag", om: "Boorsaa", am: "ቦርሳ", category: "noun" },
+      { en: "Bake", om: "Mooquu", am: "መጋገር", category: "verb" },
+      { en: "Balance", om: "Qixa ta'uu", am: "ሚዛን", category: "noun" },
+      { en: "Ball", om: "Kooraa", am: "ኳስ", category: "noun" },
+      { en: "Banana", om: "Muuzii", am: "ሙዝ", category: "noun" },
+      { en: "Bank", om: "Baankii", am: "ባንክ", category: "noun" },
+      { en: "Bar", om: "Baar", am: "ባር", category: "noun" },
+      // Continue with more words as needed...
+    ];
+
+    // Grammar rules for different languages
+    const grammarRules = {
+      tenses: {
+        en: "English has three main tenses: past, present, and future. Each has four aspects: simple, continuous, perfect, and perfect continuous.",
+        om: "Afaan Oromoo uses verb conjugation to indicate tense. The present tense is often unmarked, while past and future use specific markers.",
+        am: "Amharic verbs change form to indicate tense, person, gender, and number. There are three main tenses: past, present, and future."
+      },
+      pronouns: {
+        en: "English pronouns include: I, you, he, she, it, we, they (subject) and me, you, him, her, it, us, them (object).",
+        om: "Afaan Oromoo pronouns: Ani (I), Ati (you), Inni (he), Isheen (she), Nuti (we), Isaan (they).",
+        am: "Amharic pronouns: እኔ (I), አንተ/አንቺ (you), እሱ/እሷ (he/she), እኛ (we), እነሱ (they)."
+      },
+      questions: {
+        en: "English questions use auxiliary verbs (do, does, did) or invert subject and verb (is, are, was, were).",
+        om: "Afaan Oromoo questions often use question words like 'maal' (what), 'eessa' (where), 'yoom' (when).",
+        am: "Amharic questions use question words like ምን (what), የት (where), መቼ (when) and specific question particles."
+      },
+      negation: {
+        en: "English negation uses 'not' after auxiliary verbs or 'do not', 'does not', 'did not' with main verbs.",
+        om: "Afaan Oromoo negation uses 'hin' before the verb for present tense and 'hin jiru' for existential negation.",
+        am: "Amharic negation uses the prefix 'አል-' or 'አይ-' before the verb, depending on tense and person."
+      },
+      prepositions: {
+        en: "English prepositions show relationships between words (in, on, at, to, from, with, by, about).",
+        om: "Afaan Oromoo uses postpositions that come after nouns rather than before them.",
+        am: "Amharic uses both prepositions and postpositions to indicate spatial and temporal relationships."
+      }
+    };
+
+    // User data for learning progress
+    let userData = {
+      knownWords: [],
+      studyStreak: 0,
+      lastStudyDate: null,
+      savedTranslations: []
+    };
+
+    // Initialize the application
+    function init() {
+      loadUserData();
+      populateDictionary();
+      setupFlashcards();
+      updateStats();
+      
+      // Set up event listeners
+      document.getElementById('prevFlashcard').addEventListener('click', prevFlashcard);
+      document.getElementById('nextFlashcard').addEventListener('click', nextFlashcard);
+      document.getElementById('shuffleFlashcards').addEventListener('click', shuffleFlashcards);
+      document.getElementById('markKnown').addEventListener('click', markAsKnown);
+      
+      // Check and update study streak
+      updateStudyStreak();
+    }
+
+    // Load user data from localStorage
+    function loadUserData() {
+      const savedData = localStorage.getItem('translatorUserData');
+      if (savedData) {
+        userData = JSON.parse(savedData);
+      }
+    }
+
+    // Save user data to localStorage
+    function saveUserData() {
+      localStorage.setItem('translatorUserData', JSON.stringify(userData));
+    }
+
+    // Populate the dictionary table
+    function populateDictionary() {
+      const tableBody = document.getElementById('dictionaryBody');
+      tableBody.innerHTML = '';
+      
+      dictionary.forEach(word => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${word.en}</td>
+          <td>${word.om}</td>
+          <td>${word.am}</td>
+          <td>${word.category}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Search the dictionary
+    function searchDictionary() {
+      const searchTerm = document.getElementById('dictionarySearch').value.toLowerCase();
+      const tableBody = document.getElementById('dictionaryBody');
+      tableBody.innerHTML = '';
+      
+      const results = dictionary.filter(word => 
+        word.en.toLowerCase().includes(searchTerm) ||
+        word.om.toLowerCase().includes(searchTerm) ||
+        word.am.includes(searchTerm)
+      );
+      
+      if (results.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="4">No results found for "${searchTerm}"</td>`;
+        tableBody.appendChild(row);
+        return;
+      }
+      
+      results.forEach(word => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${word.en}</td>
+          <td>${word.om}</td>
+          <td>${word.am}</td>
+          <td>${word.category}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Translate text with advanced features
+    function translateText() {
+      const sourceLang = document.getElementById('sourceLang').value;
+      const targetLang = document.getElementById('targetLang').value;
+      const inputText = document.getElementById('inputText').value.trim();
+      
+      if (!inputText) {
+        showNotification('Please enter text to translate', 'error');
+        return;
+      }
+      
+      // Split into words for analysis
+      const words = inputText.split(/\s+/);
+      let translatedText = '';
+      let breakdownHTML = '';
+      
+      // Simple word-by-word translation with grammar consideration
+      words.forEach(word => {
+        const cleanWord = word.replace(/[.,!?;:]/g, '').toLowerCase();
+        const translation = findTranslation(cleanWord, sourceLang, targetLang);
+        
+        if (translation) {
+          translatedText += translation + ' ';
+          breakdownHTML += `
+            <div class="breakdown-item">
+              <span>${word}</span>
+              <span>→</span>
+              <span>${translation}</span>
+            </div>
+          `;
+        } else {
+          translatedText += `[${word}] `;
+          breakdownHTML += `
+            <div class="breakdown-item">
+              <span>${word}</span>
+              <span>→</span>
+              <span style="color: var(--error)">Not found</span>
+            </div>
+          `;
+        }
+      });
+      
+      // Display results
+      document.getElementById('translationOutput').innerHTML = `
+        <p class="translation-text">${translatedText}</p>
+      `;
+      
+      document.getElementById('breakdownContent').innerHTML = breakdownHTML;
+      document.getElementById('wordBreakdown').style.display = 'block';
+      
+      showNotification('Translation completed', 'success');
+    }
+
+    // Find translation for a word
+    function findTranslation(word, sourceLang, targetLang) {
+      const entry = dictionary.find(item => 
+        item[sourceLang].toLowerCase() === word
+      );
+      
+      if (entry) {
+        return entry[targetLang];
+      }
+      
+      return null;
+    }
+
+    // Text-to-speech functionality
+    function speakText() {
+      const text = document.getElementById('inputText').value || 
+                   document.querySelector('#translationOutput .translation-text').textContent;
+      
+      if (!text) {
+        showNotification('No text to speak', 'error');
+        return;
+      }
+      
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        // Set language based on source language
+        const sourceLang = document.getElementById('sourceLang').value;
+        utterance.lang = getLanguageCode(sourceLang);
+        speechSynthesis.speak(utterance);
+      } else {
+        showNotification('Text-to-speech not supported in your browser', 'error');
+      }
+    }
+
+    // Get language code for speech synthesis
+    function getLanguageCode(lang) {
+      const codes = {
+        'en': 'en-US',
+        'om': 'om-ET',
+        'am': 'am-ET'
+      };
+      return codes[lang] || 'en-US';
+    }
+
+    // Clear all text fields
+    function clearText() {
+      document.getElementById('inputText').value = '';
+      document.getElementById('translationOutput').innerHTML = '<p class="translation-text">Your translation will appear here...</p>';
+      document.getElementById('wordBreakdown').style.display = 'none';
+      document.getElementById('translationNotes').value = '';
+    }
+
+    // Save translation with notes
+    function saveTranslation() {
+      const sourceText = document.getElementById('inputText').value;
+      const translatedText = document.querySelector('#translationOutput .translation-text').textContent;
+      const notes = document.getElementById('translationNotes').value;
+      
+      if (!sourceText || !translatedText) {
+        showNotification('No translation to save', 'error');
+        return;
+      }
+      
+      const translation = {
+        id: Date.now(),
+        source: sourceText,
+        translation: translatedText,
+        notes: notes,
+        date: new Date().toLocaleDateString()
+      };
+      
+      userData.savedTranslations.push(translation);
+      saveUserData();
+      showNotification('Translation saved successfully', 'success');
+      document.getElementById('translationNotes').value = '';
+    }
+
+    // Show saved translations
+    function showSavedTranslations() {
+      const container = document.getElementById('savedTranslations');
+      
+      if (userData.savedTranslations.length === 0) {
+        container.innerHTML = '<p>No saved translations yet. Translate some text and click "Save Translation" to store them here.</p>';
+        return;
+      }
+      
+      let html = '';
+      userData.savedTranslations.forEach(translation => {
+        html += `
+          <div class="translation-result" style="margin-bottom: 15px;">
+            <p><strong>Original:</strong> ${translation.source}</p>
+            <p><strong>Translation:</strong> ${translation.translation}</p>
+            ${translation.notes ? `<p><strong>Notes:</strong> ${translation.notes}</p>` : ''}
+            <p><small>Saved on: ${translation.date}</small></p>
+            <button onclick="deleteTranslation(${translation.id})" style="background: var(--error); padding: 5px 10px; font-size: 0.8rem;">Delete</button>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    // Delete a saved translation
+    function deleteTranslation(id) {
+      userData.savedTranslations = userData.savedTranslations.filter(t => t.id !== id);
+      saveUserData();
+      showSavedTranslations();
+      showNotification('Translation deleted', 'success');
+    }
+
+    // Clear all saved translations
+    function clearSavedTranslations() {
+      userData.savedTranslations = [];
+      saveUserData();
+      showSavedTranslations();
+      showNotification('All saved translations cleared', 'success');
+    }
+
+    // Tab navigation
+    function openTab(tabName) {
+      // Hide all tab content
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show the specific tab content
+      document.getElementById(tabName).classList.add('active');
+      
+      // Add active class to the button that opened the tab
+      event.currentTarget.classList.add('active');
+      
+      // Special handling for certain tabs
+      if (tabName === 'saved') {
+        showSavedTranslations();
+      }
+    }
+
+    // Flashcard functionality
+    let currentFlashcardIndex = 0;
+    let flashcardDeck = [];
+
+    function setupFlashcards() {
+      // Create a deck from the dictionary
+      flashcardDeck = [...dictionary];
+      shuffleFlashcards();
+      showFlashcard();
+    }
+
+    function showFlashcard() {
+      if (flashcardDeck.length === 0) {
+        document.getElementById('flashcardFront').textContent = "No flashcards available";
+        document.getElementById('flashcardBack').textContent = "";
+        document.getElementById('flashcardCounter').textContent = "0/0";
+        return;
+      }
+      
+      const card = flashcardDeck[currentFlashcardIndex];
+      document.getElementById('flashcardFront').textContent = card.en;
+      document.getElementById('flashcardBack').textContent = `${card.om} / ${card.am}`;
+      document.getElementById('flashcard').classList.remove('flipped');
+      document.getElementById('flashcardCounter').textContent = `${currentFlashcardIndex + 1}/${flashcardDeck.length}`;
+      
+      // Update progress bar
+      const progress = ((currentFlashcardIndex + 1) / flashcardDeck.length) * 100;
+      document.getElementById('flashcardProgress').style.width = `${progress}%`;
+    }
+
+    function flipFlashcard() {
+      document.getElementById('flashcard').classList.toggle('flipped');
+    }
+
+    function nextFlashcard() {
+      if (flashcardDeck.length === 0) return;
+      currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcardDeck.length;
+      showFlashcard();
+    }
+
+    function prevFlashcard() {
+      if (flashcardDeck.length === 0) return;
+      currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcardDeck.length) % flashcardDeck.length;
+      showFlashcard();
+    }
+
+    function shuffleFlashcards() {
+      if (flashcardDeck.length === 0) return;
+      
+      // Fisher-Yates shuffle algorithm
+      for (let i = flashcardDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [flashcardDeck[i], flashcardDeck[j]] = [flashcardDeck[j], flashcardDeck[i]];
+      }
+      
+      currentFlashcardIndex = 0;
+      showFlashcard();
+    }
+
+    function markAsKnown() {
+      if (flashcardDeck.length === 0) return;
+      
+      const currentWord = flashcardDeck[currentFlashcardIndex].en;
+      if (!userData.knownWords.includes(currentWord)) {
+        userData.knownWords.push(currentWord);
+        saveUserData();
+        updateStats();
+        showNotification(`"${currentWord}" marked as known`, 'success');
+      }
+      
+      // Move to next card
+      nextFlashcard();
+    }
+
+    // Update learning statistics
+    function updateStats() {
+      document.getElementById('knownWords').textContent = userData.knownWords.length;
+      
+      const progress = Math.round((userData.knownWords.length / dictionary.length) * 100);
+      document.getElementById('learningProgress').textContent = `${progress}%`;
+      
+      document.getElementById('studyStreak').textContent = userData.studyStreak;
+    }
+
+    // Update study streak
+    function updateStudyStreak() {
+      const today = new Date().toDateString();
+      
+      if (userData.lastStudyDate === today) {
+        return; // Already studied today
+      }
+      
+      if (userData.lastStudyDate) {
+        const lastDate = new Date(userData.lastStudyDate);
+        const todayDate = new Date();
+        const diffTime = Math.abs(todayDate - lastDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+          // Consecutive day
+          userData.studyStreak++;
+        } else if (diffDays > 1) {
+          // Broken streak
+          userData.studyStreak = 1;
+        }
+      } else {
+        // First time
+        userData.studyStreak = 1;
+      }
+      
+      userData.lastStudyDate = today;
+      saveUserData();
+      updateStats();
+    }
+
+    // Show grammar topic
+    function showGrammarTopic() {
+      const topic = document.getElementById('grammarTopic').value;
+      const content = document.getElementById('grammarContent');
+      
+      if (!topic) {
+        content.innerHTML = '<p>Select a grammar topic to learn about language structure and rules.</p>';
+        return;
+      }
+      
+      const rules = grammarRules[topic];
+      let html = `
+        <h4>${topic.charAt(0).toUpperCase() + topic.slice(1)}</h4>
+        <p><strong>English:</strong> ${rules.en}</p>
+        <p><strong>Afaan Oromoo:</strong> ${rules.om}</p>
+        <p><strong>Amharic:</strong> ${rules.am}</p>
+      `;
+      
+      content.innerHTML = html;
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    // Additional feature stubs
+    function openSentenceBuilder() {
+      showNotification('Sentence Builder feature coming soon!', 'success');
+    }
+
+    function startQuiz() {
+      showNotification('Vocabulary Quiz feature coming soon!', 'success');
+    }
+
+    // Initialize the app when the page loads
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

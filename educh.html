@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Comprehensive Chat Tutor Bot</title>
+<style>
+:root {
+  --bg-light: #f9fbff;
+  --bg-dark: #121212;
+  --text-light: #333;
+  --text-dark: #f0f0f0;
+  --primary: #1a4bc3;
+  --primary-dark: #133a9b;
+  --card-light: #ffffff;
+  --card-dark: #1e1e1e;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+header, footer {
+  background-color: var(--primary);
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-weight: bold;
+}
+
+main {
+  flex: 1;
+  max-width: 720px;
+  margin: 20px auto;
+  padding: 1.5rem;
+  background: var(--card-light);
+  border-radius: 12px;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.07);
+  transition: background 0.3s;
+}
+
+.dark-mode main {
+  background: var(--card-dark);
+}
+
+#chatBox {
+  height: 400px;
+  overflow-y: auto;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: var(--bg-light);
+  border: 2px solid #d0d7e2;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s;
+}
+
+.dark-mode #chatBox {
+  background-color: #1a1a1a;
+}
+
+.message {
+  margin: 12px 0;
+  padding: 12px 18px;
+  border-radius: 20px;
+  max-width: 80%;
+  line-height: 1.5;
+  font-size: 1rem;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.user {
+  background-color: var(--primary);
+  color: white;
+  margin-left: auto;
+  text-align: right;
+  border-bottom-right-radius: 5px;
+}
+
+.bot {
+  background-color: #e0eaff;
+  color: var(--text-light);
+  margin-right: auto;
+  text-align: left;
+  border-bottom-left-radius: 5px;
+}
+
+.dark-mode .bot {
+  background-color: #2b2b2b;
+  color: var(--text-dark);
+}
+
+input[type="text"] {
+  width: 68%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+  border-color: var(--primary);
+}
+
+button {
+  width: 28%;
+  padding: 12px;
+  font-weight: 600;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+}
+
+.clear-btn {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  background: #999;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.clear-btn:hover {
+  background: #666;
+}
+
+.toggle-dark {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.toggle-dark:hover {
+  background: #444;
+}
+
+.typing-indicator {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  background-color: #999;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 1px;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-5px);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  input[type="text"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  #chatBox {
+    height: 300px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Comprehensive Chat Tutor Bot</h1>
+  <p>Ask me anything in English or Afaan Oromoo!</p>
+</header>
+
+<main>
+  <h2>Chat with your Tutor 🤖</h2>
+  <div id="chatBox">
+    <div class="message bot">👋 Hello! I'm your Chat Tutor. How can I help you today?</div>
+  </div>
+  <input type="text" id="userInput" placeholder="Type your question here..." autocomplete="off" />
+  <button onclick="sendMessage()">Send</button>
+  <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
+  <button class="toggle-dark" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+</main>
+
+<footer>
+  <p>&copy; 2025 AIBSBSS - Smart Education for Everyone</p>
+</footer>
+
+<script>
+  const chatBox = document.getElementById('chatBox');
+  const userInput = document.getElementById('userInput');
+  let isDarkMode = false;
+
+  // Allow sending message with Enter key
+  userInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+
+  function sendMessage() {
+    const msg = userInput.value.trim();
+    if (!msg) return;
+    
+    appendMessage(msg, 'user');
+    userInput.value = '';
+    
+    // Show typing indicator
+    const typingIndicator = document.createElement('div');
+    typingIndicator.classList.add('message', 'bot');
+    typingIndicator.id = 'typing-indicator';
+    typingIndicator.innerHTML = '🤖 Thinking<span class="typing-indicator"><span></span><span></span><span></span></span>';
+    chatBox.appendChild(typingIndicator);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    // Simulate thinking time based on message length
+    const thinkingTime = Math.min(1000 + Math.random() * 1000, 2000);
+    
+    setTimeout(() => {
+      // Remove typing indicator
+      document.getElementById('typing-indicator')?.remove();
+      
+      const reply = getBotReply(msg);
+      appendMessage(reply, 'bot');
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, thinkingTime);
+  }
+
+  function appendMessage(text, sender) {
+    const div = document.createElement('div');
+    div.classList.add('message', sender);
+    div.textContent = (sender === 'user' ? '👩‍🎓 ' : '🤖 ') + text;
+    chatBox.appendChild(div);
+  }
+
+  function clearChat() {
+    chatBox.innerHTML = '<div class="message bot">👋 Hello! I\'m your Chat Tutor. How can I help you today?</div>';
+  }
+
+  function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    document.body.classList.toggle('dark-mode', isDarkMode);
+  }
+
+  function getBotReply(msg) {
+    const lower = msg.toLowerCase();
+    
+    // Enhanced pattern matching with more flexible logic
+    const responses = [
+      // Science & General Knowledge
+      {
+        pattern: /(what is photosynthesis|photosynthesis jechuun maal)/i,
+        response: "Photosynthesis is the process by which green plants use sunlight to make food from carbon dioxide and water. / Photosynthesis jechuun biqiltoota magariisaa urjii aduu fayyadamuudhaan nyaata oomishuu dha."
+      },
+      {
+        pattern: /(what is mitosis|mitosis jechuun maal)/i,
+        response: "Mitosis is a type of cell division producing two identical daughter cells. / Mitosis jechuun seelii lama walfakkaatoo uumuudha."
+      },
+      {
+  pattern: /(what is energy|humna sochii jechuun maal)/i,
+  response: "Energy is the ability to do work or cause change. / Humni sochii hojjechuu ykn jijjiirama fiduu danda'u dha."
+},
+      {
+        pattern: /(what is a force|humna jechuun maal)/i,
+        response: "Force is a push or pull acting upon an object. / Humni wanta tokko harkisu ykn tursiisuu danda'u dha."
+      },
+      {
+        pattern: /(define velocity|velocity jechuun maal)/i,
+        response: "Velocity is speed in a specified direction. / Velocity jechuun saffisa fi kallattii wanta tokko deemu ibsa."
+      },
+      {
+        pattern: /(what is acid|acid jechuun maal)/i,
+        response: "An acid donates hydrogen ions and has pH less than 7. / Acid jechuun wanta hydrogen ion kennu fi pH isaa 7 gadi ta'e dha."
+      },
+      {
+        pattern: /(why is the sky blue|akka samii magariisa ta'u maaliif)/i,
+        response: "The sky looks blue due to scattering of sunlight by the atmosphere, which scatters shorter blue wavelengths more. / Samii magariisa fakkaata sababni isaa ifni cuquliisa addaan ba'uun saffisa gabaabaa kan magariisaaf ta'u dha."
+      },
+      {
+        pattern: /(why do we sleep|akka hirribni nurra ga'u maaliif)/i,
+        response: "We sleep to rest our body and brain, consolidate memories, and refresh energy. / Hirribni qaama keenya akka boqotuufi yaad-rimee ittiin eegalu gargaara."
+      },
+      {
+        pattern: /(why do we need water|akka lafa irratti hafuura argannuuf bishaan barbaachisa ta'u maaliif)/i,
+        response: "Water is essential for all life functions including hydration, digestion, and temperature regulation. / Bishaan qaama keenyaaf barbaachisaa dha sababni isaa hojiiwwan garaagaraa akka raawwatu isa gargaara."
+      },
+      {
+        pattern: /(what is the purpose of education)/i,
+        response: "Education empowers individuals with knowledge, skills, and values to lead successful and meaningful lives."
+      },
+      
+      // Friendly / Motivational / Study Advice
+      {
+        pattern: /(i'm tired|i am tired)/i,
+        response: "I hear you! Even superheroes need breaks. Stretch, breathe, then let's get back to it! 💪"
+      },
+      {
+        pattern: /(should i cheat)/i,
+        response: "Haha! Your brain is the best cheat sheet. Trust yourself and do your best!"
+      },
+      {
+        pattern: /(give me motivation|motivate me)/i,
+        response: "You're doing amazing! Every small step counts. Keep pushing towards your goals! 🚀"
+      },
+      {
+        pattern: /(how to study fast|study fast)/i,
+        response: "Focus on key concepts, take short breaks, and quiz yourself often. Quality over quantity!"
+      },
+      {
+        pattern: /(i don't understand|dont understand)/i,
+        response: "Learning can be tricky! Break the topic into small pieces and ask questions anytime."
+      },
+      {
+        pattern: /(tell me a joke|make me laugh)/i,
+        response: "Why was the math book sad? Because it had too many problems! 😄"
+      },
+      {
+        pattern: /(can i take a break)/i,
+        response: "Yes! Rest is important. Just don't get too comfy or you might miss studying!"
+      },
+      {
+        pattern: /(help me relax|relax)/i,
+        response: "Try this: close your eyes, breathe deeply 3 times, imagine your favorite place. Ready to study?"
+      },
+      {
+        pattern: /(i hate studying)/i,
+        response: "I get it, studying can be tough. But every challenge is a step to success! Let's find fun ways to learn."
+      },
+      {
+        pattern: /(is it okay to sleep late)/i,
+        response: "Sometimes yes, but good sleep helps your brain remember everything you study!"
+      },
+      {
+        pattern: /(why do i forget things)/i,
+        response: "Memory needs repetition and rest. Review often and get good sleep to keep info locked in."
+      },
+      {
+        pattern: /(how to focus better)/i,
+        response: "Set short goals, remove distractions, and take breaks to keep your mind sharp!"
+      },
+      {
+        pattern: /(what should i eat to study well)/i,
+        response: "Eat healthy snacks like nuts, fruits, and drink water. Avoid too much sugar—it can cause energy crashes."
+      },
+      {
+        pattern: /(i'm bored)/i,
+        response: "How about a quick brain teaser or a short walk? It refreshes your mind fast!"
+      },
+      {
+        pattern: /(can you be my friend)/i,
+        response: "Of course! I'm here to help, cheer you on, and crack a joke when you need one. 🤗"
+      },
+      {
+        pattern: /(study tips)/i,
+        response: "Break your study into chunks, teach what you learn, and test yourself regularly. Consistency wins!"
+      },
+      {
+        pattern: /(do you know math jokes)/i,
+        response: "Why was the equal sign so humble? Because it wasn't less than or greater than anyone else! 😆"
+      },
+      {
+        pattern: /(how to memorize fast)/i,
+        response: "Use mnemonics, rhymes, flashcards, and teach others. Practice helps memory!"
+      },
+      {
+        pattern: /(why is math hard)/i,
+        response: "Math builds on basics. It gets easier with practice and questions. Don't give up!"
+      },
+      
+      // More Real Questions People Often Ask
+      {
+        pattern: /(what is artificial intelligence|artificial intelligence jechuun maal)/i,
+        response: "Artificial Intelligence (AI) is the simulation of human intelligence by machines. / Artificial Intelligence jechuun sirna ogummaa nama fakkaatu komputeraatiin uumamu dha."
+      },
+      {
+        pattern: /(how does the internet work|internet jechuun maal)/i,
+        response: "The internet connects computers globally using networks and protocols to share information. / Internet jechuun qunnamsiisa addunyaa guutuu kan kompitara walitti hidhu dha."
+      },
+      {
+        pattern: /(what is climate change|climate change jechuun maal)/i,
+        response: "Climate change refers to significant changes in global temperatures and weather patterns over time. / Climate change jechuun jijjiirama haala qilleensaa fi ho'a lafaa yeroo dheeraaf ta'u dha."
+      },
+      {
+        pattern: /(what is covid-19|covid-19 jechuun maal)/i,
+        response: "COVID-19 is a contagious respiratory illness caused by the coronavirus SARS-CoV-2. / COVID-19 dhibee hafuuraa qaama namaa miidhu vaayirasii coronavirus dha."
+      },
+      {
+        pattern: /(what is democracy|democracy jechuun maal)/i,
+        response: "Democracy is a system of government where people vote to make decisions. / Democracy jechuun sirna mootummaa uummanni filannoo gochuun murteessu dha."
+      },
+      {
+        pattern: /(how to prepare for exams|exams irratti akkamitti qophoofna)/i,
+        response: "Start early, make a study schedule, practice past papers, and get enough rest. / Yeroo dheeraa dura ka'ii, sagantaa barnootaa qopheessi, gaaffilee duraan turan irra deebi'i, boqonnaa gahaa argadhu."
+      },
+      {
+        pattern: /(what is gravity|gravity jechuun maal)/i,
+        response: "Gravity is the force that attracts two bodies towards each other, like objects to Earth. / Gravity jechuun humna wantoota lama walitti harkisu dha, fakkeenyaaf lafatti wantoota harkisa."
+      },
+      {
+        pattern: /(what is the human heart|onnee jechuun maal)/i,
+        response: "The heart is a muscular organ that pumps blood throughout the body. / Onneen organii lafee keessa jiru kan dhiiga qaama keessatti bobbaasu dha."
+      },
+      {
+        pattern: /(why do plants need water|biqiltoonni maaliif bishaan barbaadu)/i,
+        response: "Water is essential for photosynthesis and transporting nutrients inside plants. / Bishaan biqiltootaaf nyaata oomishuuf fi nyaata qaama keessa oofuu barbaachisa."
+      },
+      {
+        pattern: /(how do vaccines work|vaayrasii ittisuuf talaallii akkamitti hojjata)/i,
+        response: "Vaccines train your immune system to recognize and fight diseases without causing illness. / Talaalliin qaama keenya akka vaayirasii beekuu fi ittiin of-eeggachuu danda'u gargaara."
+      },
+      {
+        pattern: /(why is math important|herrega maaliif barbaachisaa)/i,
+        response: "Math helps develop problem-solving skills and is used in science, technology, and daily life. / Herregni rakkoo hiikuuf gargaara, akkasumas saayinsa fi teeknoolojii keessatti ni fayyada."
+      },
+      {
+        pattern: /(how to improve english|akka afaan ingiliffaatti fooyyessuuf)/i,
+        response: "Practice daily by reading, writing, speaking, and listening. Use apps, watch movies, and talk with others. / Guyyaa guyyaan dubbisuun, barreessuun, dubbachuun, dhaggeeffachuun leenjii godhi."
+      },
+      {
+        pattern: /(why do we celebrate holidays|ayyaanota maaliif kabajna)/i,
+        response: "Holidays celebrate important events, cultures, and bring people together. / Ayyaanotni seenaa fi aadaa kabajuufi namoota walitti fiduuf kabajamu."
+      },
+      {
+        pattern: /(how to stay motivated|akka of kakaasuuf)/i,
+        response: "Set clear goals, reward yourself for achievements, and remember why you started. / Kaayyoo ifa ta'e kaa'i, milkaa'ina kee badhaasi, maaliif jalqabe yaadadhu."
+      },
+      {
+        pattern: /(what is energy|energy jechuun maal)/i,
+        response: "Energy is the capacity to do work or cause change. / Energy jechuun hojii hojjachuuf ykn jijjiirama fiduuf humna qabaachuu dha."
+      },
+      {
+        pattern: /(can you help me with homework|hojii mana barumsaa keessatti na gargaarti)/i,
+        response: "Absolutely! Ask me any homework question, and I'll do my best to help you understand it. / Eeyyee! Gaaffii hojii mana barumsaa gaafadhu, sirnaan si gargaara."
+      },
+      {
+        pattern: /(how do I get better grades|akka milkaa'ina barumsaa argachuuf)/i,
+        response: "Attend classes regularly, review notes daily, practice exercises, and ask questions when confused. / Barnoota yeroo hunda hirmaadhu, galmee kee guyyaa guyyaan ilaali, hojii irra oolchi, gaaffii gaafadhu."
+      },
+      {
+        pattern: /(what is the internet|internet jechuun maal)/i,
+        response: "The internet is a global network connecting computers for communication and data sharing. / Internet qunnamtii fi odeeffannoo waljijjiiruu danda'uuf komputera addunyaa walitti hidhu dha."
+      },
+      {
+        pattern: /(how to manage time|akka yeroo gaarii qindeesuuf)/i,
+        response: "Make a daily schedule, prioritize tasks, avoid distractions, and take breaks to refresh. / Sagantaa guyyaa qopheessi, hojiiwwan barbaachisan dura kenni, dogoggora fageessi, boqonnaa fudhadhu."
+      },
+      {
+        pattern: /(what is a computer|computer jechuun maal)/i,
+        response: "A computer is an electronic device that processes data and performs tasks according to instructions. / Computer meeshaa elektrooniksii odeeffannoo hojjechuu fi ajaja raawwatu dha."
+      },
+      {
+        pattern: /(how to stay healthy|akka fayyaa ta'uuf)/i,
+        response: "Eat balanced meals, exercise regularly, get enough sleep, and drink plenty of water. / Nyaata madaalawaa nyaadhu, hojii qaamaa hojjadhu, hirriba gahaa argadhu, bishaan dhugi."
+      },
+      
+      // Greetings and basic interactions
+      {
+        pattern: /(thank you|galatoomi)/i,
+        response: "You're welcome! Always here to help you learn and grow. / Nagaan siif haa ta'u! Barnootaaf si gargaaruuf qophii dha."
+      },
+      {
+        pattern: /(hello|hi|salaam|akkami)/i,
+        response: "Hello! How can I assist you today? / Nagaan siif haa ta'u! Maal siif godha?"
+      },
+      {
+        pattern: /(bye|goodbye|nagaan)/i,
+        response: "Goodbye! Keep studying hard and come back anytime. / Nagaan jiraadhu! Barnoota cimsii, yoomillee deebii."
+      },
+      {
+        pattern: /(tell me a fun fact|faayidaa nama gammachiisu naaf himi)/i,
+        response: "Did you know? Octopuses have three hearts! / Beektuu? Qalbii sadii qabu."
+      },
+      
+      // Physics
+      {
+        pattern: /(what is force|humna jechuun maal)/i,
+        response: "Force is a push or pull. / Humni harkisuu yookiin dhiibuu dha."
+      },
+      {
+        pattern: /(what is energy|humna sochii jechuun maal)/i,
+        response: "Energy is the ability to do work or cause change. / Humni sochii hojjechuu ykn jijjiirama fiduu danda'u dha."
+      },
+      {
+        pattern: /(why is force important|humni maaliif barbaachisaa dha)/i,
+        response: "Force is important because it causes motion and changes in objects. / Humni barbaachisaa dha sababni isaa wantoota sochoosuu fi jijjiiruu danda'a."
+      },
+      {
+        pattern: /(why do objects fall|wantoonni maaliif gad lolu)/i,
+        response: "Objects fall due to gravity. / Wantoonni humna urjii (gravity) waan qabanef gad lolu."
+      },
+      
+      // Chemistry
+      {
+        pattern: /(what is atom|atomii jechuun maal)/i,
+        response: "An atom is the smallest part of matter. / Atomni qixxaamura xiqqaa wantoota hundaa dha."
+      },
+      {
+        pattern: /(what is water made of|bishaan maal irraa ijaarame)/i,
+        response: "Water is made of hydrogen and oxygen. / Bishaan hayidiroojinii fi oksijiinii irraa ijaarame."
+      },
+      {
+        pattern: /(why is water important|bishaan maaliif barbaachisaa dha)/i,
+        response: "Water is essential for life. It helps cells work and keeps the body alive. / Bishaan jireenyaaf murteessaadha. Seelii hojjechuu fi qaama jiraachisuuf gargaara."
+      },
+      {
+        pattern: /(why do atoms bond|atomoonni maaliif walitti maxxanu)/i,
+        response: "Atoms bond to become stable and complete their outer shells. / Atomoonni tasgabbaa'uufi gubbaa isaanii guutachuuf walitti maxxanu."
+      },
+      
+      // Biology
+      {
+        pattern: /(what is cell|seelii jechuun maal)/i,
+        response: "A cell is the smallest unit of life. / Seelii unkaa jireenya xiqqoo dha."
+      },
+      {
+        pattern: /(what is digestion|qunnamtii nyaataa jechuun maal)/i,
+        response: "Digestion is how our body breaks down food. / Qoricha nyaataa gara qaama keenyaa keessatti gargar cabsuu dha."
+      },
+      {
+        pattern: /(why are cells important|seelii maaliif barbaachisa)/i,
+        response: "We need cells because they carry out all life processes. / Seelii barbaachisa sababni isaa hojii jireenyaa hunda raawwatu."
+      },
+      {
+        pattern: /(why is digestion important|nyaanni maaliif makamu qaba)/i,
+        response: "Digestion is important to break food into nutrients our body can use. / Nyaanni gargar cite qaamni keenya akka fayyadamuu danda'uuf barbaachisa."
+      },
+      
+      // Math
+      {
+        pattern: /(what is addition|walitti ida'u jechuun maal)/i,
+        response: "Addition means putting numbers together. / Walitti ida'un lakkoofsa walitti dabaluudha."
+      },
+      {
+        pattern: /(what is subtraction|hir'isu jechuun maal)/i,
+        response: "Subtraction means taking away from a number. / Hir'isuu lakkoofsa keessaa fudhachuudha."
+      },
+      {
+        pattern: /(why learn math|herrega maaliif baranna)/i,
+        response: "Math helps us solve problems in daily life and develop logic. / Herregni rakkoo jireenya guyyaa guyyaa furuufi yaada sirrii horachuuf nu gargaara."
+      },
+      {
+        pattern: /(why is subtraction useful|hir'isuun maaliif fayyada)/i,
+        response: "Subtraction helps us compare and find differences. / Hir'isuun garaagarummaa beekuu fi walbira qabuu keessatti nu fayyada."
+      },
+      
+      // English
+      {
+        pattern: /(what is a noun|maqaa jechuun maal)/i,
+        response: "A noun is a name of a person, place, or thing. / Maqaan maqaa namaa, bakka, yookiin wanta agarsiisa."
+      },
+      {
+        pattern: /(what is a verb|gochaa jechuun maal)/i,
+        response: "A verb is an action word. / Gochoon jecha sochii agarsiisu dha."
+      },
+      {
+        pattern: /(why is grammar important|qajeelfamni hiikkaa maaliif barbaachisa)/i,
+        response: "Grammar helps us write and speak correctly. / Qajeelfamni hiikkaa barreessuu fi dubbachuu sirriitti akka dandeenyu nu gargaara."
+      },
+      {
+        pattern: /(why do we use verbs|gochoota maaliif fayyadamna)/i,
+        response: "We use verbs to show actions and express what is happening. / Gochoota fayyadamna sochii fi haala mul'isuuf."
+      },
+      
+      // History
+      {
+        pattern: /(what is history|seenaa jechuun maal)/i,
+        response: "History is the study of past events. / Seenaa darbe qorachuudha."
+      },
+      {
+        pattern: /(who is Menelik|Menilik eenyu)/i,
+        response: "Menelik II was an Ethiopian emperor who fought in the Battle of Adwa. / Menilik II mootii Itiyoophiyaa ture kan Adwaa irratti lolate."
+      },
+      {
+        pattern: /(why learn history|seenaa maaliif baranna)/i,
+        response: "We learn history to understand our past and avoid past mistakes. / Seenaa baranna yeroo darbe hubachuufi dogoggora darbe irraa of eeguuf."
+      },
+      {
+        pattern: /(why is Menelik important|Menilik maaliif barbaachisaa dha)/i,
+        response: "Menelik is important because he protected Ethiopia's independence. / Menilik barbaachisaa dha sababni isaa bilisummaa Itiyoophiyaa tikse."
+      },
+      
+      // IT
+      {
+        pattern: /(what is computer|kompitara jechuun maal)/i,
+        response: "A computer is an electronic device that stores and processes data. / Kompitari meeshaa elektirooniksiidha kan odeeffannoo kuusuu fi dalaguu danda'u."
+      },
+      {
+        pattern: /(what is internet|intarneetii jechuun maal)/i,
+        response: "The internet is a global network that connects computers and shares information. / Intarneetii toora addunyaa guutuu kan kompitara walitti hidhus dha."
+      },
+      {
+        pattern: /(why use computers|kompitara maaliif fayyadamna)/i,
+        response: "We use computers to store, process, and share data efficiently. / Kompitara odeeffannoo kuusuu, dalaguu fi qooduu dandeenyaaniif fayyadamna."
+      },
+      {
+        pattern: /(why is internet important|intarneetiin maaliif barbaachisa)/i,
+        response: "The internet helps us connect, learn, and work globally. / Intarneetiin wal qunnamtii, barnootaa fi hojii addunyaa guutuu gargaara."
+      },
+      
+      // Life Advice
+      {
+        pattern: /(why is life hard|maaliif jireenyi rakkisaa taate)/i,
+        response: "Life is hard because growth requires challenge. Without struggle, we don't become stronger. / Jireenyi rakkoo qabdi sababni isaas guddinni rakkina keessa jira. Rakkoo malee jabinaan hin dhufu."
+      },
+      {
+        pattern: /(why am I sad|maaliif gadadha)/i,
+        response: "You feel sad because your heart is telling you something matters. Sadness is a sign you care. / Gadda yoo dhagahte qalbii kee keessa waan si yaachisu jira. Gaddaan mallattoo garaa laafummaa fi yaaduu dha."
+      },
+      {
+        pattern: /(how can I be happy|akkamitti gammachuu argadha)/i,
+        response: "Start small. Be grateful, love yourself, and connect with good people. / Xixiqqoo irraa jalqabi. Galata godhi, of jaaladhi, namoota gaarii waliin jiraadhu."
+      },
+      {
+        pattern: /(how do I deal with failure|marii kufaatii waliin akkam jiraadha)/i,
+        response: "Failure teaches you more than success. Learn, grow, try again. You are not done yet. / Kufaatiin si barsiisa. Baradhu, guddadhu, deebi'ii yaali. Ati xumuramte hin jettu."
+      },
+      {
+        pattern: /(when will things get better|yoom rakkoon ni darbu)/i,
+        response: "Things get better step by step. Keep moving forward. / Rakkoon yeroon ni darba. Tarkaanfii tokko tokkoon gara fuulduraatti tarkaanfadhu."
+      },
+      {
+        pattern: /(what is love|jaalalli maal)/i,
+        response: "Love is not just a feeling. It's action, patience, and care. / Jaalalli yaada qofa miti, hojii, obsaa fi kunuunsa of keessaa qaba."
+      },
+      {
+        pattern: /(what type of people to trust|namoota akkamii amanamuu qabu)/i,
+        response: "Trust those who show consistency, respect you in silence, and support you when no one is watching. / Namoota yeroo mara wal fakkaatan, si kabajan, si deeggaran yoo hin mul'anne — isaan amani."
+      },
+      {
+        pattern: /(who am I|ani eenyu)/i,
+        response: "You are more than your mistakes. You are becoming. You are light. / Ati dogoggora keetiin miti. Ati guddachaa jirta. Ati ifa dha."
+      },
+      {
+        pattern: /(what is the meaning of life|jireenyi hiika maalii)/i,
+        response: "The meaning of life is what you create with love, purpose, and connection. / Jireenyi hiika qaba yoo ati jaalalaan, kaayyoo fi walitti dhufeenya gaarii uutte."
+      },
+      {
+        pattern: /(how do I find peace|nagaa akkam argadhaa)/i,
+        response: "Let go of what you can't control. Accept, breathe, and forgive. / Waan dandeetti kee ol ta'e dhiisi. Simadhu, haa jabaatu, haa dhiifamu."
+      }
+      
+    ];
+    
+    
+    // Check for matching patterns
+    for (const response of responses) {
+      if (response.pattern.test(lower)) {
+        return response.response;
+      }
+    }
+    
+    // Default response for unmatched queries
+    return "I'm not sure I understand that question. Could you try rephrasing it or ask about something else? I'm here to help with your studies! / Ani gaaffii kee hin hubanne. Maaloo garaagarummaan naaf himi ykn gaaffii biraa naaf gaafadhu. Ani barnoota keessatti si gargaaruuf jira!";
+  }
+</script>
+</body>
+</html>

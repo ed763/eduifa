@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTok - Student Motivation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            margin: 0 auto;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: transparent;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #FF0050, #00F2FE);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-icons i {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .video-feed {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+        }
+
+        .video-container {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            scroll-snap-align: start;
+            background: #000;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            z-index: 10;
+        }
+
+        .video-info {
+            margin-bottom: 80px;
+        }
+
+        .video-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .video-description {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+
+        .video-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .video-actions {
+            position: absolute;
+            right: 15px;
+            bottom: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            z-index: 20;
+        }
+
+        .action-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .action-button i {
+            font-size: 28px;
+            background: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-button span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .creator-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #FF0050;
+            overflow: hidden;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .creator-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .follow-btn {
+            background: #FF0050;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+            transition: background 0.3s ease;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 414px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item.active i {
+            color: #FF0050;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .video-placeholder i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #FF0050;
+        }
+
+        .placeholder-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .placeholder-subtext {
+            font-size: 14px;
+            opacity: 0.7;
+            max-width: 300px;
+        }
+
+        /* Hide scrollbar */
+        .video-feed::-webkit-scrollbar {
+            display: none;
+        }
+
+        .video-feed {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Animation for like button */
+        @keyframes like {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .liked {
+            animation: like 0.5s ease;
+            color: #FF0050;
+        }
+
+        .play-pause-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 5;
+        }
+
+        .play-pause-overlay i {
+            font-size: 80px;
+            color: white;
+        }
+
+        .video-container:hover .play-pause-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="logo">EduTok</div>
+            <div class="nav-icons">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-inbox"></i>
+            </div>
+        </div>
+
+        <div class="video-feed" id="video-feed">
+            <!-- Video 1: Study Motivation -->
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div class="placeholder-text">Study Motivation</div>
+                    <div class="placeholder-subtext">"Success is the sum of small efforts repeated day in and day out." - Robert Collier</div>
+                    <div style="margin-top: 20px; font-size: 12px; opacity: 0.5;">Tap the play button to start</div>
+                </div>
+                <div class="play-pause-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="video-overlay">
+                    <div class="creator-info">
+                        <div class="creator-avatar">SM</div>
+                        <div class="creator-name">@StudyMotivation</div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Boost Your Study Motivation 📚</div>
+                        <div class="video-description">Stay focused and achieve your academic goals with these powerful tips!</div>
+                        <div class="video-stats">
+                            <span><i class="fas fa-music"></i> Study Focus Mix</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-actions">
+                    <div class="action-button" onclick="toggleLike(this)">
+                        <i class="far fa-heart"></i>
+                        <span>24.5K</span>
+                    </div>
+                    <div class="action-button" onclick="showComments()">
+                        <i class="far fa-comment"></i>
+                        <span>1.2K</span>
+                    </div>
+                    <div class="action-button" onclick="shareVideo()">
+                        <i class="far fa-share-square"></i>
+                        <span>3.4K</span>
+                    </div>
+                    <div class="action-button">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video 2: Exam Success -->
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <i class="fas fa-trophy"></i>
+                    <div class="placeholder-text">Exam Success Tips</div>
+                    <div class="placeholder-subtext">"The secret of getting ahead is getting started." - Mark Twain</div>
+                    <div style="margin-top: 20px; font-size: 12px; opacity: 0.5;">Swipe up for next video</div>
+                </div>
+                <div class="play-pause-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="video-overlay">
+                    <div class="creator-info">
+                        <div class="creator-avatar">ET</div>
+                        <div class="creator-name">@ExamTips</div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Ace Your Exams 🎯</div>
+                        <div class="video-description">Proven strategies to help you excel in your exams and reduce stress.</div>
+                        <div class="video-stats">
+                            <span><i class="fas fa-music"></i> Focus Ambient</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-actions">
+                    <div class="action-button" onclick="toggleLike(this)">
+                        <i class="far fa-heart"></i>
+                        <span>18.7K</span>
+                    </div>
+                    <div class="action-button" onclick="showComments()">
+                        <i class="far fa-comment"></i>
+                        <span>856</span>
+                    </div>
+                    <div class="action-button" onclick="shareVideo()">
+                        <i class="far fa-share-square"></i>
+                        <span>2.1K</span>
+                    </div>
+                    <div class="action-button">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video 3: Time Management -->
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <i class="fas fa-clock"></i>
+                    <div class="placeholder-text">Time Management</div>
+                    <div class="placeholder-subtext">"Don't watch the clock; do what it does. Keep going." - Sam Levenson</div>
+                </div>
+                <div class="play-pause-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="video-overlay">
+                    <div class="creator-info">
+                        <div class="creator-avatar">PM</div>
+                        <div class="creator-name">@ProductiveMind</div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Master Your Time ⏰</div>
+                        <div class="video-description">Learn how to manage your time effectively as a student and maximize productivity.</div>
+                        <div class="video-stats">
+                            <span><i class="fas fa-music"></i> Productivity Beats</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-actions">
+                    <div class="action-button" onclick="toggleLike(this)">
+                        <i class="far fa-heart"></i>
+                        <span>32.1K</span>
+                    </div>
+                    <div class="action-button" onclick="showComments()">
+                        <i class="far fa-comment"></i>
+                        <span>2.3K</span>
+                    </div>
+                    <div class="action-button" onclick="shareVideo()">
+                        <i class="far fa-share-square"></i>
+                        <span>4.8K</span>
+                    </div>
+                    <div class="action-button">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video 4: Career Guidance -->
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <i class="fas fa-briefcase"></i>
+                    <div class="placeholder-text">Career Guidance</div>
+                    <div class="placeholder-subtext">"The future depends on what you do today." - Mahatma Gandhi</div>
+                </div>
+                <div class="play-pause-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="video-overlay">
+                    <div class="creator-info">
+                        <div class="creator-avatar">CG</div>
+                        <div class="creator-name">@CareerGuide</div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Plan Your Career Path 🚀</div>
+                        <div class="video-description">Essential advice for students planning their future careers and professional development.</div>
+                        <div class="video-stats">
+                            <span><i class="fas fa-music"></i> Inspiring Melody</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-actions">
+                    <div class="action-button" onclick="toggleLike(this)">
+                        <i class="far fa-heart"></i>
+                        <span>41.3K</span>
+                    </div>
+                    <div class="action-button" onclick="showComments()">
+                        <i class="far fa-comment"></i>
+                        <span>3.1K</span>
+                    </div>
+                    <div class="action-button" onclick="shareVideo()">
+                        <i class="far fa-share-square"></i>
+                        <span>6.2K</span>
+                    </div>
+                    <div class="action-button">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>For You</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Discover</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-plus-square"></i>
+                <span>Upload</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-inbox"></i>
+                <span>Inbox</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoContainers = document.querySelectorAll('.video-container');
+            const videoFeed = document.getElementById('video-feed');
+            
+            // Auto-play simulation when video is in view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const container = entry.target;
+                    const playOverlay = container.querySelector('.play-pause-overlay');
+                    
+                    if (entry.isIntersecting) {
+                        // Video is in view - simulate playing
+                        container.style.background = '#000';
+                        playOverlay.innerHTML = '<i class="fas fa-pause"></i>';
+                        playOverlay.style.opacity = '0';
+                    } else {
+                        // Video is out of view - simulate pausing
+                        playOverlay.innerHTML = '<i class="fas fa-play"></i>';
+                        playOverlay.style.opacity = '0';
+                    }
+                });
+            }, { threshold: 0.7 });
+            
+            videoContainers.forEach(container => {
+                observer.observe(container);
+                
+                // Click to play/pause simulation
+                container.addEventListener('click', function(e) {
+                    if (!e.target.closest('.video-actions') && !e.target.closest('.follow-btn')) {
+                        const playOverlay = this.querySelector('.play-pause-overlay');
+                        if (playOverlay.style.opacity === '1') {
+                            playOverlay.style.opacity = '0';
+                            playOverlay.innerHTML = '<i class="fas fa-pause"></i>';
+                        } else {
+                            playOverlay.style.opacity = '1';
+                            setTimeout(() => {
+                                playOverlay.style.opacity = '0';
+                            }, 1000);
+                        }
+                    }
+                });
+            });
+            
+            // Double tap to like
+            videoContainers.forEach(container => {
+                let lastTap = 0;
+                container.addEventListener('touchend', function(e) {
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTap;
+                    if (tapLength < 500 && tapLength > 0) {
+                        // Double tap detected - like the video
+                        const likeButton = this.querySelector('.action-button');
+                        toggleLike(likeButton);
+                        
+                        // Show heart animation
+                        const heart = document.createElement('div');
+                        heart.innerHTML = '<i class="fas fa-heart" style="font-size: 80px; color: #FF0050;"></i>';
+                        heart.style.position = 'absolute';
+                        heart.style.top = '50%';
+                        heart.style.left = '50%';
+                        heart.style.transform = 'translate(-50%, -50%)';
+                        heart.style.zIndex = '30';
+                        heart.style.animation = 'like 0.8s ease-out';
+                        this.appendChild(heart);
+                        
+                        setTimeout(() => {
+                            heart.remove();
+                        }, 800);
+                    }
+                    lastTap = currentTime;
+                });
+            });
+        });
+
+        function toggleLike(button) {
+            const icon = button.querySelector('i');
+            const count = button.querySelector('span');
+            
+            if (icon.classList.contains('fas')) {
+                icon.classList.remove('fas', 'liked');
+                icon.classList.add('far');
+                let currentLikes = parseInt(count.textContent) || 0;
+                count.textContent = formatCount(currentLikes - 1);
+            } else {
+                icon.classList.remove('far');
+                icon.classList.add('fas', 'liked');
+                let currentLikes = parseInt(count.textContent) || 0;
+                count.textContent = formatCount(currentLikes + 1);
+            }
+        }
+
+        function showComments() {
+            alert("💬 Comments feature would open here!\n\nStudents could discuss:\n• Study tips\n• Questions about the content\n• Share their experiences");
+        }
+
+        function shareVideo() {
+            alert("📤 Share this motivational content with classmates!\n\nOptions:\n• Copy link\n• Share to classroom\n• Send to friends");
+        }
+
+        function formatCount(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Add smooth scrolling behavior
+        let isScrolling;
+        const videoFeed = document.getElementById('video-feed');
+        
+        videoFeed.addEventListener('scroll', function() {
+            window.clearTimeout(isScrolling);
+            isScrolling = setTimeout(function() {
+                // Snap to nearest video
+                const scrollTop = videoFeed.scrollTop;
+                const containerHeight = window.innerHeight;
+                const currentIndex = Math.round(scrollTop / containerHeight);
+                videoFeed.scrollTo({
+                    top: currentIndex * containerHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enhanced Mind Map + 3D Models</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --primary: #3aafa9;
+    --primary-dark: #2b7a78;
+    --secondary: #def2f1;
+    --accent: #fe5f55;
+    --text: #17252a;
+    --light: #ffffff;
+    --shadow: rgba(0, 0, 0, 0.1);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #e0f7f7 0%, #c8e6e6 100%);
+    margin: 0;
+    overflow: hidden;
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-header {
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 100;
+  }
+
+  .app-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .app-title i {
+    font-size: 1.8rem;
+  }
+
+  .app-controls {
+    display: flex;
+    gap: 15px;
+  }
+
+  .app-controls button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    padding: 8px 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .app-controls button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .app-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ui-panel {
+    width: 350px;
+    background: var(--light);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 15px var(--shadow);
+    z-index: 10;
+    overflow-y: auto;
+  }
+
+  .panel-section {
+    margin-bottom: 25px;
+  }
+
+  .panel-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    border-radius: 10px;
+    border: 2px solid var(--secondary);
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+  }
+
+  textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(58, 175, 169, 0.2);
+  }
+
+  .generate-btn {
+    background: var(--primary);
+    border: none;
+    border-radius: 10px;
+    color: var(--light);
+    font-weight: 600;
+    font-size: 16px;
+    padding: 14px 0;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(43, 122, 120, 0.4);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .generate-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(43, 122, 120, 0.5);
+  }
+
+  .generate-btn:active {
+    transform: translateY(-1px);
+  }
+
+  .theme-selector {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .theme-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .theme-option.active {
+    border-color: var(--text);
+    transform: scale(1.1);
+  }
+
+  .theme-blue { background: #3aafa9; }
+  .theme-green { background: #4caf50; }
+  .theme-purple { background: #9c27b0; }
+  .theme-orange { background: #ff9800; }
+
+  .mindmap-container {
+    flex: 1;
+    background: var(--light);
+    margin: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px var(--shadow);
+    overflow: hidden;
+    position: relative;
+    perspective: 1200px;
+  }
+
+  .mindmap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+  }
+
+  .node {
+    position: absolute;
+    padding: 14px 20px;
+    background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+    color: white;
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    user-select: none;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 5;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .node-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+  }
+
+  .node:hover {
+    transform: scale(1.15);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 10;
+  }
+
+  .node.active {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 12px 30px rgba(0,0,0,0.4);
+  }
+
+  .description-box {
+    width: 350px;
+    background: var(--light);
+    padding: 20px;
+    box-shadow: -4px 0 15px var(--shadow);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .description-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .description-header h3 {
+    color: var(--primary-dark);
+    font-size: 1.3rem;
+  }
+
+  .description-controls {
+    display: flex;
+    gap: 10px;
+  }
+
+  .desc-btn {
+    background: var(--secondary);
+    border: none;
+    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary-dark);
+    transition: all 0.2s ease;
+  }
+
+  .desc-btn:hover {
+    background: var(--primary);
+    color: white;
+  }
+
+  #descContent {
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex: 1;
+  }
+
+  .model-container {
+    height: 280px;
+    background: var(--light);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px var(--shadow);
+    perspective: 1400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+
+  .model {
+    width: 240px;
+    height: 240px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+    position: relative;
+  }
+
+  .dna-helix {
+    position: absolute;
+    width: 10px;
+    height: 200px;
+    background: repeating-linear-gradient(
+      45deg,
+      #1e90ff,
+      #1e90ff 8px,
+      #ff2d55 8px,
+      #ff2d55 16px
+    );
+    border-radius: 10px;
+    transform-origin: center;
+    animation: spinHelix 8s linear infinite;
+    top: 20px;
+    left: 115px;
+    box-shadow: 0 0 20px #1e90ffaa;
+  }
+
+  .dna-helix::before,
+  .dna-helix::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 200px;
+    background: repeating-linear-gradient(
+      -45deg,
+      #1e90ff,
+      #1e90ff 8px,
+      #ff2d55 8px,
+      #ff2d55 16px
+    );
+    border-radius: 10px;
+    left: -20px;
+    animation: spinHelix 6s linear infinite reverse;
+  }
+
+  .dna-helix::after {
+    left: 20px;
+    animation: spinHelix 10s linear infinite;
+  }
+
+  .heart {
+    width: 120px;
+    height: 110px;
+    background: #ff4d6d;
+    position: absolute;
+    transform: rotate(-45deg);
+    animation: heartbeat 1.2s ease-in-out infinite;
+    top: 65px;
+    left: 60px;
+    box-shadow: 0 0 25px #ff4d6daa;
+  }
+
+  .heart::before,
+  .heart::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 110px;
+    background: #ff4d6d;
+    border-radius: 60px 60px 0 0;
+  }
+
+  .heart::before {
+    top: -65px;
+    left: 0;
+  }
+
+  .heart::after {
+    left: 65px;
+    top: 0;
+  }
+
+  .digestive {
+    width: 180px;
+    height: 120px;
+    background: #ffcba4;
+    border-radius: 90px 20px 20px 90px;
+    position: absolute;
+    top: 60px;
+    left: 30px;
+    box-shadow: inset 0 0 30px #d97c4baa;
+    overflow: hidden;
+  }
+
+  .digestive::before {
+    content: "";
+    width: 40px;
+    height: 80px;
+    background: #b76b43;
+    position: absolute;
+    top: 20px;
+    left: 120px;
+    border-radius: 10px;
+  }
+
+  .digestive::after {
+    content: "";
+    width: 60px;
+    height: 60px;
+    background: #ff9d6c;
+    position: absolute;
+    border-radius: 50%;
+    top: 30px;
+    left: 30px;
+  }
+
+  .brain {
+    width: 160px;
+    height: 140px;
+    background: #c792ea;
+    position: absolute;
+    top: 50px;
+    left: 40px;
+    border-radius: 70% 30% 60% 40% / 50% 40% 60% 50%;
+    box-shadow: 
+      inset -10px -10px 20px rgba(0,0,0,0.1),
+      0 0 25px #c792eaaa;
+    animation: brainPulse 3s ease-in-out infinite;
+  }
+
+  .brain::before,
+  .brain::after {
+    content: "";
+    position: absolute;
+    background: #b380d4;
+    border-radius: 50%;
+  }
+
+  .brain::before {
+    width: 40px;
+    height: 40px;
+    top: 30px;
+    left: 30px;
+  }
+
+  .brain::after {
+    width: 30px;
+    height: 30px;
+    top: 70px;
+    left: 100px;
+  }
+
+  .lungs {
+    width: 180px;
+    height: 120px;
+    position: absolute;
+    top: 80px;
+    left: 30px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .lung-left,
+  .lung-right {
+    width: 80px;
+    height: 120px;
+    background: #a5d8ff;
+    border-radius: 40px 40px 60px 60px;
+    position: relative;
+    animation: breathe 4s ease-in-out infinite;
+  }
+
+  .lung-right {
+    animation-delay: 0.5s;
+  }
+
+  .lung-left::before,
+  .lung-right::before {
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 60px;
+    background: #74c0fc;
+    border-radius: 20px;
+    top: 30px;
+    left: 20px;
+  }
+
+  /* Lines */
+  .line {
+    position: absolute;
+    height: 3px;
+    background: linear-gradient(to right, transparent, var(--primary), transparent);
+    transform-origin: left center;
+    border-radius: 2px;
+    pointer-events: none;
+    box-shadow: 0 0 8px var(--primary);
+    z-index: 1;
+  }
+
+  /* Animations */
+  @keyframes spinHelix {
+    from {
+      transform: rotateY(0deg);
+    }
+    to {
+      transform: rotateY(360deg);
+    }
+  }
+
+  @keyframes heartbeat {
+    0%,
+    100% {
+      transform: scale(1) rotate(-45deg);
+    }
+    50% {
+      transform: scale(1.15) rotate(-45deg);
+    }
+  }
+
+  @keyframes brainPulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes breathe {
+    0%, 100% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(1.1);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .app-container {
+      flex-direction: column;
+    }
+    
+    .ui-panel, .description-box {
+      width: 100%;
+      height: auto;
+    }
+    
+    .mindmap-container {
+      margin: 10px;
+      min-height: 500px;
+    }
+    
+    .model-container {
+      height: 200px;
+    }
+  }
+
+  /* Notification */
+  .notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--primary);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: transform 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .notification.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Loading animation */
+  .loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+  <div class="app-header">
+    <div class="app-title">
+      <i>🧠</i>
+      <span>Enhanced Mind Map + 3D Models</span>
+    </div>
+    <div class="app-controls">
+      <button id="exportBtn">
+        <i>📤</i> Export
+      </button>
+      <button id="helpBtn">
+        <i>❓</i> Help
+      </button>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <div class="ui-panel">
+      <div class="panel-section">
+        <h3><i>📝</i> Your Notes</h3>
+        <textarea
+          id="fullNote"
+          placeholder="Write or paste your notes here... For example: 'DNA is the genetic material that carries instructions for development, functioning, and reproduction. The heart pumps blood through the circulatory system. The digestive system breaks down food for energy and nutrients. The brain controls thoughts, memory, and body functions. The lungs facilitate gas exchange between air and blood.'"
+        >DNA is the genetic material that carries instructions for development, functioning, and reproduction. The heart pumps blood through the circulatory system. The digestive system breaks down food for energy and nutrients. The brain controls thoughts, memory, and body functions. The lungs facilitate gas exchange between air and blood.</textarea>
+      </div>
+      
+      <div class="panel-section">
+        <h3><i>🎨</i> Theme</h3>
+        <div class="theme-selector">
+          <div class="theme-option theme-blue active" data-theme="blue"></div>
+          <div class="theme-option theme-green" data-theme="green"></div>
+          <div class="theme-option theme-purple" data-theme="purple"></div>
+          <div class="theme-option theme-orange" data-theme="orange"></div>
+        </div>
+      </div>
+      
+      <button class="generate-btn" onclick="generateMindMap()">
+        <i>✨</i> Generate Mind Map + Models
+      </button>
+    </div>
+
+    <div class="mindmap-container" id="mindmapContainer">
+      <div class="mindmap" id="mindmap">
+        <div class="node" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+          <div class="node-icon">🧠</div>
+          <div>Main Topic</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-box" id="descriptionBox">
+      <div class="description-header">
+        <h3 id="descTitle">Topic Details</h3>
+        <div class="description-controls">
+          <button class="desc-btn" id="speakBtn" title="Read Aloud">
+            <i>🔊</i>
+          </button>
+          <button class="desc-btn" id="copyBtn" title="Copy Text">
+            <i>📋</i>
+          </button>
+        </div>
+      </div>
+      <p id="descContent">Select a node from the mind map to see its description here. You can also listen to the description using the speaker button.</p>
+      
+      <div class="model-container" id="modelContainer">
+        <div class="model">
+          <div class="brain"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notification" id="notification">
+    <span id="notificationText">Message sent!</span>
+  </div>
+
+<script>
+  // Enhanced stop words list
+  const stopWords = [
+    "the", "is", "and", "of", "to", "in", "a", "with", "for", "on", "an", "at", "by", 
+    "this", "that", "it", "as", "from", "be", "are", "was", "were", "or", "but", "not",
+    "what", "which", "have", "has", "had", "will", "would", "could", "should", "can",
+    "may", "might", "must", "shall", "their", "there", "here", "when", "where", "who",
+    "whom", "how", "why", "all", "any", "both", "each", "few", "more", "most", "other",
+    "some", "such", "no", "nor", "only", "own", "same", "so", "than", "too", "very"
+  ];
+
+  // Theme data
+  const themes = {
+    blue: {
+      primary: "#3aafa9",
+      primaryDark: "#2b7a78",
+      secondary: "#def2f1",
+      accent: "#fe5f55",
+      text: "#17252a",
+      light: "#ffffff"
+    },
+    green: {
+      primary: "#4caf50",
+      primaryDark: "#388e3c",
+      secondary: "#c8e6c9",
+      accent: "#ff9800",
+      text: "#1b5e20",
+      light: "#ffffff"
+    },
+    purple: {
+      primary: "#9c27b0",
+      primaryDark: "#7b1fa2",
+      secondary: "#e1bee7",
+      accent: "#ffeb3b",
+      text: "#4a148c",
+      light: "#ffffff"
+    },
+    orange: {
+      primary: "#ff9800",
+      primaryDark: "#f57c00",
+      secondary: "#ffe0b2",
+      accent: "#2196f3",
+      text: "#e65100",
+      light: "#ffffff"
+    }
+  };
+
+  // Helper to capitalize first letter
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // Show notification
+  function showNotification(message, duration = 3000) {
+    const notification = document.getElementById("notification");
+    const notificationText = document.getElementById("notificationText");
+    
+    notificationText.textContent = message;
+    notification.classList.add("show");
+    
+    setTimeout(() => {
+      notification.classList.remove("show");
+    }, duration);
+  }
+
+  // Change theme
+  function changeTheme(themeName) {
+    const theme = themes[themeName];
+    document.documentElement.style.setProperty('--primary', theme.primary);
+    document.documentElement.style.setProperty('--primary-dark', theme.primaryDark);
+    document.documentElement.style.setProperty('--secondary', theme.secondary);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--text', theme.text);
+    document.documentElement.style.setProperty('--light', theme.light);
+    
+    // Update active theme indicator
+    document.querySelectorAll('.theme-option').forEach(option => {
+      option.classList.remove('active');
+    });
+    document.querySelector(`.theme-option.theme-${themeName}`).classList.add('active');
+  }
+
+  // Initialize theme selector
+  document.querySelectorAll('.theme-option').forEach(option => {
+    option.addEventListener('click', function() {
+      changeTheme(this.getAttribute('data-theme'));
+    });
+  });
+
+  // Generate mind map function
+  function generateMindMap() {
+    const note = document.getElementById("fullNote").value.trim();
+    if (!note) {
+      showNotification("Please enter your notes first.");
+      return;
+    }
+
+    const mindmap = document.getElementById("mindmap");
+    const mindmapContainer = document.getElementById("mindmapContainer");
+    mindmap.innerHTML = "";
+    
+    // Remove old lines
+    document.querySelectorAll(".line").forEach(line => line.remove());
+
+    document.getElementById("descriptionBox").style.display = "flex";
+    document.getElementById("modelContainer").innerHTML = '<div class="model"><div class="brain"></div></div>';
+
+    // Show loading state
+    const generateBtn = document.querySelector('.generate-btn');
+    const originalText = generateBtn.innerHTML;
+    generateBtn.innerHTML = '<div class="loading"></div> Generating...';
+    generateBtn.disabled = true;
+
+    // Simulate processing time for better UX
+    setTimeout(() => {
+      const wordFreq = {};
+      const sentences = note.match(/[^.!?]+[.!?]?/g) || [note];
+
+      sentences.forEach((sentence) => {
+        const words = sentence.toLowerCase().match(/\b\w+\b/g);
+        if (words) {
+          words.forEach((word) => {
+            if (!stopWords.includes(word) && word.length > 2) {
+              if (!wordFreq[word]) wordFreq[word] = { count: 0, sentences: [] };
+              wordFreq[word].count++;
+              wordFreq[word].sentences.push(sentence.trim());
+            }
+          });
+        }
+      });
+
+      const sortedWords = Object.keys(wordFreq)
+        .sort((a, b) => wordFreq[b].count - wordFreq[a].count)
+        .slice(0, 6);
+
+      // Center node
+      const centerX = mindmapContainer.clientWidth / 2;
+      const centerY = mindmapContainer.clientHeight / 2;
+
+      // Create center main node
+      const mainNode = document.createElement("div");
+      mainNode.className = "node";
+      mainNode.innerHTML = '<div class="node-icon">🧠</div><div>Main Topic</div>';
+      mainNode.style.left = centerX - 60 + "px";
+      mainNode.style.top = centerY - 30 + "px";
+      mainNode.addEventListener("click", () => {
+        document.getElementById("descTitle").textContent = "Main Topic";
+        document.getElementById("descContent").textContent = "This is the central topic of your mind map. Click on other nodes to learn more about specific topics.";
+        document.getElementById("modelContainer").innerHTML = '<div class="model"><div class="brain"></div></div>';
+        
+        // Set active node
+        document.querySelectorAll('.node').forEach(node => node.classList.remove('active'));
+        mainNode.classList.add('active');
+      });
+      mindmap.appendChild(mainNode);
+
+      // Draw outer topic nodes + lines
+      const radius = Math.min(mindmapContainer.clientWidth, mindmapContainer.clientHeight) * 0.3;
+      const angleStep = (2 * Math.PI) / sortedWords.length;
+
+      sortedWords.forEach((topic, i) => {
+        const angle = i * angleStep;
+        const x = centerX + radius * Math.cos(angle) - 60;
+        const y = centerY + radius * Math.sin(angle) - 30;
+
+        const node = document.createElement("div");
+        node.className = "node";
+        node.style.left = x + "px";
+        node.style.top = y + "px";
+        
+        // Select icon based on topic
+        let icon = "📌";
+        if (topic.includes("dna")) icon = "🧬";
+        else if (topic.includes("heart")) icon = "❤️";
+        else if (topic.includes("digest")) icon = "🫀";
+        else if (topic.includes("brain")) icon = "🧠";
+        else if (topic.includes("lung")) icon = "🫁";
+        
+        node.innerHTML = `<div class="node-icon">${icon}</div><div>${capitalize(topic)}</div>`;
+        node.addEventListener("click", () =>
+          showDescription(topic, wordFreq[topic].sentences.join(" "), icon)
+        );
+        mindmap.appendChild(node);
+
+        drawLine(mainNode, node, mindmapContainer);
+      });
+
+      // Reset button
+      generateBtn.innerHTML = originalText;
+      generateBtn.disabled = false;
+      
+      showNotification("Mind map generated successfully!");
+    }, 1000);
+  }
+
+  // Draw a line connecting two nodes inside container
+  function drawLine(n1, n2, container) {
+    const r1 = n1.getBoundingClientRect();
+    const r2 = n2.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    const x1 = r1.left + r1.width / 2 - containerRect.left;
+    const y1 = r1.top + r1.height / 2 - containerRect.top;
+    const x2 = r2.left + r2.width / 2 - containerRect.left;
+    const y2 = r2.top + r2.height / 2 - containerRect.top;
+
+    const length = Math.hypot(x2 - x1, y2 - y1);
+    const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+    const line = document.createElement("div");
+    line.className = "line";
+    line.style.width = length + "px";
+    line.style.left = x1 + "px";
+    line.style.top = y1 + "px";
+    line.style.transform = `rotate(${angle}deg)`;
+    container.appendChild(line);
+  }
+
+  // Show description and 3D model
+  function showDescription(title, content, icon) {
+    document.getElementById("descTitle").textContent = capitalize(title);
+    document.getElementById("descContent").textContent = content;
+    document.getElementById("descriptionBox").style.display = "flex";
+
+    const container = document.getElementById("modelContainer");
+    container.innerHTML = "";
+    const modelDiv = document.createElement("div");
+    modelDiv.className = "model";
+
+    // Set active node
+    document.querySelectorAll('.node').forEach(node => node.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    if (title.includes("dna")) {
+      const dna = document.createElement("div");
+      dna.className = "dna-helix";
+      modelDiv.appendChild(dna);
+    } else if (title.includes("heart")) {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      modelDiv.appendChild(heart);
+    } else if (title.includes("digest")) {
+      const digestive = document.createElement("div");
+      digestive.className = "digestive";
+      modelDiv.appendChild(digestive);
+    } else if (title.includes("brain")) {
+      const brain = document.createElement("div");
+      brain.className = "brain";
+      modelDiv.appendChild(brain);
+    } else if (title.includes("lung")) {
+      const lungs = document.createElement("div");
+      lungs.className = "lungs";
+      lungs.innerHTML = '<div class="lung-left"></div><div class="lung-right"></div>';
+      modelDiv.appendChild(lungs);
+    } else {
+      modelDiv.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; height:100%; font-size:48px;">${icon}</div>`;
+    }
+
+    container.appendChild(modelDiv);
+  }
+
+  // Text-to-speech functionality
+  document.getElementById("speakBtn").addEventListener("click", function() {
+    const content = document.getElementById("descContent").textContent;
+    const title = document.getElementById("descTitle").textContent;
+    
+    if ("speechSynthesis" in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(`${title}. ${content}`);
+      utterance.lang = "en-US";
+      utterance.rate = 0.9;
+      
+      // Change button appearance during speech
+      this.innerHTML = '<i>⏹️</i>';
+      this.style.background = "var(--accent)";
+      
+      utterance.onend = () => {
+        this.innerHTML = '<i>🔊</i>';
+        this.style.background = "";
+      };
+      
+      window.speechSynthesis.speak(utterance);
+    } else {
+      showNotification("Text-to-speech is not supported in your browser.");
+    }
+  });
+
+  // Copy text functionality
+  document.getElementById("copyBtn").addEventListener("click", function() {
+    const content = document.getElementById("descContent").textContent;
+    const title = document.getElementById("descTitle").textContent;
+    const textToCopy = `${title}\n\n${content}`;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      showNotification("Description copied to clipboard!");
+    }).catch(err => {
+      showNotification("Failed to copy text.");
+    });
+  });
+
+  // Export functionality
+  document.getElementById("exportBtn").addEventListener("click", function() {
+    showNotification("Export feature would be implemented in a full version.");
+  });
+
+  // Help functionality
+  document.getElementById("helpBtn").addEventListener("click", function() {
+    showNotification("Enter your notes and click 'Generate' to create a mind map. Click on nodes to see details and 3D models.");
+  });
+
+  // Initialize with sample data
+  window.onload = function() {
+    // Set default theme
+    changeTheme('blue');
+    
+    // Show welcome notification
+    setTimeout(() => {
+      showNotification("Welcome! Enter your notes and click 'Generate' to create your mind map.");
+    }, 1000);
+  };
+</script>
+</body>
+</html>

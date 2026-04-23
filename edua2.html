@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audio to Smart Notes - Learning Assistant</title>
+  <style>
+    /* Your existing CSS remains the same */
+    :root {
+      --primary: #3498db;
+      --primary-dark: #2980b9;
+      --secondary: #2ecc71;
+      --secondary-dark: #27ae60;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --text: #34495e;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    h1 {
+      color: var(--dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .subtitle {
+      color: var(--primary-dark);
+      font-size: 1.1rem;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .app-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card h2 {
+      color: var(--primary-dark);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: var(--secondary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #e67e22;
+      transform: translateY(-2px);
+    }
+
+    .btn-small {
+      padding: 8px 15px;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border: 2px solid var(--light);
+      border-radius: 8px;
+      font-size: 16px;
+      resize: vertical;
+      transition: border-color 0.3s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: var(--light);
+    }
+
+    .status-recording {
+      background: #ffeaa7;
+      color: #e17055;
+    }
+
+    .status-processing {
+      background: #a29bfe;
+      color: white;
+    }
+
+    .status-ready {
+      background: #55efc4;
+      color: #00b894;
+    }
+
+    .visualizer {
+      height: 100px;
+      background: var(--dark);
+      border-radius: 8px;
+      margin: 15px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .visualizer-bar {
+      position: absolute;
+      bottom: 0;
+      width: 8px;
+      background: var(--primary);
+      border-radius: 4px 4px 0 0;
+      transition: height 0.1s;
+    }
+
+    .summary-section {
+      margin-top: 15px;
+    }
+
+    .summary-section h3 {
+      margin-bottom: 10px;
+      color: var(--primary-dark);
+    }
+
+    .summary-box {
+      background: #f8f9fa;
+      border-left: 4px solid var(--primary);
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 15px;
+    }
+
+    .questions-container {
+      margin-top: 15px;
+    }
+
+    .question {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--secondary);
+    }
+
+    .options {
+      margin-top: 10px;
+    }
+
+    .option {
+      padding: 8px 12px;
+      margin: 5px 0;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .option:hover {
+      background: #e9ecef;
+    }
+
+    .option.correct {
+      background: #d4edda;
+      border-left: 4px solid var(--secondary);
+    }
+
+    .option.incorrect {
+      background: #f8d7da;
+      border-left: 4px solid var(--danger);
+    }
+
+    .highlight {
+      background: #fff9c4;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .key-terms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .term {
+      background: var(--primary);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+
+    .transcript-container {
+      position: relative;
+    }
+
+    .transcript-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--light);
+      border-radius: 3px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .timer {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+      color: var(--primary-dark);
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      background: var(--dark);
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .feature {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px var(--shadow);
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎤 Audio to Smart Notes</h1>
+      <p class="subtitle">Learning Assistant for Hearing-Impaired Students</p>
+    </header>
+
+    <div class="app-grid">
+      <!-- Recording Section -->
+      <div class="card">
+        <h2>🎙️ Audio Recording</h2>
+        
+        <div class="controls">
+          <button class="btn-primary" id="startRecording">
+            <span>▶️ Start Recording</span>
+          </button>
+          <button class="btn-danger" id="stopRecording" disabled>
+            <span>⏹️ Stop</span>
+          </button>
+          <button class="btn-warning" id="pauseRecording" disabled>
+            <span>⏸️ Pause</span>
+          </button>
+        </div>
+
+        <div class="status" id="recordingStatus">
+          <div>🔴</div>
+          <div>Ready to record</div>
+        </div>
+
+        <div class="timer" id="timer">00:00</div>
+
+        <div class="visualizer" id="visualizer">
+          <!-- Audio bars will be generated here -->
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress" id="progress"></div>
+        </div>
+
+        <button class="btn-secondary" id="uploadAudio">
+          <span>📁 Upload Audio File</span>
+        </button>
+        <input type="file" id="fileInput" accept="audio/*" style="display: none;">
+      </div>
+
+      <!-- Transcript Section -->
+      <div class="card transcript-container">
+        <h2>📝 Live Transcript</h2>
+        
+        <textarea id="transcript" placeholder="Transcript will appear here as you speak..."></textarea>
+        
+        <div class="transcript-controls">
+          <button class="btn-primary btn-small" id="clearTranscript">
+            <span>🗑️ Clear</span>
+          </button>
+          <button class="btn-secondary btn-small" id="copyTranscript">
+            <span>📋 Copy</span>
+          </button>
+          <button class="btn-warning btn-small" id="highlightKeyTerms">
+            <span>🔍 Highlight Terms</span>
+          </button>
+        </div>
+
+        <div class="key-terms" id="keyTerms">
+          <!-- Key terms will appear here -->
+        </div>
+      </div>
+
+      <!-- Summary Section -->
+      <div class="card">
+        <h2>📊 Smart Summary</h2>
+        
+        <button class="btn-primary" id="generateSummary">
+          <span>✨ Generate Summary</span>
+        </button>
+        
+        <div class="summary-section">
+          <h3>Key Points</h3>
+          <div class="summary-box" id="keyPoints">
+            Summary will appear here...
+          </div>
+          
+          <h3>Study Notes</h3>
+          <div class="summary-box" id="studyNotes">
+            Study notes will appear here...
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions Section -->
+      <div class="card">
+        <h2>❓ Comprehension Questions</h2>
+        
+        <button class="btn-primary" id="generateQuestions">
+          <span>🎯 Generate Questions</span>
+        </button>
+        
+        <div class="questions-container" id="questionsContainer">
+          <!-- Questions will be generated here -->
+        </div>
+      </div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">👂</div>
+        <h3>Real-time Transcription</h3>
+        <p>Converts speech to text as you listen to lectures</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📚</div>
+        <h3>Smart Summarization</h3>
+        <p>Extracts key points and creates study notes</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🧠</div>
+        <h3>Comprehension Testing</h3>
+        <p>Generates questions to test understanding</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <h3>Key Term Extraction</h3>
+        <p>Identifies and highlights important concepts</p>
+      </div>
+    </div>
+
+    <footer>
+      <p>Audio to Smart Notes - Designed to support hearing-impaired students and enhance learning for all</p>
+    </footer>
+  </div>
+
+  <div class="notification" id="notification">
+    <!-- Notifications will appear here -->
+  </div>
+
+  <script>
+    // DOM Elements
+    const startRecordingBtn = document.getElementById('startRecording');
+    const stopRecordingBtn = document.getElementById('stopRecording');
+    const pauseRecordingBtn = document.getElementById('pauseRecording');
+    const uploadAudioBtn = document.getElementById('uploadAudio');
+    const fileInput = document.getElementById('fileInput');
+    const transcript = document.getElementById('transcript');
+    const clearTranscriptBtn = document.getElementById('clearTranscript');
+    const copyTranscriptBtn = document.getElementById('copyTranscript');
+    const highlightKeyTermsBtn = document.getElementById('highlightKeyTerms');
+    const generateSummaryBtn = document.getElementById('generateSummary');
+    const generateQuestionsBtn = document.getElementById('generateQuestions');
+    const keyPoints = document.getElementById('keyPoints');
+    const studyNotes = document.getElementById('studyNotes');
+    const questionsContainer = document.getElementById('questionsContainer');
+    const keyTerms = document.getElementById('keyTerms');
+    const recordingStatus = document.getElementById('recordingStatus');
+    const timer = document.getElementById('timer');
+    const progress = document.getElementById('progress');
+    const visualizer = document.getElementById('visualizer');
+    const notification = document.getElementById('notification');
+
+    // State variables
+    let recognition;
+    let isRecording = false;
+    let isPaused = false;
+    let recordingTime = 0;
+    let timerInterval;
+    let audioContext;
+    let analyser;
+    let dataArray;
+    let bufferLength;
+    let bars = [];
+    let lastProcessedIndex = 0; // Track the last processed result index
+
+    // Initialize audio visualizer bars
+    function initVisualizer() {
+      visualizer.innerHTML = '';
+      bars = [];
+      const barCount = 40;
+      
+      for (let i = 0; i < barCount; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'visualizer-bar';
+        bar.style.left = `${(i / barCount) * 100}%`;
+        bar.style.height = '0px';
+        visualizer.appendChild(bar);
+        bars.push(bar);
+      }
+    }
+
+    // Update visualizer with audio data
+    function updateVisualizer() {
+      if (!analyser) return;
+      
+      analyser.getByteFrequencyData(dataArray);
+      
+      for (let i = 0; i < bufferLength; i++) {
+        const value = dataArray[i];
+        const bar = bars[i];
+        if (bar) {
+          const height = Math.max(2, value / 2);
+          bar.style.height = `${height}%`;
+        }
+      }
+      
+      if (isRecording && !isPaused) {
+        requestAnimationFrame(updateVisualizer);
+      }
+    }
+
+    // Show notification
+    function showNotification(message, duration = 3000) {
+      notification.textContent = message;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, duration);
+    }
+
+    // Format time as MM:SS
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Start timer
+    function startTimer() {
+      recordingTime = 0;
+      timer.textContent = formatTime(recordingTime);
+      
+      timerInterval = setInterval(() => {
+        if (!isPaused) {
+          recordingTime++;
+          timer.textContent = formatTime(recordingTime);
+          
+          // Update progress (simulated)
+          const progressPercent = Math.min(100, (recordingTime / 600) * 100);
+          progress.style.width = `${progressPercent}%`;
+        }
+      }, 1000);
+    }
+
+    // Stop timer
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timer.textContent = '00:00';
+      progress.style.width = '0%';
+    }
+
+    // Initialize speech recognition
+    function initSpeechRecognition() {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = function() {
+          isRecording = true;
+          lastProcessedIndex = 0; // Reset the index when starting new recording
+          startRecordingBtn.disabled = true;
+          stopRecordingBtn.disabled = false;
+          pauseRecordingBtn.disabled = false;
+          recordingStatus.innerHTML = '<div class="pulse">🔴</div><div>Recording in progress...</div>';
+          recordingStatus.className = 'status status-recording';
+          startTimer();
+          initVisualizer();
+          
+          // Initialize audio context for visualizer
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          bufferLength = analyser.frequencyBinCount;
+          dataArray = new Uint8Array(bufferLength);
+          
+          // In a real app, we would connect the microphone to the analyser
+          // For this demo, we'll simulate the visualizer
+          updateVisualizer();
+        };
+        
+        recognition.onresult = function(event) {
+          let finalTranscript = '';
+          let interimTranscript = '';
+          
+          // Process only new results since the last processed index
+          for (let i = lastProcessedIndex; i < event.results.length; i++) {
+            const result = event.results[i];
+            const transcriptText = result[0].transcript;
+            
+            if (result.isFinal) {
+              finalTranscript += transcriptText + ' ';
+            } else {
+              interimTranscript += transcriptText;
+            }
+          }
+          
+          // Update last processed index
+          lastProcessedIndex = event.results.length;
+          
+          // Get current transcript text
+          let currentTranscript = transcript.value;
+          
+          // Remove any existing interim results (text without punctuation)
+          currentTranscript = currentTranscript.replace(/[^.!?]*$/, '');
+          
+          // Add final results
+          if (finalTranscript) {
+            currentTranscript += finalTranscript;
+          }
+          
+          // Add interim results if any
+          if (interimTranscript) {
+            currentTranscript += interimTranscript;
+          }
+          
+          // Update the transcript
+          transcript.value = currentTranscript;
+          
+          // Auto-scroll to bottom
+          transcript.scrollTop = transcript.scrollHeight;
+        };
+        
+        recognition.onerror = function(event) {
+          console.error('Speech recognition error', event.error);
+          showNotification(`Recognition error: ${event.error}`, 5000);
+          stopRecording();
+        };
+        
+        recognition.onend = function() {
+          if (isRecording && !isPaused) {
+            // If recording wasn't manually stopped, restart (for continuous recording)
+            recognition.start();
+          }
+        };
+      } else {
+        showNotification('Speech recognition is not supported in this browser. Please use Chrome or Edge.', 5000);
+      }
+    }
+
+    // Start recording
+    function startRecording() {
+      if (!recognition) {
+        initSpeechRecognition();
+      }
+      
+      try {
+        recognition.start();
+      } catch (error) {
+        console.error('Error starting recognition:', error);
+        showNotification('Error starting recording. Please try again.', 3000);
+      }
+    }
+
+    // Stop recording
+    function stopRecording() {
+      if (recognition) {
+        recognition.stop();
+      }
+      
+      isRecording = false;
+      isPaused = false;
+      startRecordingBtn.disabled = false;
+      stopRecordingBtn.disabled = true;
+      pauseRecordingBtn.disabled = true;
+      recordingStatus.innerHTML = '<div>✅</div><div>Recording stopped</div>';
+      recordingStatus.className = 'status status-ready';
+      stopTimer();
+    }
+
+    // Pause/resume recording
+    function togglePauseRecording() {
+      if (!isRecording) return;
+      
+      if (isPaused) {
+        // Resume recording
+        recognition.start();
+        isPaused = false;
+        pauseRecordingBtn.innerHTML = '<span>⏸️ Pause</span>';
+        recordingStatus.innerHTML = '<div class="pulse">🔴</div><div>Recording in progress...</div>';
+        recordingStatus.className = 'status status-recording';
+      } else {
+        // Pause recording
+        recognition.stop();
+        isPaused = true;
+        pauseRecordingBtn.innerHTML = '<span>▶️ Resume</span>';
+        recordingStatus.innerHTML = '<div>⏸️</div><div>Recording paused</div>';
+        recordingStatus.className = 'status';
+      }
+    }
+
+    // Upload audio file
+    function uploadAudioFile() {
+      fileInput.click();
+    }
+
+    // Handle file selection
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        showNotification(`Audio file "${file.name}" selected. Processing...`, 3000);
+        // In a real app, you would process the audio file here
+        // For this demo, we'll just show a message
+        setTimeout(() => {
+          showNotification('Audio file processed. Transcript would appear here in a full implementation.', 4000);
+        }, 2000);
+      }
+    });
+
+    // Clear transcript
+    function clearTranscript() {
+      transcript.value = '';
+      keyTerms.innerHTML = '';
+      lastProcessedIndex = 0; // Reset the index when clearing transcript
+    }
+
+    // Copy transcript to clipboard
+    function copyTranscript() {
+      if (!transcript.value.trim()) {
+        showNotification('No transcript to copy', 2000);
+        return;
+      }
+      
+      transcript.select();
+      document.execCommand('copy');
+      showNotification('Transcript copied to clipboard', 2000);
+    }
+
+    // Extract and highlight key terms
+    function highlightKeyTerms() {
+      const text = transcript.value;
+      if (!text.trim()) {
+        showNotification('No transcript to analyze', 2000);
+        return;
+      }
+      
+      // Simple algorithm to find potential key terms (nouns and capitalized words)
+      const words = text.split(/\s+/);
+      const keyWords = [];
+      const seen = new Set();
+      
+      // Look for capitalized words and longer words that might be important
+      words.forEach(word => {
+        const cleanWord = word.replace(/[.,!?;:()]/g, '');
+        if (cleanWord.length > 4 && 
+            (cleanWord[0] === cleanWord[0].toUpperCase() || cleanWord.length > 6) &&
+            !seen.has(cleanWord.toLowerCase())) {
+          keyWords.push(cleanWord);
+          seen.add(cleanWord.toLowerCase());
+        }
+      });
+      
+      // Limit to top 10 terms
+      const topTerms = keyWords.slice(0, 10);
+      
+      // Display key terms
+      keyTerms.innerHTML = '';
+      topTerms.forEach(term => {
+        const termEl = document.createElement('div');
+        termEl.className = 'term';
+        termEl.textContent = term;
+        keyTerms.appendChild(termEl);
+      });
+      
+      // Highlight terms in transcript (simplified)
+      let highlightedText = text;
+      topTerms.forEach(term => {
+        const regex = new RegExp(`\\b${term}\\b`, 'gi');
+        highlightedText = highlightedText.replace(regex, `<span class="highlight">${term}</span>`);
+      });
+      
+      // Create a temporary element to hold the HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = highlightedText;
+      
+      // Update transcript with highlights (readonly mode)
+      const originalScroll = transcript.scrollTop;
+      transcript.innerHTML = tempDiv.innerHTML;
+      transcript.style.whiteSpace = 'pre-wrap';
+      transcript.setAttribute('contenteditable', 'true');
+      
+      // Restore scroll position
+      transcript.scrollTop = originalScroll;
+      
+      showNotification(`Found ${topTerms.length} key terms`, 2000);
+    }
+
+    // Generate summary
+    function generateSummary() {
+      const text = transcript.value;
+      if (!text.trim()) {
+        showNotification('No transcript to summarize', 2000);
+        return;
+      }
+      
+      showNotification('Generating summary...', 2000);
+      
+      // Simple summarization algorithm
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      
+      // Extract key points (first, middle, and last sentences)
+      const midIndex = Math.floor(sentences.length / 2);
+      const keyPointsText = [
+        sentences[0],
+        sentences.length > 2 ? sentences[midIndex] : '',
+        sentences.length > 1 ? sentences[sentences.length - 1] : ''
+      ].filter(s => s.trim()).join(' ');
+      
+      // Generate study notes (simplified)
+      const studyNotesText = `
+        <strong>Main Topic:</strong> ${sentences[0]}<br><br>
+        <strong>Key Concepts:</strong><br>
+        • ${sentences.length > 1 ? sentences[1] : 'No additional concepts identified'}<br>
+        • ${sentences.length > 2 ? sentences[2] : ''}<br><br>
+        <strong>Conclusion:</strong> ${sentences.length > 1 ? sentences[sentences.length - 1] : 'No conclusion identified'}
+      `;
+      
+      // Update the UI
+      keyPoints.textContent = keyPointsText;
+      studyNotes.innerHTML = studyNotesText;
+      
+      showNotification('Summary generated successfully', 2000);
+    }
+
+    // Generate questions
+    function generateQuestions() {
+      const text = transcript.value;
+      if (!text.trim()) {
+        showNotification('No transcript to generate questions from', 2000);
+        return;
+      }
+      
+      showNotification('Generating questions...', 2000);
+      
+      // Simple question generation algorithm
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      
+      questionsContainer.innerHTML = '';
+      
+      if (sentences.length < 3) {
+        questionsContainer.innerHTML = '<p>Not enough content to generate questions. Please record more audio.</p>';
+        return;
+      }
+      
+      // Generate a few sample questions
+      const questions = [
+        {
+          question: "What is the main topic discussed?",
+          options: [
+            sentences[0],
+            sentences[Math.floor(sentences.length/2)],
+            "Something completely different",
+            "The topic wasn't clearly stated"
+          ],
+          correct: 0
+        },
+        {
+          question: "Which of these points was mentioned?",
+          options: [
+            sentences[1] || "First point",
+            sentences[2] || "Second point",
+            "A point that wasn't mentioned",
+            "None of the above"
+          ],
+          correct: Math.min(1, sentences.length-1)
+        },
+        {
+          question: "How does the speaker conclude?",
+          options: [
+            sentences[sentences.length-1],
+            "With a question",
+            "With a summary of key points",
+            "The conclusion isn't clear"
+          ],
+          correct: 0
+        }
+      ];
+      
+      // Display questions
+      questions.forEach((q, index) => {
+        const questionEl = document.createElement('div');
+        questionEl.className = 'question';
+        
+        let optionsHTML = '';
+        q.options.forEach((option, optIndex) => {
+          optionsHTML += `
+            <div class="option" data-correct="${optIndex === q.correct}">
+              ${String.fromCharCode(65 + optIndex)}. ${option}
+            </div>
+          `;
+        });
+        
+        questionEl.innerHTML = `
+          <h3>${index + 1}. ${q.question}</h3>
+          <div class="options">${optionsHTML}</div>
+        `;
+        
+        questionsContainer.appendChild(questionEl);
+      });
+      
+      // Add event listeners to options
+      document.querySelectorAll('.option').forEach(option => {
+        option.addEventListener('click', function() {
+          const isCorrect = this.getAttribute('data-correct') === 'true';
+          const allOptions = this.parentElement.querySelectorAll('.option');
+          
+          // Show correct/incorrect feedback
+          allOptions.forEach(opt => {
+            opt.classList.remove('correct', 'incorrect');
+            if (opt.getAttribute('data-correct') === 'true') {
+              opt.classList.add('correct');
+            }
+          });
+          
+          if (!isCorrect) {
+            this.classList.add('incorrect');
+          }
+          
+          showNotification(isCorrect ? 'Correct! 🎉' : 'Incorrect. Try again!', 2000);
+        });
+      });
+      
+      showNotification('Questions generated successfully', 2000);
+    }
+
+    // Event listeners
+    startRecordingBtn.addEventListener('click', startRecording);
+    stopRecordingBtn.addEventListener('click', stopRecording);
+    pauseRecordingBtn.addEventListener('click', togglePauseRecording);
+    uploadAudioBtn.addEventListener('click', uploadAudioFile);
+    clearTranscriptBtn.addEventListener('click', clearTranscript);
+    copyTranscriptBtn.addEventListener('click', copyTranscript);
+    highlightKeyTermsBtn.addEventListener('click', highlightKeyTerms);
+    generateSummaryBtn.addEventListener('click', generateSummary);
+    generateQuestionsBtn.addEventListener('click', generateQuestions);
+
+    // Initialize the app
+    initVisualizer();
+    showNotification('Welcome! Click "Start Recording" to begin transcribing audio.', 4000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Study & Workout Quiz - Fixed</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary: #facc15;
+      --success: #4ade80;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --gray: #94a3b8;
+      --bg-gradient: linear-gradient(135deg, #c3dbf9, #e0f0ff);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--dark);
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    
+    h1 {
+      color: var(--primary);
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+    
+    .subtitle {
+      color: var(--dark);
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .stat-item {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--dark);
+    }
+    
+    .setup-area {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+      color: var(--dark);
+    }
+    
+    select, textarea, button, input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1.5px solid var(--primary);
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    
+    select:focus, textarea:focus, button:focus, input:focus {
+      outline: none;
+      border-color: var(--primary-dark);
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+    
+    button {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+    }
+    
+    button:hover:not(:disabled) {
+      background-color: var(--primary-dark);
+    }
+    
+    button:disabled {
+      background-color: var(--gray);
+      cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary);
+      color: var(--dark);
+    }
+    
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #eab308;
+    }
+    
+    .question-box {
+      background: white;
+      padding: 20px;
+      margin: 15px 0;
+      border-left: 6px solid var(--primary);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    
+    .option {
+      margin: 8px 8px 8px 0;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #93c5fd;
+      color: var(--dark);
+      font-weight: 600;
+      transition: all 0.3s ease;
+      user-select: none;
+      display: inline-block;
+    }
+    
+    .option:hover:not(:disabled) {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .correct {
+      background-color: var(--success) !important;
+      color: #14532d !important;
+      font-weight: 700;
+    }
+    
+    .wrong {
+      background-color: var(--danger) !important;
+      color: #7f1d1d !important;
+      font-weight: 700;
+    }
+    
+    .summary, .review {
+      background: #e0e7ff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 6px rgba(99, 102, 241, 0.3);
+      margin-top: 20px;
+      line-height: 1.5;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 14px;
+      background-color: #cbd5e1;
+      border-radius: 7px;
+      margin-top: 20px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: var(--primary);
+      border-radius: 7px;
+      transition: width 0.6s ease;
+    }
+    
+    .rank-display {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-top: 10px;
+      text-align: center;
+      color: var(--primary);
+    }
+    
+    .game-area {
+      margin-top: 25px;
+      text-align: center;
+    }
+    
+    .coin-btn {
+      background-color: var(--secondary);
+      border: none;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      font-size: 2.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(250, 204, 21, 0.7);
+      transition: transform 0.2s ease;
+      user-select: none;
+    }
+    
+    .coin-btn:active {
+      transform: scale(0.9);
+    }
+    
+    .coin-count {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #a16207;
+      margin-top: 10px;
+    }
+    
+    .achievements {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .achievement {
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    
+    .achievement.unlocked {
+      opacity: 1;
+    }
+    
+    .achievement-icon {
+      font-size: 1.5rem;
+    }
+    
+    .achievement-text {
+      font-size: 0.9rem;
+    }
+    
+    .streak-counter {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .streak-fire {
+      color: #f97316;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .workout-timer {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 15px 0;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    
+    .timer-display {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 10px 0;
+    }
+    
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .timer-btn {
+      width: auto;
+      padding: 8px 15px;
+    }
+    
+    .workout-exercise {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 15px 0;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    
+    .exercise-title {
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    
+    .exercise-description {
+      margin-bottom: 15px;
+    }
+    
+    .exercise-video {
+      width: 100%;
+      max-width: 400px;
+      height: 225px;
+      background: #e2e8f0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      color: var(--gray);
+    }
+    
+    .exercise-counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .counter-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+    
+    .counter-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      min-width: 50px;
+      text-align: center;
+    }
+    
+    .leaderboard {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    
+    .leaderboard-title {
+      color: var(--primary);
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .leaderboard-list {
+      list-style: none;
+    }
+    
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .leaderboard-item:last-child {
+      border-bottom: none;
+    }
+    
+    .leaderboard-rank {
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .leaderboard-name {
+      flex: 1;
+      margin-left: 10px;
+    }
+    
+    .leaderboard-score {
+      font-weight: 700;
+    }
+    
+    .tab-container {
+      margin-top: 20px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e2e8f0;
+      flex-wrap: wrap;
+    }
+    
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      background: #f1f5f9;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      margin-right: 5px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .tab-content {
+      display: none;
+      padding: 20px;
+      background: white;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .mistake-item {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid var(--danger);
+    }
+    
+    .mistake-subject {
+      font-weight: 700;
+      color: var(--danger);
+      margin-bottom: 5px;
+    }
+    
+    .mistake-question {
+      margin-bottom: 8px;
+    }
+    
+    .mistake-answer {
+      color: var(--success);
+      font-weight: 600;
+    }
+    
+    .subject-filter {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .subject-filter button {
+      width: auto;
+      padding: 8px 15px;
+    }
+    
+    .subject-filter button.active {
+      background: var(--primary-dark);
+    }
+    
+    .flashcard {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin: 20px 0;
+      text-align: center;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    
+    .flashcard:hover {
+      transform: translateY(-5px);
+    }
+    
+    .flashcard-front, .flashcard-back {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .flashcard-back {
+      display: none;
+      color: var(--primary);
+    }
+    
+    .flashcard.flipped .flashcard-front {
+      display: none;
+    }
+    
+    .flashcard.flipped .flashcard-back {
+      display: block;
+    }
+    
+    .flashcard-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .flashcard-controls button {
+      width: auto;
+      padding: 8px 15px;
+    }
+    
+    .study-timer {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    
+    .timer-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: conic-gradient(var(--primary) 0%, #e2e8f0 0%);
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .timer-circle-inner {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .focus-mode {
+      background: rgba(0, 0, 0, 0.8);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    
+    .focus-question {
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+      text-align: center;
+      max-width: 80%;
+    }
+    
+    .focus-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 80%;
+      max-width: 500px;
+    }
+    
+    .focus-option {
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.3s ease;
+    }
+    
+    .focus-option:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .exit-focus {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 768px) {
+      .stats-bar {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .exercise-counter {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Smart Study & Workout Quiz</h1>
+      <p class="subtitle">Combine learning with physical activity for better retention</p>
+      <div class="streak-counter">
+        <span class="streak-fire">🔥</span>
+        <span id="streakCount">0 day streak</span>
+      </div>
+    </header>
+    
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-value" id="totalQuizzes">0</div>
+        <div class="stat-label">Quizzes Taken</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="avgScore">0%</div>
+        <div class="stat-label">Average Score</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalCoins">0</div>
+        <div class="stat-label">Coins Earned</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="achievementsCount">0/5</div>
+        <div class="stat-label">Achievements</div>
+      </div>
+    </div>
+    
+    <div class="setup-area">
+      <div class="form-group">
+        <label for="subjectSelect">Select Subject:</label>
+        <select id="subjectSelect">
+          <option value="" disabled selected>-- Choose Subject --</option>
+          <option value="general">General</option>
+          <option value="math">Math</option>
+          <option value="physics">Physics</option>
+          <option value="chemistry">Chemistry</option>
+          <option value="biology">Biology</option>
+          <option value="english">English</option>
+          <option value="history">History</option>
+          <option value="geography">Geography</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="noteInput">Paste your study note here:</label>
+        <textarea id="noteInput" rows="8" placeholder="Enter notes relevant to selected subject..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="modeSelect">Select Quiz Mode:</label>
+        <select id="modeSelect">
+          <option value="choose">Choose Form (MCQ)</option>
+          <option value="workout">Workout Form (Write Answer)</option>
+          <option value="mixed">Mixed Mode</option>
+          <option value="flashcards">Flashcards</option>
+        </select>
+      </div>
+      
+      <button id="generateBtn">Generate Quiz</button>
+      <button class="btn-secondary" id="focusModeBtn">Enter Focus Mode</button>
+    </div>
+    
+    <div class="progress-container">
+      <div id="fillBar" class="progress-bar"></div>
+    </div>
+    <div id="rank" class="rank-display"></div>
+    
+    <div class="tab-container">
+      <div class="tabs">
+        <button class="tab active" data-tab="summary">Summary</button>
+        <button class="tab" data-tab="quiz">Quiz</button>
+        <button class="tab" data-tab="workout">Workout</button>
+        <button class="tab" data-tab="mistakes">My Mistakes</button>
+        <button class="tab" data-tab="flashcards">Flashcards</button>
+        <button class="tab" data-tab="achievements">Achievements</button>
+        <button class="tab" data-tab="leaderboard">Leaderboard</button>
+      </div>
+      
+      <div id="summary" class="tab-content active">
+        <h3>🔍 Smart Summary</h3>
+        <div id="summaryContent" class="summary"></div>
+        
+        <div class="study-timer">
+          <h3>⏱️ Study Timer</h3>
+          <div class="timer-circle" id="studyTimerCircle">
+            <div class="timer-circle-inner" id="studyTimerDisplay">25:00</div>
+          </div>
+          <div class="timer-controls">
+            <button class="timer-btn" id="startStudyTimer">Start</button>
+            <button class="timer-btn" id="pauseStudyTimer">Pause</button>
+            <button class="timer-btn" id="resetStudyTimer">Reset</button>
+          </div>
+          <p>Set a timer for focused study sessions. Take breaks between sessions!</p>
+        </div>
+      </div>
+      
+      <div id="quiz" class="tab-content">
+        <h3>🧠 Smart Quiz Area</h3>
+        <div id="quizArea"></div>
+      </div>
+      
+      <div id="workout" class="tab-content">
+        <h3>💪 Workout Questions</h3>
+        <div id="workoutQuestions"></div>
+        <button id="submitWorkout" style="display:none;">Submit Workout Answers</button>
+        <div id="workoutScore" class="summary"></div>
+        <div id="workoutReview" class="review"></div>
+        
+        <div class="workout-timer hidden" id="workoutTimer">
+          <h3>⏱️ Workout Timer</h3>
+          <div class="timer-display" id="timerDisplay">05:00</div>
+          <div class="timer-controls">
+            <button class="timer-btn" id="startTimer">Start</button>
+            <button class="timer-btn" id="pauseTimer">Pause</button>
+            <button class="timer-btn" id="resetTimer">Reset</button>
+          </div>
+        </div>
+        
+        <div id="physicalWorkout" class="hidden">
+          <h3>🏃 Physical Workout Challenge</h3>
+          <div class="workout-exercise">
+            <h4 class="exercise-title">Desk Stretches</h4>
+            <p class="exercise-description">Perform these stretches to relieve tension and improve circulation.</p>
+            <div class="exercise-video">Exercise Video Placeholder</div>
+            <div class="exercise-counter">
+              <button class="counter-btn" id="decreaseReps">-</button>
+              <div class="counter-value" id="repCount">10</div>
+              <button class="counter-btn" id="increaseReps">+</button>
+            </div>
+            <button class="btn-secondary" id="completeExercise">Mark as Completed</button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="mistakes" class="tab-content">
+        <h3>📝 My Mistakes</h3>
+        <p>Review and learn from your previous mistakes organized by subject.</p>
+        
+        <div class="subject-filter" id="mistakeFilter">
+          <button class="active" data-filter="all">All Subjects</button>
+          <!-- Subject filters will be added dynamically -->
+        </div>
+        
+        <div id="mistakesList">
+          <!-- Mistakes will be populated here -->
+        </div>
+        
+        <button class="btn-secondary" id="quizFromMistakes">Quiz Me on My Mistakes</button>
+      </div>
+      
+      <div id="flashcards" class="tab-content">
+        <h3>📇 Smart Flashcards</h3>
+        <p>Review key concepts with interactive flashcards.</p>
+        
+        <div class="flashcard" id="flashcard">
+          <div class="flashcard-front" id="flashcardFront">Click to generate flashcards</div>
+          <div class="flashcard-back" id="flashcardBack"></div>
+        </div>
+        
+        <div class="flashcard-controls">
+          <button id="prevFlashcard">Previous</button>
+          <button id="nextFlashcard">Next</button>
+          <button id="shuffleFlashcards">Shuffle</button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 15px;">
+          <span id="flashcardProgress">0/0</span>
+        </div>
+      </div>
+      
+      <div id="achievements" class="tab-content">
+        <h3>🏆 Achievements</h3>
+        <div class="achievements">
+          <div class="achievement" id="achievement1">
+            <div class="achievement-icon">📚</div>
+            <div class="achievement-text">First Quiz: Complete your first quiz</div>
+          </div>
+          <div class="achievement" id="achievement2">
+            <div class="achievement-icon">🎯</div>
+            <div class="achievement-text">Accuracy Master: Score 90% or higher</div>
+          </div>
+          <div class="achievement" id="achievement3">
+            <div class="achievement-icon">💪</div>
+            <div class="achievement-text">Workout Warrior: Complete a workout session</div>
+          </div>
+          <div class="achievement" id="achievement4">
+            <div class="achievement-icon">🔥</div>
+            <div class="achievement-text">Streak Builder: Maintain a 3-day streak</div>
+          </div>
+          <div class="achievement" id="achievement5">
+            <div class="achievement-icon">🏅</div>
+            <div class="achievement-text">Quiz Champion: Complete 10 quizzes</div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="leaderboard" class="tab-content">
+        <h3 class="leaderboard-title">🏅 Leaderboard</h3>
+        <ul class="leaderboard-list" id="leaderboardList">
+          <!-- Leaderboard items will be populated by JavaScript -->
+        </ul>
+      </div>
+    </div>
+    
+    <div id="review" class="review hidden">
+      <h3>🔁 Review Incorrect Answers</h3>
+      <div id="reviewContent"></div>
+    </div>
+    
+    <div id="gameArea" class="game-area"></div>
+    
+    <div id="focusMode" class="focus-mode hidden">
+      <button class="exit-focus" id="exitFocus">✕</button>
+      <div class="focus-question" id="focusQuestion"></div>
+      <div class="focus-options" id="focusOptions"></div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let wrongAnswers = [];
+    let score = 0;
+    let totalQuizzes = 0;
+    let totalScore = 0;
+    let coins = 0;
+    let streak = 0;
+    let lastQuizDate = null;
+    let achievements = {
+      firstQuiz: false,
+      accuracyMaster: false,
+      workoutWarrior: false,
+      streakBuilder: false,
+      quizChampion: false
+    };
+    
+    // Mistake tracking by subject
+    let mistakesBySubject = {};
+    
+    // Flashcards
+    let flashcards = [];
+    let currentFlashcardIndex = 0;
+    
+    // Timer variables
+    let timerInterval;
+    let timerSeconds = 300; // 5 minutes
+    let studyTimerInterval;
+    let studyTimerSeconds = 1500; // 25 minutes
+    
+    // DOM elements
+    const subjectSelect = document.getElementById('subjectSelect');
+    const noteInput = document.getElementById('noteInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const focusModeBtn = document.getElementById('focusModeBtn');
+    const exitFocusBtn = document.getElementById('exitFocus');
+    const focusMode = document.getElementById('focusMode');
+    
+    // Initialize the app
+    function initApp() {
+      loadUserData();
+      updateStats();
+      updateAchievementsDisplay();
+      populateLeaderboard();
+      checkEnableButton();
+      initializeStudyTimer();
+      updateMistakesDisplay();
+      
+      // Add event listeners
+      subjectSelect.addEventListener('change', checkEnableButton);
+      noteInput.addEventListener('input', checkEnableButton);
+      generateBtn.addEventListener('click', generateQuiz);
+      focusModeBtn.addEventListener('click', enterFocusMode);
+      exitFocusBtn.addEventListener('click', exitFocusMode);
+      
+      // Tab navigation
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => openTab(tab.dataset.tab));
+      });
+      
+      // Timer functionality
+      document.getElementById('startTimer').addEventListener('click', startTimer);
+      document.getElementById('pauseTimer').addEventListener('click', pauseTimer);
+      document.getElementById('resetTimer').addEventListener('click', resetTimer);
+      
+      // Workout functionality
+      document.getElementById('submitWorkout').addEventListener('click', checkWorkoutAnswers);
+      document.getElementById('decreaseReps').addEventListener('click', () => changeRepCount(-1));
+      document.getElementById('increaseReps').addEventListener('click', () => changeRepCount(1));
+      document.getElementById('completeExercise').addEventListener('click', completeExercise);
+      
+      // Flashcards functionality
+      document.getElementById('flashcard').addEventListener('click', flipFlashcard);
+      document.getElementById('prevFlashcard').addEventListener('click', prevFlashcard);
+      document.getElementById('nextFlashcard').addEventListener('click', nextFlashcard);
+      document.getElementById('shuffleFlashcards').addEventListener('click', shuffleFlashcards);
+      
+      // Mistakes functionality
+      document.getElementById('quizFromMistakes').addEventListener('click', generateQuizFromMistakes);
+    }
+    
+    // Load user data from localStorage
+    function loadUserData() {
+      const savedData = localStorage.getItem('smartQuizData');
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        totalQuizzes = data.totalQuizzes || 0;
+        totalScore = data.totalScore || 0;
+        coins = data.coins || 0;
+        streak = data.streak || 0;
+        lastQuizDate = data.lastQuizDate || null;
+        achievements = data.achievements || achievements;
+        mistakesBySubject = data.mistakesBySubject || {};
+        
+        // Update streak based on last quiz date
+        updateStreak();
+      }
+    }
+    
+    // Save user data to localStorage
+    function saveUserData() {
+      const data = {
+        totalQuizzes,
+        totalScore,
+        coins,
+        streak,
+        lastQuizDate,
+        achievements,
+        mistakesBySubject
+      };
+      localStorage.setItem('smartQuizData', JSON.stringify(data));
+    }
+    
+    // Update streak counter
+    function updateStreak() {
+      const today = new Date().toDateString();
+      const streakElem = document.getElementById('streakCount');
+      
+      if (lastQuizDate === today) {
+        // Already completed a quiz today
+        streakElem.textContent = `${streak} day streak`;
+        return;
+      }
+      
+      if (lastQuizDate) {
+        const lastDate = new Date(lastQuizDate);
+        const todayDate = new Date();
+        const diffTime = Math.abs(todayDate - lastDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+          // Consecutive day
+          streak++;
+        } else if (diffDays > 1) {
+          // Broken streak
+          streak = 1;
+        }
+      } else {
+        // First time
+        streak = 1;
+      }
+      
+      lastQuizDate = today;
+      streakElem.textContent = `${streak} day streak`;
+      checkAchievements();
+      saveUserData();
+    }
+    
+    // Update statistics display
+    function updateStats() {
+      document.getElementById('totalQuizzes').textContent = totalQuizzes;
+      document.getElementById('avgScore').textContent = totalQuizzes > 0 ? 
+        Math.round(totalScore / totalQuizzes) + '%' : '0%';
+      document.getElementById('totalCoins').textContent = coins;
+      
+      const unlockedCount = Object.values(achievements).filter(a => a).length;
+      document.getElementById('achievementsCount').textContent = `${unlockedCount}/5`;
+    }
+    
+    // Check and unlock achievements
+    function checkAchievements() {
+      // First Quiz
+      if (totalQuizzes >= 1 && !achievements.firstQuiz) {
+        achievements.firstQuiz = true;
+        showNotification("Achievement Unlocked: First Quiz! 📚");
+      }
+      
+      // Accuracy Master (checked after each quiz)
+      
+      // Workout Warrior (checked after workout completion)
+      
+      // Streak Builder
+      if (streak >= 3 && !achievements.streakBuilder) {
+        achievements.streakBuilder = true;
+        showNotification("Achievement Unlocked: Streak Builder! 🔥");
+      }
+      
+      // Quiz Champion
+      if (totalQuizzes >= 10 && !achievements.quizChampion) {
+        achievements.quizChampion = true;
+        showNotification("Achievement Unlocked: Quiz Champion! 🏅");
+      }
+      
+      updateAchievementsDisplay();
+      saveUserData();
+    }
+    
+    // Update achievements display
+    function updateAchievementsDisplay() {
+      document.getElementById('achievement1').classList.toggle('unlocked', achievements.firstQuiz);
+      document.getElementById('achievement2').classList.toggle('unlocked', achievements.accuracyMaster);
+      document.getElementById('achievement3').classList.toggle('unlocked', achievements.workoutWarrior);
+      document.getElementById('achievement4').classList.toggle('unlocked', achievements.streakBuilder);
+      document.getElementById('achievement5').classList.toggle('unlocked', achievements.quizChampion);
+    }
+    
+    // Show notification
+    function showNotification(message) {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        border-left: 4px solid var(--primary);
+        max-width: 300px;
+      `;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          document.body.removeChild(notification);
+        }
+      }, 3000);
+    }
+    
+    // Populate leaderboard
+    function populateLeaderboard() {
+      const leaderboardData = [
+        { name: "Quiz Master", score: 98, quizzes: 15 },
+        { name: "Study Pro", score: 95, quizzes: 12 },
+        { name: "Brainiac", score: 92, quizzes: 8 },
+        { name: "Knowledge Seeker", score: 88, quizzes: 10 },
+        { name: "Curious Mind", score: 85, quizzes: 6 }
+      ];
+      
+      const leaderboardList = document.getElementById('leaderboardList');
+      leaderboardList.innerHTML = '';
+      
+      leaderboardData.forEach((user, index) => {
+        const item = document.createElement('li');
+        item.className = 'leaderboard-item';
+        item.innerHTML = `
+          <span class="leaderboard-rank">#${index + 1}</span>
+          <span class="leaderboard-name">${user.name}</span>
+          <span class="leaderboard-score">${user.score}%</span>
+        `;
+        leaderboardList.appendChild(item);
+      });
+    }
+    
+    // Tab navigation
+    function openTab(tabName) {
+      // Hide all tab content
+      const tabContents = document.getElementsByClassName('tab-content');
+      for (let i = 0; i < tabContents.length; i++) {
+        tabContents[i].classList.remove('active');
+      }
+      
+      // Remove active class from all tabs
+      const tabs = document.getElementsByClassName('tab');
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+      }
+      
+      // Show the specific tab content
+      document.getElementById(tabName).classList.add('active');
+      
+      // Add active class to the button that opened the tab
+      document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+      
+      // Special handling for certain tabs
+      if (tabName === 'mistakes') {
+        updateMistakesDisplay();
+      } else if (tabName === 'flashcards') {
+        generateFlashcards();
+      }
+    }
+    
+    // Check if generate button should be enabled
+    function checkEnableButton() {
+      generateBtn.disabled = !subjectSelect.value || !noteInput.value.trim();
+    }
+    
+    // Extract words from text
+    function extractWords(text) {
+      return [...new Set(text.toLowerCase().match(/\b\w{4,}\b/g) || [])];
+    }
+    
+    // Get sentences from text
+    function getSentences(text) {
+      return text.match(/[^.!?]+[.!?]/g) || [text];
+    }
+    
+    // Shuffle array
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+    
+    // Generate MCQ
+    function generateMCQ(sentence, noteWords) {
+      const keywords = sentence.match(/\b\w{5,}\b/g);
+      if (!keywords || keywords.length === 0) return null;
+      const correct = keywords[Math.floor(Math.random() * keywords.length)];
+      const distractors = noteWords.filter(w => w !== correct);
+      shuffleArray(distractors);
+      const options = [correct, ...distractors.slice(0, 3)];
+      shuffleArray(options);
+
+      const whTypes = ['What', 'Which', 'Fill'];
+      const whType = whTypes[Math.floor(Math.random() * whTypes.length)];
+
+      const qText = sentence.replace(new RegExp(`\\b${correct}\\b`, 'gi'), '_____');
+      const prefix = whType === 'Fill' ? '' : `${whType} is `;
+
+      return {
+        q: prefix + qText,
+        options,
+        correct
+      };
+    }
+    
+    // Generate workout questions
+    function generateWorkout() {
+      const text = noteInput.value;
+      const lines = getSentences(text);
+      const container = document.getElementById("workoutQuestions");
+      const submitBtn = document.getElementById("submitWorkout");
+      container.innerHTML = "";
+      submitBtn.style.display = "none";
+      document.getElementById("workoutScore").innerHTML = "";
+      document.getElementById("workoutReview").innerHTML = "";
+
+      const workoutLines = lines.filter(line => /\d+/.test(line));
+      if (workoutLines.length === 0) {
+        container.innerHTML = "<i>No valid workout questions found in the notes.</i>";
+        return;
+      }
+
+      workoutLines.forEach((line, i) => {
+        const numbers = [...line.matchAll(/\d+(\.\d+)?/g)];
+        if (!numbers.length) return;
+
+        const originalNum = numbers[0][0];
+        const randomChange = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 10 + 1);
+        const newNum = (parseFloat(originalNum) + randomChange).toFixed(2);
+        const questionText = line.replace(originalNum, newNum);
+        const hint = lines[Math.max(0, i - 1)] + " " + lines[Math.min(i + 1, lines.length - 1)];
+
+        const box = document.createElement("div");
+        box.className = "question-box";
+        box.innerHTML = `
+          <b>Q${i + 1} (Workout):</b> ${questionText}
+          <textarea data-answer="${line}" rows="2" placeholder="Write your answer..."></textarea>
+          <br><button class="show-hint">💡 Show Hint</button>
+          <div class="hint-text" style="display:none;margin-top:5px;color:#475569;"><i>${hint}</i></div>
+        `;
+        container.appendChild(box);
+      });
+
+      // Add event listeners for hint buttons
+      document.querySelectorAll('.show-hint').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.nextElementSibling.style.display = 'block';
+        });
+      });
+
+      submitBtn.style.display = "block";
+    }
+    
+    // Generate quiz
+    function generateQuiz() {
+      document.getElementById("quizArea").innerHTML = "";
+      document.getElementById("review").classList.add("hidden");
+      document.getElementById("workoutQuestions").innerHTML = "";
+      document.getElementById("fillBar").style.width = "0%";
+      document.getElementById("rank").innerHTML = "";
+      document.getElementById("gameArea").innerHTML = "";
+      document.getElementById("physicalWorkout").classList.add("hidden");
+      document.getElementById("workoutTimer").classList.add("hidden");
+      wrongAnswers = [];
+      score = 0;
+
+      const notes = noteInput.value.trim();
+      const mode = document.getElementById("modeSelect").value;
+      const subject = document.getElementById("subjectSelect").value;
+      
+      if (!notes) {
+        alert("Please paste some notes!");
+        return;
+      }
+
+      const noteWords = extractWords(notes);
+      const sentences = getSentences(notes);
+      summarizeNotes(notes, subject);
+
+      if (mode === "workout") {
+        generateWorkout();
+        openTab('workout');
+        return;
+      } else if (mode === "mixed") {
+        generateMixedQuiz(sentences, noteWords, subject);
+        openTab('quiz');
+        return;
+      } else if (mode === "flashcards") {
+        generateFlashcards();
+        openTab('flashcards');
+        return;
+      }
+
+      let questions = sentences.map(s => generateMCQ(s, noteWords)).filter(Boolean);
+      shuffleArray(questions);
+
+      if (questions.length === 0) {
+        alert("Not enough data to generate questions.");
+        return;
+      }
+
+      let answeredCount = 0;
+
+      questions.forEach((qObj, idx) => {
+        const box = document.createElement("div");
+        box.className = "question-box";
+        box.innerHTML = `<b>Q${idx + 1}:</b> ${qObj.q}<br/>`;
+
+        qObj.options.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.className = "option";
+          btn.textContent = opt;
+          btn.addEventListener('click', function() {
+            if (btn.disabled) return;
+            if (opt === qObj.correct) {
+              btn.classList.add("correct");
+              score++;
+            } else {
+              btn.classList.add("wrong");
+              wrongAnswers.push({ q: qObj.q, correct: qObj.correct, subject: subject });
+              
+              // Save mistake by subject
+              if (!mistakesBySubject[subject]) {
+                mistakesBySubject[subject] = [];
+              }
+              mistakesBySubject[subject].push({
+                question: qObj.q,
+                correctAnswer: qObj.correct,
+                date: new Date().toLocaleDateString()
+              });
+            }
+            const siblings = btn.parentNode.querySelectorAll("button.option");
+            siblings.forEach(b => b.disabled = true);
+
+            answeredCount++;
+            updateProgress(score, answeredCount, questions.length);
+
+            if (answeredCount === questions.length) {
+              finishQuiz(score, questions.length, subject);
+            }
+          });
+          box.appendChild(btn);
+        });
+        document.getElementById("quizArea").appendChild(box);
+      });
+      
+      openTab('quiz');
+    }
+    
+    // Generate mixed quiz (MCQ + workout)
+    function generateMixedQuiz(sentences, noteWords, subject) {
+      const container = document.getElementById("quizArea");
+      container.innerHTML = "";
+      
+      let mcqQuestions = sentences.map(s => generateMCQ(s, noteWords)).filter(Boolean);
+      shuffleArray(mcqQuestions);
+      mcqQuestions = mcqQuestions.slice(0, Math.ceil(mcqQuestions.length / 2));
+      
+      const workoutLines = sentences.filter(line => /\d+/.test(line));
+      shuffleArray(workoutLines);
+      const workoutQuestions = workoutLines.slice(0, Math.ceil(workoutLines.length / 2));
+      
+      if (mcqQuestions.length === 0 && workoutQuestions.length === 0) {
+        alert("Not enough data to generate questions.");
+        return;
+      }
+      
+      let questionCount = 0;
+      let answeredCount = 0;
+      
+      // Add MCQ questions
+      mcqQuestions.forEach((qObj, idx) => {
+        questionCount++;
+        const box = document.createElement("div");
+        box.className = "question-box";
+        box.innerHTML = `<b>Q${questionCount}:</b> ${qObj.q}<br/>`;
+
+        qObj.options.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.className = "option";
+          btn.textContent = opt;
+          btn.addEventListener('click', function() {
+            if (btn.disabled) return;
+            if (opt === qObj.correct) {
+              btn.classList.add("correct");
+              score++;
+            } else {
+              btn.classList.add("wrong");
+              wrongAnswers.push({ q: qObj.q, correct: qObj.correct, subject: subject });
+              
+              // Save mistake by subject
+              if (!mistakesBySubject[subject]) {
+                mistakesBySubject[subject] = [];
+              }
+              mistakesBySubject[subject].push({
+                question: qObj.q,
+                correctAnswer: qObj.correct,
+                date: new Date().toLocaleDateString()
+              });
+            }
+            const siblings = btn.parentNode.querySelectorAll("button.option");
+            siblings.forEach(b => b.disabled = true);
+
+            answeredCount++;
+            updateProgress(score, answeredCount, questionCount);
+
+            if (answeredCount === questionCount) {
+              finishQuiz(score, questionCount, subject);
+            }
+          });
+          box.appendChild(btn);
+        });
+        container.appendChild(box);
+      });
+      
+      // Add workout questions
+      workoutQuestions.forEach((line, idx) => {
+        questionCount++;
+        const numbers = [...line.matchAll(/\d+(\.\d+)?/g)];
+        if (!numbers.length) return;
+
+        const originalNum = numbers[0][0];
+        const randomChange = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 10 + 1);
+        const newNum = (parseFloat(originalNum) + randomChange).toFixed(2);
+        const questionText = line.replace(originalNum, newNum);
+        const hint = sentences[Math.max(0, sentences.indexOf(line) - 1)] + " " + 
+                     sentences[Math.min(sentences.indexOf(line) + 1, sentences.length - 1)];
+
+        const box = document.createElement("div");
+        box.className = "question-box";
+        box.innerHTML = `
+          <b>Q${questionCount} (Workout):</b> ${questionText}
+          <textarea data-answer="${line}" rows="2" placeholder="Write your answer..."></textarea>
+          <br><button class="show-hint">💡 Show Hint</button>
+          <div class="hint-text" style="display:none;margin-top:5px;color:#475569;"><i>${hint}</i></div>
+          <div id="feedback${questionCount}" style="margin-top:5px;"></div>
+        `;
+        container.appendChild(box);
+      });
+
+      // Add event listeners for hint buttons and textareas
+      document.querySelectorAll('.show-hint').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.nextElementSibling.style.display = 'block';
+        });
+      });
+
+      document.querySelectorAll('#quizArea textarea').forEach((textarea, i) => {
+        textarea.addEventListener('input', function() {
+          checkWorkoutAnswer(this, i + mcqQuestions.length + 1);
+        });
+      });
+    }
+    
+    // Check individual workout answer
+    function checkWorkoutAnswer(textarea, questionNum) {
+      const user = textarea.value.trim().replace(/\s+/g, ' ');
+      const expected = textarea.dataset.answer.trim().replace(/\s+/g, ' ');
+      const feedback = document.getElementById(`feedback${questionNum}`);
+      
+      if (user.toLowerCase() === expected.toLowerCase()) {
+        textarea.style.border = "2px solid #22c55e";
+        if (feedback) feedback.innerHTML = "<span style='color:#22c55e'>✓ Correct!</span>";
+        score++;
+      } else if (user.length > 0) {
+        textarea.style.border = "2px solid #ef4444";
+        if (feedback) feedback.innerHTML = "<span style='color:#ef4444'>✗ Incorrect</span>";
+      } else {
+        textarea.style.border = "1.5px solid #3b82f6";
+        if (feedback) feedback.innerHTML = "";
+      }
+    }
+    
+    // Check workout answers
+    function checkWorkoutAnswers() {
+      const answers = document.querySelectorAll('#workoutQuestions textarea');
+      let correct = 0;
+      const wrong = [];
+
+      answers.forEach((area, i) => {
+        const user = area.value.trim().replace(/\s+/g, ' ');
+        const expected = area.dataset.answer.trim().replace(/\s+/g, ' ');
+        if (user.toLowerCase() === expected.toLowerCase()) {
+          area.style.border = "2px solid #22c55e";
+          correct++;
+        } else {
+          area.style.border = "2px solid #ef4444";
+          wrong.push({ i: i + 1, correct: expected, user });
+        }
+        area.disabled = true;
+      });
+
+      const percent = (correct / answers.length) * 100;
+      document.getElementById("workoutScore").innerHTML = `
+        <b>Workout Score:</b> ${correct} / ${answers.length} (${percent.toFixed(1)}%)<br>
+        ${percent === 100 ? "🏆 Perfect!" : percent > 75 ? "🎉 Great job!" : "📘 Keep improving!"}
+      `;
+
+      const review = document.getElementById("workoutReview");
+      review.innerHTML = wrong.length
+        ? `<b>Incorrect Answers:</b><br>${wrong.map(w =>
+          `<b>Q${w.i}</b><br>✅ ${w.correct}<br>❌ ${w.user || "<i>Blank</i>"}<br>`
+        ).join("<br>")}`
+        : "<b>All answers correct. 💯</b>";
+      
+      finishWorkout(correct, answers.length);
+    }
+    
+    // Finish workout session
+    function finishWorkout(correct, total) {
+      const percent = (correct / total) * 100;
+      
+      // Update stats
+      totalQuizzes++;
+      totalScore += percent;
+      updateStats();
+      
+      // Check achievements
+      if (percent >= 90 && !achievements.accuracyMaster) {
+        achievements.accuracyMaster = true;
+        showNotification("Achievement Unlocked: Accuracy Master! 🎯");
+      }
+      
+      if (!achievements.workoutWarrior) {
+        achievements.workoutWarrior = true;
+        showNotification("Achievement Unlocked: Workout Warrior! 💪");
+      }
+      
+      // Show physical workout if score is high enough
+      if (percent >= 90) {
+        document.getElementById("physicalWorkout").classList.remove("hidden");
+        document.getElementById("workoutTimer").classList.remove("hidden");
+        showNotification("Great job! You've unlocked a physical workout challenge! 🏃");
+      }
+      
+      checkAchievements();
+      saveUserData();
+    }
+    
+    // Finish quiz
+    function finishQuiz(correct, total, subject) {
+      const percent = (correct / total) * 100;
+      
+      // Update stats
+      totalQuizzes++;
+      totalScore += percent;
+      updateStats();
+      updateStreak();
+      
+      showReview();
+      showFinalRank(correct, total);
+      
+      // Check achievements
+      if (percent >= 90 && !achievements.accuracyMaster) {
+        achievements.accuracyMaster = true;
+        showNotification("Achievement Unlocked: Accuracy Master! 🎯");
+      }
+      
+      // Show coin game if score is high enough
+      if (percent >= 90) {
+        showCoinGame();
+      }
+      
+      checkAchievements();
+      saveUserData();
+    }
+    
+    // Update progress bar
+    function updateProgress(score, total, max) {
+      const percent = (total / max) * 100;
+      document.getElementById("fillBar").style.width = percent + "%";
+    }
+    
+    // Show final rank
+    function showFinalRank(score, max) {
+      const percent = (score / max) * 100;
+      const rankElem = document.getElementById("rank");
+      let rankText = "";
+
+      if (percent === 100) rankText = "🏆 Perfect! Expert Level";
+      else if (percent >= 90) rankText = "🎉 Excellent! Advanced Level";
+      else if (percent >= 75) rankText = "👍 Good! Intermediate Level";
+      else if (percent >= 50) rankText = "🙂 Fair! Beginner Level";
+      else rankText = "😕 Keep Practicing!";
+
+      rankElem.textContent = `Rank: ${rankText} (${score} / ${max})`;
+    }
+    
+    // Show review of incorrect answers
+    function showReview() {
+      const reviewElem = document.getElementById("reviewContent");
+      reviewElem.innerHTML = "";
+      document.getElementById("review").classList.remove("hidden");
+      
+      if (wrongAnswers.length === 0) {
+        reviewElem.innerHTML = "<b>All correct! Great job! 🎉</b>";
+        return;
+      }
+
+      reviewElem.innerHTML = "<h4>Review Incorrect Answers:</h4>";
+      wrongAnswers.forEach((item, i) => {
+        const div = document.createElement("div");
+        div.innerHTML = `<b>Q${i + 1}:</b> ${item.q} <br><b>✔ Correct Answer:</b> ${item.correct}`;
+        reviewElem.appendChild(div);
+      });
+    }
+    
+    // Summarize notes
+    function summarizeNotes(text, subject) {
+      const sentences = getSentences(text);
+      const summary = sentences.slice(0, 5).map((s, i) => {
+        const keyword = s.match(/\b\w{5,}\b/);
+        return keyword ? `<b>${keyword[0]}</b>: ${s}` : s;
+      }).join("<br/>");
+      
+      const subjectTitle = subject.charAt(0).toUpperCase() + subject.slice(1);
+      document.getElementById('summaryContent').innerHTML = `
+        <h4>${subjectTitle} Summary</h4>
+        <p>${summary}</p>
+        <p><b>Key Concepts:</b> ${extractWords(text).slice(0, 10).join(', ')}</p>
+      `;
+    }
+    
+    // Show coin game
+    function showCoinGame() {
+      const gameArea = document.getElementById("gameArea");
+      gameArea.innerHTML = `
+        <h3>🎮 Bonus: Collect 10 coins to celebrate your score!</h3>
+        <button class="coin-btn" id="coinBtn" title="Click to collect coin 🪙">🪙</button>
+        <div>Coins collected: <span id="coinCount">0</span></div>
+      `;
+
+      let collectedCoins = 0;
+      const coinBtn = document.getElementById("coinBtn");
+      const coinCount = document.getElementById("coinCount");
+
+      coinBtn.addEventListener("click", () => {
+        collectedCoins++;
+        coins++;
+        coinCount.textContent = collectedCoins;
+        coinBtn.style.transform = 'scale(1.2)';
+        setTimeout(() => coinBtn.style.transform = '', 150);
+
+        if (collectedCoins >= 10) {
+          alert("🎊 Congrats! You collected all 10 coins!");
+          coinBtn.disabled = true;
+          coinBtn.textContent = "✔️ Done!";
+          updateStats();
+          saveUserData();
+        }
+      });
+    }
+    
+    // Timer functionality
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+      document.getElementById('startTimer').disabled = true;
+      document.getElementById('pauseTimer').disabled = false;
+    }
+    
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      document.getElementById('startTimer').disabled = false;
+      document.getElementById('pauseTimer').disabled = true;
+    }
+    
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerSeconds = 300;
+      updateTimerDisplay();
+      document.getElementById('startTimer').disabled = false;
+      document.getElementById('pauseTimer').disabled = true;
+    }
+    
+    function updateTimer() {
+      timerSeconds--;
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerSeconds = 0;
+        showNotification("Time's up! Great workout! 🏃");
+      }
+      updateTimerDisplay();
+    }
+    
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timerSeconds / 60);
+      const seconds = timerSeconds % 60;
+      document.getElementById('timerDisplay').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    // Study timer functionality
+    function initializeStudyTimer() {
+      document.getElementById('startStudyTimer').addEventListener('click', startStudyTimer);
+      document.getElementById('pauseStudyTimer').addEventListener('click', pauseStudyTimer);
+      document.getElementById('resetStudyTimer').addEventListener('click', resetStudyTimer);
+      updateStudyTimerDisplay();
+    }
+    
+    function startStudyTimer() {
+      clearInterval(studyTimerInterval);
+      studyTimerInterval = setInterval(updateStudyTimer, 1000);
+      document.getElementById('startStudyTimer').disabled = true;
+      document.getElementById('pauseStudyTimer').disabled = false;
+    }
+    
+    function pauseStudyTimer() {
+      clearInterval(studyTimerInterval);
+      document.getElementById('startStudyTimer').disabled = false;
+      document.getElementById('pauseStudyTimer').disabled = true;
+    }
+    
+    function resetStudyTimer() {
+      clearInterval(studyTimerInterval);
+      studyTimerSeconds = 1500;
+      updateStudyTimerDisplay();
+      document.getElementById('startStudyTimer').disabled = false;
+      document.getElementById('pauseStudyTimer').disabled = true;
+    }
+    
+    function updateStudyTimer() {
+      studyTimerSeconds--;
+      if (studyTimerSeconds <= 0) {
+        clearInterval(studyTimerInterval);
+        studyTimerSeconds = 0;
+        showNotification("Time's up! Take a 5-minute break! 🎉");
+        // Auto-start break timer
+        setTimeout(() => {
+          studyTimerSeconds = 300; // 5 minutes break
+          updateStudyTimerDisplay();
+          startStudyTimer();
+        }, 5000);
+      }
+      updateStudyTimerDisplay();
+    }
+    
+    function updateStudyTimerDisplay() {
+      const minutes = Math.floor(studyTimerSeconds / 60);
+      const seconds = studyTimerSeconds % 60;
+      document.getElementById('studyTimerDisplay').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      // Update progress circle
+      const progress = ((1500 - studyTimerSeconds) / 1500) * 100;
+      document.getElementById('studyTimerCircle').style.background = 
+        `conic-gradient(var(--primary) ${progress}%, #e2e8f0 ${progress}%)`;
+    }
+    
+    // Exercise counter
+    function changeRepCount(change) {
+      const repCount = document.getElementById('repCount');
+      let count = parseInt(repCount.textContent);
+      count = Math.max(1, count + change);
+      repCount.textContent = count;
+    }
+    
+    function completeExercise() {
+      showNotification("Exercise completed! Great job staying active! 💪");
+      coins += 5;
+      updateStats();
+      saveUserData();
+    }
+    
+    // Mistakes tracking and display
+    function updateMistakesDisplay() {
+      const mistakesList = document.getElementById('mistakesList');
+      const mistakeFilter = document.getElementById('mistakeFilter');
+      
+      // Clear existing content
+      mistakesList.innerHTML = '';
+      
+      // Add subject filters
+      const subjects = Object.keys(mistakesBySubject);
+      mistakeFilter.innerHTML = '<button class="active" data-filter="all">All Subjects</button>';
+      
+      subjects.forEach(subject => {
+        const button = document.createElement('button');
+        button.textContent = subject.charAt(0).toUpperCase() + subject.slice(1);
+        button.dataset.filter = subject;
+        button.addEventListener('click', function() {
+          filterMistakes(this.dataset.filter);
+        });
+        mistakeFilter.appendChild(button);
+      });
+      
+      // Display mistakes
+      if (subjects.length === 0) {
+        mistakesList.innerHTML = '<p>No mistakes recorded yet. Keep studying!</p>';
+        return;
+      }
+      
+      let totalMistakes = 0;
+      subjects.forEach(subject => {
+        const subjectMistakes = mistakesBySubject[subject];
+        totalMistakes += subjectMistakes.length;
+        
+        const subjectHeader = document.createElement('h4');
+        subjectHeader.textContent = `${subject.charAt(0).toUpperCase() + subject.slice(1)} (${subjectMistakes.length} mistakes)`;
+        subjectHeader.style.marginTop = '15px';
+        subjectHeader.style.color = 'var(--primary)';
+        mistakesList.appendChild(subjectHeader);
+        
+        subjectMistakes.forEach((mistake, index) => {
+          const mistakeItem = document.createElement('div');
+          mistakeItem.className = 'mistake-item';
+          mistakeItem.innerHTML = `
+            <div class="mistake-subject">Mistake ${index + 1}</div>
+            <div class="mistake-question">${mistake.question}</div>
+            <div class="mistake-answer">Correct answer: ${mistake.correctAnswer}</div>
+            <div style="font-size: 0.8rem; color: var(--gray); margin-top: 5px;">Date: ${mistake.date}</div>
+          `;
+          mistakesList.appendChild(mistakeItem);
+        });
+      });
+      
+      // Add summary
+      const summary = document.createElement('div');
+      summary.innerHTML = `<p><b>Total mistakes recorded:</b> ${totalMistakes}</p>`;
+      mistakesList.insertBefore(summary, mistakesList.firstChild);
+    }
+    
+    function filterMistakes(subject) {
+      // Update active filter button
+      const buttons = document.querySelectorAll('#mistakeFilter button');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`#mistakeFilter button[data-filter="${subject}"]`).classList.add('active');
+      
+      const mistakesList = document.getElementById('mistakesList');
+      mistakesList.innerHTML = '';
+      
+      if (subject === 'all') {
+        updateMistakesDisplay();
+        return;
+      }
+      
+      const subjectMistakes = mistakesBySubject[subject] || [];
+      
+      if (subjectMistakes.length === 0) {
+        mistakesList.innerHTML = `<p>No mistakes recorded for ${subject}.</p>`;
+        return;
+      }
+      
+      const subjectHeader = document.createElement('h4');
+      subjectHeader.textContent = `${subject.charAt(0).toUpperCase() + subject.slice(1)} (${subjectMistakes.length} mistakes)`;
+      subjectHeader.style.marginBottom = '15px';
+      subjectHeader.style.color = 'var(--primary)';
+      mistakesList.appendChild(subjectHeader);
+      
+      subjectMistakes.forEach((mistake, index) => {
+        const mistakeItem = document.createElement('div');
+        mistakeItem.className = 'mistake-item';
+        mistakeItem.innerHTML = `
+          <div class="mistake-subject">Mistake ${index + 1}</div>
+          <div class="mistake-question">${mistake.question}</div>
+          <div class="mistake-answer">Correct answer: ${mistake.correctAnswer}</div>
+          <div style="font-size: 0.8rem; color: var(--gray); margin-top: 5px;">Date: ${mistake.date}</div>
+        `;
+        mistakesList.appendChild(mistakeItem);
+      });
+    }
+    
+    function generateQuizFromMistakes() {
+      const allMistakes = [];
+      Object.keys(mistakesBySubject).forEach(subject => {
+        mistakesBySubject[subject].forEach(mistake => {
+          allMistakes.push({
+            ...mistake,
+            subject: subject
+          });
+        });
+      });
+      
+      if (allMistakes.length === 0) {
+        alert("No mistakes to quiz you on!");
+        return;
+      }
+      
+      // Use the first 10 mistakes or all if less than 10
+      const quizMistakes = allMistakes.slice(0, Math.min(10, allMistakes.length));
+      const container = document.getElementById("quizArea");
+      container.innerHTML = "";
+      
+      wrongAnswers = [];
+      score = 0;
+      
+      quizMistakes.forEach((mistake, idx) => {
+        const box = document.createElement("div");
+        box.className = "question-box";
+        box.innerHTML = `<b>Q${idx + 1} (From Mistakes):</b> ${mistake.question}<br/>`;
+        
+        // Create a text input for answer
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Enter the correct answer...";
+        input.style.marginTop = "10px";
+        input.style.marginBottom = "10px";
+        
+        const checkBtn = document.createElement("button");
+        checkBtn.textContent = "Check Answer";
+        checkBtn.addEventListener('click', function() {
+          const userAnswer = input.value.trim();
+          if (userAnswer.toLowerCase() === mistake.correctAnswer.toLowerCase()) {
+            input.style.border = "2px solid #22c55e";
+            score++;
+          } else {
+            input.style.border = "2px solid #ef4444";
+            wrongAnswers.push({ 
+              q: mistake.question, 
+              correct: mistake.correctAnswer,
+              subject: mistake.subject
+            });
+          }
+          input.disabled = true;
+          checkBtn.disabled = true;
+          
+          // Update progress
+          updateProgress(score, idx + 1, quizMistakes.length);
+          
+          if (idx + 1 === quizMistakes.length) {
+            finishQuiz(score, quizMistakes.length, "mistakes");
+          }
+        });
+        
+        box.appendChild(input);
+        box.appendChild(checkBtn);
+        container.appendChild(box);
+      });
+      
+      openTab('quiz');
+    }
+    
+    // Flashcards functionality
+    function generateFlashcards() {
+      const text = noteInput.value.trim();
+      if (!text) {
+        document.getElementById('flashcardFront').textContent = "Please enter notes to generate flashcards";
+        return;
+      }
+      
+      const sentences = getSentences(text);
+      flashcards = [];
+      
+      sentences.forEach(sentence => {
+        const keywords = sentence.match(/\b\w{5,}\b/g);
+        if (keywords && keywords.length > 0) {
+          const keyword = keywords[0];
+          const definition = sentence.replace(keyword, '_____');
+          flashcards.push({
+            front: keyword,
+            back: definition
+          });
+        }
+      });
+      
+      if (flashcards.length === 0) {
+        document.getElementById('flashcardFront').textContent = "No suitable content found for flashcards";
+        return;
+      }
+      
+      shuffleArray(flashcards);
+      currentFlashcardIndex = 0;
+      showFlashcard();
+    }
+    
+    function showFlashcard() {
+      if (flashcards.length === 0) return;
+      
+      const card = flashcards[currentFlashcardIndex];
+      document.getElementById('flashcardFront').textContent = card.front;
+      document.getElementById('flashcardBack').textContent = card.back;
+      document.getElementById('flashcard').classList.remove('flipped');
+      document.getElementById('flashcardProgress').textContent = `${currentFlashcardIndex + 1}/${flashcards.length}`;
+    }
+    
+    function flipFlashcard() {
+      document.getElementById('flashcard').classList.toggle('flipped');
+    }
+    
+    function nextFlashcard() {
+      if (flashcards.length === 0) return;
+      currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.length;
+      showFlashcard();
+    }
+    
+    function prevFlashcard() {
+      if (flashcards.length === 0) return;
+      currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcards.length) % flashcards.length;
+      showFlashcard();
+    }
+    
+    function shuffleFlashcards() {
+      if (flashcards.length === 0) return;
+      shuffleArray(flashcards);
+      currentFlashcardIndex = 0;
+      showFlashcard();
+    }
+    
+    // Focus mode functionality
+    function enterFocusMode() {
+      const text = noteInput.value.trim();
+      if (!text) {
+        alert("Please enter notes to use focus mode");
+        return;
+      }
+      
+      const noteWords = extractWords(text);
+      const sentences = getSentences(text);
+      let questions = sentences.map(s => generateMCQ(s, noteWords)).filter(Boolean);
+      
+      if (questions.length === 0) {
+        alert("Not enough content for focus mode");
+        return;
+      }
+      
+      shuffleArray(questions);
+      const focusQuestion = questions[0];
+      
+      document.getElementById('focusQuestion').textContent = focusQuestion.q;
+      
+      const optionsContainer = document.getElementById('focusOptions');
+      optionsContainer.innerHTML = '';
+      
+      focusQuestion.options.forEach(option => {
+        const optionElem = document.createElement('div');
+        optionElem.className = 'focus-option';
+        optionElem.textContent = option;
+        optionElem.addEventListener('click', function() {
+          if (option === focusQuestion.correct) {
+            optionElem.style.background = 'rgba(34, 197, 94, 0.3)';
+            showNotification("Correct! 🎉");
+          } else {
+            optionElem.style.background = 'rgba(239, 68, 68, 0.3)';
+            showNotification(`Incorrect. The answer is: ${focusQuestion.correct}`);
+          }
+          
+          // Disable all options after selection
+          const allOptions = document.querySelectorAll('.focus-option');
+          allOptions.forEach(opt => {
+            opt.style.pointerEvents = 'none';
+          });
+        });
+        optionsContainer.appendChild(optionElem);
+      });
+      
+      document.getElementById('focusMode').classList.remove('hidden');
+    }
+    
+    function exitFocusMode() {
+      document.getElementById('focusMode').classList.add('hidden');
+    }
+    
+    // Initialize the app when the page loads
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>

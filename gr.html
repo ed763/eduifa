@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Offline Study Chat PRO+</title>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --teacher-color: #7209b7;
+      --student-color: #4cc9f0;
+    }
+    
+    body { 
+      font-family: 'Segoe UI', sans-serif; 
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      margin: 0 auto; 
+      padding: 20px; 
+      max-width: 1000px; 
+      color: #333; 
+    }
+    
+    h2 { 
+      text-align: center; 
+      color: var(--primary); 
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .tabs { 
+      display: flex; 
+      margin-top: 20px; 
+      background: white;
+      border-radius: 10px 10px 0 0;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .tab { 
+      flex: 1; 
+      padding: 12px; 
+      text-align: center; 
+      background: #e0e0e0; 
+      cursor: pointer; 
+      transition: all 0.3s ease;
+      border-right: 1px solid #ccc;
+    }
+    
+    .tab:last-child {
+      border-right: none;
+    }
+    
+    .tab.active { 
+      background: white; 
+      font-weight: bold; 
+      color: var(--primary); 
+      box-shadow: inset 0 -3px 0 var(--primary);
+    }
+    
+    .tab:hover {
+      background: #f0f0f0;
+    }
+    
+    .tab-content { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 0 0 10px 10px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+      min-height: 500px;
+    }
+    
+    .hidden { display: none; }
+    
+    label { 
+      font-weight: bold; 
+      display: block; 
+      margin: 15px 0 5px; 
+      color: #444;
+    }
+    
+    input, textarea, select { 
+      width: 100%; 
+      padding: 12px; 
+      border-radius: 8px; 
+      border: 1px solid #ccc; 
+      font-size: 16px; 
+      margin-bottom: 10px; 
+      transition: border 0.3s;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    }
+    
+    button { 
+      background-color: var(--primary); 
+      color: white; 
+      border: none; 
+      padding: 12px 20px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-size: 16px; 
+      margin-top: 10px; 
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    
+    button:hover { 
+      background-color: var(--secondary); 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-success {
+      background-color: var(--success);
+    }
+    
+    .btn-danger {
+      background-color: var(--danger);
+    }
+    
+    .btn-warning {
+      background-color: var(--warning);
+    }
+    
+    .chat-area, .notes-area, .media-area, .quiz-area, .whiteboard-area { 
+      background: #fff; 
+      border-radius: 12px; 
+      padding: 15px; 
+      max-height: 350px; 
+      overflow-y: auto; 
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.1); 
+      margin-top: 20px; 
+      border: 1px solid #eee;
+    }
+    
+    .chat-bubble { 
+      padding: 12px 16px; 
+      margin-bottom: 12px; 
+      border-radius: 18px; 
+      position: relative; 
+      max-width: 80%; 
+      word-wrap: break-word;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .user-message { 
+      background: linear-gradient(135deg, #d1e7ff 0%, #b3d4ff 100%);
+      margin-left: auto; 
+      border-bottom-right-radius: 5px; 
+    }
+    
+    .other-message { 
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      margin-right: auto; 
+      border-bottom-left-radius: 5px; 
+    }
+    
+    .system-message {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      margin: 0 auto;
+      max-width: 90%;
+      text-align: center;
+    }
+    
+    .username { 
+      font-weight: bold; 
+      color: var(--primary); 
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    
+    .tag { 
+      font-size: 12px; 
+      color: #666; 
+      font-style: italic; 
+      margin-bottom: 5px;
+    }
+    
+    .timestamp { 
+      font-size: 11px; 
+      color: #888; 
+      text-align: right; 
+      margin-top: 5px; 
+    }
+    
+    .status { 
+      font-size: 14px; 
+      margin-top: 10px; 
+      padding: 8px;
+      border-radius: 8px;
+      background: #e9ecef;
+    }
+    
+    #codeOutput { 
+      height: 80px; 
+      font-family: monospace; 
+      resize: vertical; 
+    }
+    
+    .member-list { 
+      margin-top: 15px; 
+      font-size: 14px; 
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .member-list span { 
+      display: inline-block; 
+      background: #e1ecf4; 
+      padding: 5px 10px; 
+      border-radius: 15px; 
+      margin: 3px; 
+      font-size: 13px;
+    }
+    
+    .media-item { 
+      margin: 10px 0; 
+      padding: 10px;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+    
+    audio, img, .doc-link { 
+      display: block; 
+      margin-top: 10px; 
+    }
+    
+    .quiz-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .quiz-question {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .quiz-options {
+      margin-left: 20px;
+    }
+    
+    .quiz-option {
+      margin-bottom: 8px;
+    }
+    
+    .whiteboard-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 10px;
+      background: white;
+      touch-action: none;
+    }
+    
+    .whiteboard-tools {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    .whiteboard-tool {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      background: white;
+    }
+    
+    .whiteboard-tool.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .progress-container {
+      margin-top: 15px;
+    }
+    
+    .progress-bar {
+      height: 10px;
+      background: #e9ecef;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    
+    .flashcard {
+      perspective: 1000px;
+      width: 100%;
+      height: 200px;
+      margin: 15px 0;
+    }
+    
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .flashcard-front {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 1.5em;
+    }
+    
+    .flashcard-back {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      transform: rotateY(180deg);
+      font-size: 1.2em;
+    }
+    
+    .timer-display {
+      font-size: 2em;
+      text-align: center;
+      margin: 15px 0;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .search-box {
+      margin-bottom: 15px;
+    }
+    
+    .pomodoro-container {
+      text-align: center;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    
+    .pomodoro-timer {
+      font-size: 3em;
+      font-weight: bold;
+      margin: 20px 0;
+      color: var(--primary);
+    }
+    
+    .pomodoro-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .pomodoro-session {
+      margin-top: 15px;
+      font-size: 1.2em;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .feature-card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      background: var(--success);
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .dark-mode {
+      background: #1a1a2e;
+      color: #f0f0f0;
+    }
+    
+    .dark-mode .tab-content {
+      background: #16213e;
+      color: #f0f0f0;
+    }
+    
+    .dark-mode .chat-area, 
+    .dark-mode .notes-area, 
+    .dark-mode .media-area, 
+    .dark-mode .quiz-area, 
+    .dark-mode .whiteboard-area {
+      background: #0f3460;
+      color: #f0f0f0;
+    }
+    
+    .dark-mode input, 
+    .dark-mode textarea, 
+    .dark-mode select {
+      background: #1a1a2e;
+      color: #f0f0f0;
+      border-color: #333;
+    }
+    
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 100;
+    }
+
+    .share-section {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .share-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .share-option {
+      flex: 1;
+      min-width: 120px;
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleDarkMode()">🌙</button>
+  
+  <h2>📚 Offline Study Chat PRO+</h2>
+  <div class="subtitle">Collaborative learning without internet - All features work offline!</div>
+  
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('chat')">💬 Chat</div>
+    <div class="tab" onclick="switchTab('notes')">📝 Notes</div>
+    <div class="tab" onclick="switchTab('media')">📁 Media</div>
+    <div class="tab" onclick="switchTab('quiz')">❓ Quiz</div>
+    <div class="tab" onclick="switchTab('whiteboard')">🖊️ Whiteboard</div>
+    <div class="tab" onclick="switchTab('tools')">🛠️ Study Tools</div>
+    <div class="tab" onclick="switchTab('sync')">🔄 Sync & Share</div>
+  </div>
+  
+  <div class="tab-content" id="chatTab">
+    <div class="search-box">
+      <input type="text" id="searchChat" placeholder="🔍 Search messages..." onkeyup="searchMessages()">
+    </div>
+    <label>Your Username:</label>
+    <input type="text" id="usernameInput" placeholder="Enter your name" />
+    <label>Paste Shared Code (First Time Only):</label>
+    <textarea id="codeInput" placeholder="Paste code here"></textarea>
+    <button onclick="loadConversation()">Load Conversation</button>
+    
+    <div style="display: flex; gap: 10px;">
+      <div style="flex: 1;">
+        <label>Message Type:</label>
+        <select id="tagSelect">
+          <option value="Chat">💬 Chat</option>
+          <option value="Quiz">❓ Quiz</option>
+          <option value="Idea">💡 Idea</option>
+          <option value="Note">📝 Note</option>
+          <option value="Important">⚠️ Important</option>
+          <option value="Question">❔ Question</option>
+        </select>
+      </div>
+      <div style="flex: 1;">
+        <label>Quick Actions:</label>
+        <div>
+          <button onclick="addQuickMessage('Understood! 👍')" style="padding: 8px; margin: 2px;">👍</button>
+          <button onclick="addQuickMessage('Need help with this 🤔')" style="padding: 8px; margin: 2px;">🤔</button>
+          <button onclick="addQuickMessage('Let me check 🔍')" style="padding: 8px; margin: 2px;">🔍</button>
+        </div>
+      </div>
+    </div>
+    
+    <label>Write Message:</label>
+    <textarea id="messageInput" rows="2" placeholder="Write your message..."></textarea>
+    <button onclick="addMessage()">Send Message</button>
+    <button class="btn-danger" onclick="clearMessages()">Clear Messages</button>
+    
+    <div class="chat-area" id="chatArea"></div>
+    <div class="member-list" id="memberList"></div>
+  </div>
+  
+  <div class="tab-content hidden" id="notesTab">
+    <label>Shared Notes Pad:</label>
+    <textarea id="sharedNotes" rows="10" placeholder="Collaborative notes area..."></textarea>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="saveNotes()">Save Notes</button>
+      <button class="btn-success" onclick="exportNotes()">Export Notes</button>
+      <button class="btn-warning" onclick="formatNotes()">Format Notes</button>
+    </div>
+    
+    <div class="share-section">
+      <h4>Share Notes</h4>
+      <div class="share-options">
+        <button class="share-option" onclick="shareNotes()">Share Notes Only</button>
+        <button class="share-option" onclick="generateCode()">Share Everything</button>
+      </div>
+    </div>
+    
+    <div class="progress-container">
+      <label>Notes Progress:</label>
+      <div class="progress-bar">
+        <div class="progress-fill" id="notesProgress"></div>
+      </div>
+      <div id="notesStats" style="text-align: center; margin-top: 5px;"></div>
+    </div>
+  </div>
+  
+  <div class="tab-content hidden" id="mediaTab">
+    <label>Upload Audio/PDF/Image/DOCX:</label>
+    <input type="file" id="mediaInput" multiple accept="audio/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*">
+    <button onclick="uploadMedia()">Add to Media</button>
+    <button onclick="recordAudio()">Record Audio</button>
+    
+    <div class="media-area" id="mediaArea"></div>
+  </div>
+  
+  <div class="tab-content hidden" id="quizTab">
+    <label>Create Quiz Question:</label>
+    <input type="text" id="quizQuestion" placeholder="Enter question">
+    
+    <label>Options (one per line):</label>
+    <textarea id="quizOptions" rows="4" placeholder="Option A
+Option B
+Option C
+Option D"></textarea>
+    
+    <label>Correct Answer:</label>
+    <select id="correctAnswer">
+      <option value="0">Option A</option>
+      <option value="1">Option B</option>
+      <option value="2">Option C</option>
+      <option value="3">Option D</option>
+    </select>
+    
+    <button onclick="addQuiz()">Add Quiz</button>
+    <button class="btn-success" onclick="startQuizSession()">Start Quiz Session</button>
+    
+    <div class="share-section">
+      <h4>Share Quizzes</h4>
+      <div class="share-options">
+        <button class="share-option" onclick="shareQuizzes()">Share Quizzes Only</button>
+        <button class="share-option" onclick="generateCode()">Share Everything</button>
+      </div>
+    </div>
+    
+    <div class="quiz-area" id="quizArea"></div>
+  </div>
+  
+  <div class="tab-content hidden" id="whiteboardTab">
+    <div class="whiteboard-tools">
+      <div class="whiteboard-tool active" onclick="setTool('pen')">✏️ Pen</div>
+      <div class="whiteboard-tool" onclick="setTool('eraser')">🧽 Eraser</div>
+      <div class="whiteboard-tool" onclick="clearWhiteboard()">🗑️ Clear</div>
+      <input type="color" id="colorPicker" value="#000000">
+      <input type="range" id="brushSize" min="1" max="20" value="3">
+      <span id="brushSizeValue">Size: 3</span>
+    </div>
+    
+    <div class="whiteboard-container">
+      <canvas id="whiteboard"></canvas>
+    </div>
+    
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+      <button onclick="saveWhiteboard()">Save Whiteboard</button>
+      <button class="btn-success" onclick="shareWhiteboard()">Share Whiteboard</button>
+    </div>
+
+    <div class="share-section">
+      <h4>Share Whiteboard</h4>
+      <div class="share-options">
+        <button class="share-option" onclick="shareWhiteboardData()">Share Current Drawing</button>
+        <button class="share-option" onclick="generateCode()">Share Everything</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="tab-content hidden" id="toolsTab">
+    <div class="feature-grid">
+      <div class="feature-card" onclick="switchTab('pomodoro')">
+        <div class="feature-icon">🍅</div>
+        <div>Pomodoro Timer</div>
+      </div>
+      <div class="feature-card" onclick="switchTab('flashcards')">
+        <div class="feature-icon">📇</div>
+        <div>Flashcards</div>
+      </div>
+      <div class="feature-card" onclick="switchTab('progress')">
+        <div class="feature-icon">📊</div>
+        <div>Progress Tracker</div>
+      </div>
+      <div class="feature-card" onclick="switchTab('summary')">
+        <div class="feature-icon">📋</div>
+        <div>Session Summary</div>
+      </div>
+    </div>
+    
+    <div id="pomodoro" class="hidden">
+      <div class="pomodoro-container">
+        <h3>Pomodoro Timer</h3>
+        <div class="pomodoro-timer" id="pomodoroTimer">25:00</div>
+        <div class="pomodoro-controls">
+          <button onclick="startPomodoro()">Start</button>
+          <button onclick="pausePomodoro()">Pause</button>
+          <button onclick="resetPomodoro()">Reset</button>
+        </div>
+        <div class="pomodoro-session">
+          Session: <span id="pomodoroSession">1</span> | 
+          Completed: <span id="pomodoroCompleted">0</span>
+        </div>
+      </div>
+    </div>
+    
+    <div id="flashcards" class="hidden">
+      <h3>Flashcards</h3>
+      <label>Front:</label>
+      <input type="text" id="flashcardFront" placeholder="Front of card">
+      <label>Back:</label>
+      <input type="text" id="flashcardBack" placeholder="Back of card">
+      <button onclick="addFlashcard()">Add Flashcard</button>
+      
+      <div class="flashcard" id="currentFlashcard" onclick="flipFlashcard()">
+        <div class="flashcard-inner">
+          <div class="flashcard-front" id="flashcardFrontDisplay">
+            Click to add flashcards
+          </div>
+          <div class="flashcard-back" id="flashcardBackDisplay">
+            Back side
+          </div>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 15px;">
+        <button onclick="prevFlashcard()">⬅️ Previous</button>
+        <button onclick="nextFlashcard()">Next ➡️</button>
+      </div>
+
+      <div class="share-section">
+        <h4>Share Flashcards</h4>
+        <div class="share-options">
+          <button class="share-option" onclick="shareFlashcards()">Share Flashcards Only</button>
+          <button class="share-option" onclick="generateCode()">Share Everything</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="progress" class="hidden">
+      <h3>Study Progress</h3>
+      <div class="progress-container">
+        <label>Today's Progress:</label>
+        <div class="progress-bar">
+          <div class="progress-fill" id="dailyProgress"></div>
+        </div>
+        <div id="dailyStats" style="text-align: center; margin-top: 5px;"></div>
+      </div>
+      
+      <div class="progress-container">
+        <label>Weekly Progress:</label>
+        <div class="progress-bar">
+          <div class="progress-fill" id="weeklyProgress"></div>
+        </div>
+        <div id="weeklyStats" style="text-align: center; margin-top: 5px;"></div>
+      </div>
+      
+      <button onclick="resetProgress()">Reset Progress</button>
+    </div>
+    
+    <div id="summary" class="hidden">
+      <h3>Study Session Summary</h3>
+      <div id="sessionSummary">
+        <p>No session data available. Start studying to see your summary.</p>
+      </div>
+      <button onclick="generateSummary()">Generate Summary</button>
+    </div>
+  </div>
+  
+  <div class="tab-content hidden" id="syncTab">
+    <div class="share-section">
+      <h3>Share Everything</h3>
+      <button onclick="generateCode()">Generate Shareable Code</button>
+      <label>Generated Code (Share this with others):</label>
+      <textarea id="codeOutput" readonly></textarea>
+      <div class="status" id="syncStatus"></div>
+    </div>
+
+    <div class="share-section" style="margin-top: 20px;">
+      <h3>Share Specific Content</h3>
+      <div class="share-options">
+        <button class="share-option" onclick="shareNotes()">Share Notes</button>
+        <button class="share-option" onclick="shareQuizzes()">Share Quizzes</button>
+        <button class="share-option" onclick="shareFlashcards()">Share Flashcards</button>
+        <button class="share-option" onclick="shareWhiteboardData()">Share Whiteboard</button>
+      </div>
+      <textarea id="specificCodeOutput" readonly placeholder="Specific share code will appear here..." style="margin-top: 10px;"></textarea>
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <h3>Backup & Restore</h3>
+      <button onclick="backupData()">Backup All Data</button>
+      <button onclick="restoreData()">Restore from Backup</button>
+      <input type="file" id="backupFile" accept=".json" style="display: none;">
+    </div>
+  </div>
+  
+  <div class="notification" id="notification">Operation completed successfully!</div>
+
+<script>
+  // Enhanced data structure
+  let allMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+  let currentUser = localStorage.getItem('currentUser') || '';
+  let members = JSON.parse(localStorage.getItem('chatMembers')) || [];
+  let sharedNotes = localStorage.getItem('sharedNotes') || '';
+  let mediaFiles = JSON.parse(localStorage.getItem('mediaFiles')) || [];
+  let quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+  let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+  let whiteboardData = localStorage.getItem('whiteboardData') || '';
+  let studyProgress = JSON.parse(localStorage.getItem('studyProgress')) || {
+    daily: 0,
+    weekly: 0,
+    sessions: 0,
+    lastSession: null
+  };
+  
+  // Whiteboard variables
+  let canvas, ctx, isDrawing = false, lastX = 0, lastY = 0;
+  let currentTool = 'pen';
+  let currentColor = '#000000';
+  let brushSize = 3;
+  
+  // Pomodoro variables
+  let pomodoroInterval;
+  let pomodoroTime = 25 * 60; // 25 minutes in seconds
+  let pomodoroRunning = false;
+  let pomodoroSessions = 0;
+  let pomodoroCompleted = 0;
+  
+  // Flashcard variables
+  let currentFlashcardIndex = 0;
+  
+  // Initialize
+  document.getElementById('usernameInput').value = currentUser;
+  document.getElementById('sharedNotes').value = sharedNotes;
+  renderChat();
+  updateMemberList();
+  renderMedia();
+  renderQuizzes();
+  updateProgressBars();
+  initWhiteboard();
+  loadFlashcards();
+  
+  // Tab switching
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+    
+    // Handle nested tabs in tools
+    if (tabName === 'pomodoro' || tabName === 'flashcards' || tabName === 'progress' || tabName === 'summary') {
+      document.querySelectorAll('.tab').forEach(tab => { 
+        if(tab.textContent.includes('Tools')) tab.classList.add('active'); 
+      });
+      document.getElementById('toolsTab').classList.remove('hidden');
+      
+      // Hide all tool sections
+      document.getElementById('pomodoro').classList.add('hidden');
+      document.getElementById('flashcards').classList.add('hidden');
+      document.getElementById('progress').classList.add('hidden');
+      document.getElementById('summary').classList.add('hidden');
+      
+      // Show selected tool
+      document.getElementById(tabName).classList.remove('hidden');
+    } else {
+      document.querySelectorAll('.tab').forEach(tab => { 
+        if(tab.textContent.includes(tabName)) tab.classList.add('active'); 
+      });
+      document.getElementById(tabName + 'Tab').classList.remove('hidden');
+    }
+  }
+  
+  // Load conversation from shared code
+  function loadConversation() {
+    const username = document.getElementById('usernameInput').value.trim();
+    const code = document.getElementById('codeInput').value.trim();
+    if (!username) return showNotification('Please enter your username.', 'error');
+    currentUser = username;
+    localStorage.setItem('currentUser', username);
+    
+    if (code) {
+      try {
+        const decoded = atob(code);
+        const data = JSON.parse(decoded);
+        
+        // Check what type of data we're loading
+        if (data.type === 'notes') {
+          sharedNotes = data.content || '';
+          document.getElementById('sharedNotes').value = sharedNotes;
+          showNotification('Notes loaded successfully!');
+        } else if (data.type === 'quizzes') {
+          quizzes = data.content || [];
+          localStorage.setItem('quizzes', JSON.stringify(quizzes));
+          renderQuizzes();
+          showNotification('Quizzes loaded successfully!');
+        } else if (data.type === 'flashcards') {
+          flashcards = data.content || [];
+          localStorage.setItem('flashcards', JSON.stringify(flashcards));
+          loadFlashcards();
+          showNotification('Flashcards loaded successfully!');
+        } else if (data.type === 'whiteboard') {
+          whiteboardData = data.content || '';
+          loadWhiteboardData();
+          showNotification('Whiteboard loaded successfully!');
+        } else {
+          // Full data load (original functionality)
+          allMessages = data.messages || [];
+          sharedNotes = data.notes || '';
+          members = Array.from(new Set([...members, ...data.members, username]));
+          mediaFiles = data.media || [];
+          quizzes = data.quizzes || [];
+          flashcards = data.flashcards || [];
+          whiteboardData = data.whiteboard || '';
+          
+          localStorage.setItem('chatMessages', JSON.stringify(allMessages));
+          localStorage.setItem('chatMembers', JSON.stringify(members));
+          localStorage.setItem('sharedNotes', sharedNotes);
+          localStorage.setItem('mediaFiles', JSON.stringify(mediaFiles));
+          localStorage.setItem('quizzes', JSON.stringify(quizzes));
+          localStorage.setItem('flashcards', JSON.stringify(flashcards));
+          localStorage.setItem('whiteboardData', whiteboardData);
+          
+          document.getElementById('sharedNotes').value = sharedNotes;
+          renderChat();
+          updateMemberList();
+          renderMedia();
+          renderQuizzes();
+          loadFlashcards();
+          loadWhiteboardData();
+          showNotification('All data loaded successfully!');
+        }
+      } catch {
+        showNotification('Invalid code!', 'error');
+      }
+    } else {
+      if (!members.includes(username)) members.push(username);
+      localStorage.setItem('chatMembers', JSON.stringify(members));
+      updateMemberList();
+      showNotification('Username set successfully!');
+    }
+  }
+  
+  // Add message to chat
+  function addMessage() {
+    const message = document.getElementById('messageInput').value.trim();
+    const tag = document.getElementById('tagSelect').value;
+    if (!message || !currentUser) return showNotification('Write message and set username.', 'error');
+    
+    allMessages.push({ 
+      username: currentUser, 
+      tag, 
+      message, 
+      timestamp: new Date().toISOString(),
+      id: Date.now() // Add unique ID for searching
+    });
+    
+    localStorage.setItem('chatMessages', JSON.stringify(allMessages));
+    document.getElementById('messageInput').value = '';
+    renderChat();
+    
+    // Update study progress
+    updateStudyProgress();
+  }
+  
+  // Quick message buttons
+  function addQuickMessage(text) {
+    document.getElementById('messageInput').value = text;
+    addMessage();
+  }
+  
+  // Clear all messages
+  function clearMessages() {
+    if (confirm('Are you sure you want to clear all messages?')) {
+      allMessages = [];
+      localStorage.setItem('chatMessages', JSON.stringify(allMessages));
+      renderChat();
+      showNotification('All messages cleared.');
+    }
+  }
+  
+  // Render chat messages
+  function renderChat() {
+    const chatArea = document.getElementById('chatArea');
+    chatArea.innerHTML = '';
+    
+    if (allMessages.length === 0) {
+      chatArea.innerHTML = '<p style="text-align:center; color:#777;">No messages yet. Start the conversation!</p>';
+      return;
+    }
+    
+    allMessages.forEach(msg => {
+      const bubble = document.createElement('div');
+      const isUser = msg.username === currentUser;
+      bubble.className = `chat-bubble ${isUser ? 'user-message' : 'other-message'}`;
+      
+      bubble.innerHTML = `
+        <div class='username'>👤 ${msg.username}</div>
+        <div class='tag'>[${msg.tag}]</div>
+        <div>${msg.message}</div>
+        <div class='timestamp'>${new Date(msg.timestamp).toLocaleString()}</div>
+      `;
+      
+      chatArea.appendChild(bubble);
+    });
+    
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+  
+  // Search messages
+  function searchMessages() {
+    const query = document.getElementById('searchChat').value.toLowerCase();
+    const chatArea = document.getElementById('chatArea');
+    
+    if (!query) {
+      renderChat();
+      return;
+    }
+    
+    chatArea.innerHTML = '';
+    const filteredMessages = allMessages.filter(msg => 
+      msg.message.toLowerCase().includes(query) || 
+      msg.username.toLowerCase().includes(query) ||
+      msg.tag.toLowerCase().includes(query)
+    );
+    
+    if (filteredMessages.length === 0) {
+      chatArea.innerHTML = '<p style="text-align:center; color:#777;">No messages found.</p>';
+      return;
+    }
+    
+    filteredMessages.forEach(msg => {
+      const bubble = document.createElement('div');
+      const isUser = msg.username === currentUser;
+      bubble.className = `chat-bubble ${isUser ? 'user-message' : 'other-message'}`;
+      
+      // Highlight search term in message
+      const highlightedMessage = msg.message.replace(
+        new RegExp(query, 'gi'), 
+        match => `<mark>${match}</mark>`
+      );
+      
+      bubble.innerHTML = `
+        <div class='username'>👤 ${msg.username}</div>
+        <div class='tag'>[${msg.tag}]</div>
+        <div>${highlightedMessage}</div>
+        <div class='timestamp'>${new Date(msg.timestamp).toLocaleString()}</div>
+      `;
+      
+      chatArea.appendChild(bubble);
+    });
+  }
+  
+  // Upload media files
+  function uploadMedia() {
+    const files = document.getElementById('mediaInput').files;
+    if (files.length === 0) return showNotification('Please select files to upload.', 'error');
+    
+    for (let file of files) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        mediaFiles.push({ 
+          name: file.name, 
+          type: file.type, 
+          content: e.target.result,
+          uploadedBy: currentUser,
+          timestamp: new Date().toISOString()
+        });
+        
+        localStorage.setItem('mediaFiles', JSON.stringify(mediaFiles));
+        renderMedia();
+        showNotification(`"${file.name}" uploaded successfully!`);
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    document.getElementById('mediaInput').value = '';
+  }
+  
+  // Record audio
+  function recordAudio() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      showNotification('Recording not supported on this device.', 'error');
+      return;
+    }
+    
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      const mediaRecorder = new MediaRecorder(stream);
+      const chunks = [];
+      
+      mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          mediaFiles.push({ 
+            name: `Audio Recording ${new Date().toLocaleString()}`, 
+            type: 'audio/webm', 
+            content: e.target.result,
+            uploadedBy: currentUser,
+            timestamp: new Date().toISOString()
+          });
+          
+          localStorage.setItem('mediaFiles', JSON.stringify(mediaFiles));
+          renderMedia();
+          showNotification('Audio recorded successfully!');
+        };
+        
+        reader.readAsDataURL(blob);
+      };
+      
+      mediaRecorder.start();
+      showNotification('Recording... Click OK to stop.', 'info');
+      
+      // Stop recording after 30 seconds or when user confirms
+      setTimeout(() => {
+        if (mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+          stream.getTracks().forEach(track => track.stop());
+        }
+      }, 30000);
+      
+      // Add a way to stop recording manually
+      const stopBtn = document.createElement('button');
+      stopBtn.textContent = 'Stop Recording';
+      stopBtn.className = 'btn-danger';
+      stopBtn.onclick = () => {
+        mediaRecorder.stop();
+        stream.getTracks().forEach(track => track.stop());
+        stopBtn.remove();
+      };
+      
+      document.getElementById('mediaTab').appendChild(stopBtn);
+    }).catch(err => {
+      showNotification('Recording failed: ' + err, 'error');
+    });
+  }
+  
+  // Render media files
+  function renderMedia() {
+    const mediaArea = document.getElementById('mediaArea');
+    mediaArea.innerHTML = '';
+    
+    if (mediaFiles.length === 0) {
+      mediaArea.innerHTML = '<p style="text-align:center; color:#777;">No media files yet.</p>';
+      return;
+    }
+    
+    mediaFiles.forEach((file, index) => {
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      
+      let content = '';
+      if (file.type.startsWith('audio')) {
+        content = `<b>🎵 ${file.name}</b><audio controls src='${file.content}'></audio>`;
+      } else if (file.type.startsWith('image')) {
+        content = `<b>🖼️ ${file.name}</b><img src='${file.content}' width='100%' style='max-height: 200px; object-fit: contain;'>`;
+      } else {
+        content = `<b>📄 ${file.name}</b><a class='doc-link' href='${file.content}' download='${file.name}'>Download</a>`;
+      }
+      
+      content += `<div style='font-size: 12px; color: #666; margin-top: 5px;'>Uploaded by ${file.uploadedBy} on ${new Date(file.timestamp).toLocaleString()}</div>`;
+      content += `<button onclick='deleteMedia(${index})' style='padding: 5px 10px; font-size: 12px; margin-top: 5px;'>Delete</button>`;
+      
+      div.innerHTML = content;
+      mediaArea.appendChild(div);
+    });
+  }
+  
+  // Delete media file
+  function deleteMedia(index) {
+    if (confirm('Are you sure you want to delete this media file?')) {
+      mediaFiles.splice(index, 1);
+      localStorage.setItem('mediaFiles', JSON.stringify(mediaFiles));
+      renderMedia();
+      showNotification('Media file deleted.');
+    }
+  }
+  
+  // Add quiz
+  function addQuiz() {
+    const question = document.getElementById('quizQuestion').value.trim();
+    const optionsText = document.getElementById('quizOptions').value.trim();
+    const correctAnswer = parseInt(document.getElementById('correctAnswer').value);
+    
+    if (!question || !optionsText) {
+      showNotification('Please enter both question and options.', 'error');
+      return;
+    }
+    
+    const options = optionsText.split('\n').filter(opt => opt.trim() !== '');
+    
+    if (options.length < 2) {
+      showNotification('Please enter at least 2 options.', 'error');
+      return;
+    }
+    
+    if (correctAnswer < 0 || correctAnswer >= options.length) {
+      showNotification('Please select a valid correct answer.', 'error');
+      return;
+    }
+    
+    quizzes.push({
+      question,
+      options,
+      correctAnswer,
+      createdBy: currentUser,
+      timestamp: new Date().toISOString()
+    });
+    
+    localStorage.setItem('quizzes', JSON.stringify(quizzes));
+    renderQuizzes();
+    
+    // Clear form
+    document.getElementById('quizQuestion').value = '';
+    document.getElementById('quizOptions').value = '';
+    document.getElementById('correctAnswer').selectedIndex = 0;
+    
+    showNotification('Quiz added successfully!');
+  }
+  
+  // Render quizzes
+  function renderQuizzes() {
+    const quizArea = document.getElementById('quizArea');
+    quizArea.innerHTML = '';
+    
+    if (quizzes.length === 0) {
+      quizArea.innerHTML = '<p style="text-align:center; color:#777;">No quizzes yet. Create one!</p>';
+      return;
+    }
+    
+    quizzes.forEach((quiz, index) => {
+      const div = document.createElement('div');
+      div.className = 'quiz-item';
+      
+      let optionsHtml = '';
+      quiz.options.forEach((option, optIndex) => {
+        optionsHtml += `
+          <div class="quiz-option">
+            <input type="radio" id="quiz-${index}-${optIndex}" name="quiz-${index}" value="${optIndex}">
+            <label for="quiz-${index}-${optIndex}">${option}</label>
+          </div>
+        `;
+      });
+      
+      div.innerHTML = `
+        <div class="quiz-question">${index + 1}. ${quiz.question}</div>
+        <div class="quiz-options">${optionsHtml}</div>
+        <button onclick="checkAnswer(${index})" style="margin-top: 10px;">Check Answer</button>
+        <div id="quiz-result-${index}" style="margin-top: 10px;"></div>
+        <div style="font-size: 12px; color: #666; margin-top: 5px;">
+          Created by ${quiz.createdBy} on ${new Date(quiz.timestamp).toLocaleString()}
+        </div>
+      `;
+      
+      quizArea.appendChild(div);
+    });
+  }
+  
+  // Check quiz answer
+  function checkAnswer(quizIndex) {
+    const selectedOption = document.querySelector(`input[name="quiz-${quizIndex}"]:checked`);
+    const resultDiv = document.getElementById(`quiz-result-${quizIndex}`);
+    
+    if (!selectedOption) {
+      resultDiv.innerHTML = '<span style="color: orange;">Please select an answer!</span>';
+      return;
+    }
+    
+    const selectedAnswer = parseInt(selectedOption.value);
+    const quiz = quizzes[quizIndex];
+    
+    if (selectedAnswer === quiz.correctAnswer) {
+      resultDiv.innerHTML = '<span style="color: green;">✅ Correct! Well done!</span>';
+    } else {
+      resultDiv.innerHTML = `<span style="color: red;">❌ Incorrect. The correct answer is: ${quiz.options[quiz.correctAnswer]}</span>`;
+    }
+  }
+  
+  // Start quiz session
+  function startQuizSession() {
+    if (quizzes.length === 0) {
+      showNotification('No quizzes available. Create some quizzes first.', 'error');
+      return;
+    }
+    
+    // Implement a quiz session with random questions
+    const sessionQuizzes = [...quizzes].sort(() => 0.5 - Math.random()).slice(0, 5);
+    let score = 0;
+    let currentQuiz = 0;
+    
+    function showNextQuiz() {
+      if (currentQuiz >= sessionQuizzes.length) {
+        showNotification(`Quiz session completed! Your score: ${score}/${sessionQuizzes.length}`, 'success');
+        return;
+      }
+      
+      const quiz = sessionQuizzes[currentQuiz];
+      const userAnswer = prompt(`Question ${currentQuiz + 1}/${sessionQuizzes.length}:\n\n${quiz.question}\n\nOptions:\n${quiz.options.map((opt, i) => `${i+1}. ${opt}`).join('\n')}\n\nEnter the number of your answer:`);
+      
+      if (userAnswer !== null) {
+        const answerIndex = parseInt(userAnswer) - 1;
+        if (answerIndex === quiz.correctAnswer) {
+          score++;
+          alert('✅ Correct!');
+        } else {
+          alert(`❌ Incorrect. The correct answer is: ${quiz.options[quiz.correctAnswer]}`);
+        }
+        
+        currentQuiz++;
+        showNextQuiz();
+      }
+    }
+    
+    showNextQuiz();
+  }
+  
+  // Whiteboard functions - FIXED VERSION
+  function initWhiteboard() {
+    canvas = document.getElementById('whiteboard');
+    ctx = canvas.getContext('2d');
+    
+    // Set canvas size
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    
+    // Set initial drawing style
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = brushSize;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    // Load saved whiteboard data
+    loadWhiteboardData();
+    
+    // Event listeners for drawing
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchmove', handleTouch);
+    canvas.addEventListener('touchend', stopDrawing);
+    
+    // Color picker
+    document.getElementById('colorPicker').addEventListener('input', function(e) {
+      currentColor = e.target.value;
+      ctx.strokeStyle = currentColor;
+    });
+    
+    // Brush size
+    document.getElementById('brushSize').addEventListener('input', function(e) {
+      brushSize = parseInt(e.target.value);
+      ctx.lineWidth = brushSize;
+      document.getElementById('brushSizeValue').textContent = `Size: ${brushSize}`;
+    });
+  }
+  
+  function getCanvasCoordinates(e) {
+    const rect = canvas.getBoundingClientRect();
+    let x, y;
+    
+    if (e.type.includes('touch')) {
+      x = e.touches[0].clientX - rect.left;
+      y = e.touches[0].clientY - rect.top;
+    } else {
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
+    }
+    
+    // Scale coordinates for high DPI displays
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    return {
+      x: x * scaleX,
+      y: y * scaleY
+    };
+  }
+  
+  function handleTouch(e) {
+    e.preventDefault();
+    if (e.type === 'touchstart') {
+      startDrawing(e);
+    } else if (e.type === 'touchmove') {
+      draw(e);
+    }
+  }
+  
+  function startDrawing(e) {
+    isDrawing = true;
+    const coords = getCanvasCoordinates(e);
+    [lastX, lastY] = [coords.x, coords.y];
+  }
+  
+  function draw(e) {
+    if (!isDrawing) return;
+    
+    const coords = getCanvasCoordinates(e);
+    
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(coords.x, coords.y);
+    ctx.stroke();
+    
+    [lastX, lastY] = [coords.x, coords.y];
+    
+    // Save whiteboard data periodically
+    if (Math.random() < 0.1) { // 10% chance to save on each draw
+      saveWhiteboardData();
+    }
+  }
+  
+  function stopDrawing() {
+    isDrawing = false;
+    saveWhiteboardData();
+  }
+  
+  function setTool(tool) {
+    currentTool = tool;
+    
+    // Update active tool UI
+    document.querySelectorAll('.whiteboard-tool').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    if (tool === 'pen') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = currentColor;
+    } else if (tool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.strokeStyle = 'rgba(0,0,0,1)';
+    }
+  }
+  
+  function clearWhiteboard() {
+    if (confirm('Are you sure you want to clear the whiteboard?')) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      whiteboardData = '';
+      localStorage.setItem('whiteboardData', '');
+      showNotification('Whiteboard cleared.');
+    }
+  }
+  
+  function saveWhiteboardData() {
+    whiteboardData = canvas.toDataURL();
+    localStorage.setItem('whiteboardData', whiteboardData);
+  }
+  
+  function loadWhiteboardData() {
+    if (whiteboardData) {
+      const img = new Image();
+      img.onload = function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = whiteboardData;
+    }
+  }
+  
+  function saveWhiteboard() {
+    const dataURL = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = `whiteboard-${new Date().toISOString().slice(0, 10)}.png`;
+    link.href = dataURL;
+    link.click();
+    showNotification('Whiteboard saved as image!');
+  }
+  
+  function shareWhiteboard() {
+    const dataURL = canvas.toDataURL('image/png');
+    mediaFiles.push({
+      name: `Whiteboard ${new Date().toLocaleString()}`,
+      type: 'image/png',
+      content: dataURL,
+      uploadedBy: currentUser,
+      timestamp: new Date().toISOString()
+    });
+    
+    localStorage.setItem('mediaFiles', JSON.stringify(mediaFiles));
+    showNotification('Whiteboard shared to media library!');
+  }
+  
+  // Pomodoro timer functions
+  function startPomodoro() {
+    if (pomodoroRunning) return;
+    
+    pomodoroRunning = true;
+    pomodoroInterval = setInterval(updatePomodoro, 1000);
+    showNotification('Pomodoro timer started! Focus for 25 minutes.');
+  }
+  
+  function pausePomodoro() {
+    pomodoroRunning = false;
+    clearInterval(pomodoroInterval);
+    showNotification('Pomodoro timer paused.');
+  }
+  
+  function resetPomodoro() {
+    pomodoroRunning = false;
+    clearInterval(pomodoroInterval);
+    pomodoroTime = 25 * 60;
+    updatePomodoroDisplay();
+    showNotification('Pomodoro timer reset.');
+  }
+  
+  function updatePomodoro() {
+    pomodoroTime--;
+    
+    if (pomodoroTime <= 0) {
+      clearInterval(pomodoroInterval);
+      pomodoroRunning = false;
+      pomodoroCompleted++;
+      document.getElementById('pomodoroCompleted').textContent = pomodoroCompleted;
+      
+      // Notify user
+      showNotification('Pomodoro session completed! Take a 5-minute break.', 'success');
+      
+      // Start break timer
+      setTimeout(() => {
+        showNotification('Break time over! Ready for next session?', 'info');
+      }, 5000); // 5 seconds for demo, would be 5 minutes in real use
+      
+      // Reset for next session
+      pomodoroTime = 25 * 60;
+      pomodoroSessions++;
+      document.getElementById('pomodoroSession').textContent = pomodoroSessions + 1;
+    }
+    
+    updatePomodoroDisplay();
+  }
+  
+  function updatePomodoroDisplay() {
+    const minutes = Math.floor(pomodoroTime / 60);
+    const seconds = pomodoroTime % 60;
+    document.getElementById('pomodoroTimer').textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+  
+  // Flashcard functions
+  function addFlashcard() {
+    const front = document.getElementById('flashcardFront').value.trim();
+    const back = document.getElementById('flashcardBack').value.trim();
+    
+    if (!front || !back) {
+      showNotification('Please enter both front and back of the flashcard.', 'error');
+      return;
+    }
+    
+    flashcards.push({ front, back });
+    localStorage.setItem('flashcards', JSON.stringify(flashcards));
+    
+    // Clear form
+    document.getElementById('flashcardFront').value = '';
+    document.getElementById('flashcardBack').value = '';
+    
+    // Update display if this is the first card
+    if (flashcards.length === 1) {
+      showFlashcard(0);
+    }
+    
+    showNotification('Flashcard added successfully!');
+  }
+  
+  function loadFlashcards() {
+    if (flashcards.length > 0) {
+      showFlashcard(0);
+    }
+  }
+  
+  function showFlashcard(index) {
+    if (flashcards.length === 0) return;
+    
+    const card = flashcards[index];
+    document.getElementById('flashcardFrontDisplay').textContent = card.front;
+    document.getElementById('flashcardBackDisplay').textContent = card.back;
+    
+    // Reset to front side
+    document.getElementById('currentFlashcard').classList.remove('flipped');
+  }
+  
+  function flipFlashcard() {
+    document.getElementById('currentFlashcard').classList.toggle('flipped');
+  }
+  
+  function nextFlashcard() {
+    if (flashcards.length === 0) return;
+    
+    currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.length;
+    showFlashcard(currentFlashcardIndex);
+  }
+  
+  function prevFlashcard() {
+    if (flashcards.length === 0) return;
+    
+    currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcards.length) % flashcards.length;
+    showFlashcard(currentFlashcardIndex);
+  }
+  
+  // Study progress tracking
+  function updateStudyProgress() {
+    const now = new Date();
+    const today = now.toDateString();
+    
+    // Initialize progress if needed
+    if (!studyProgress.daily) studyProgress.daily = {};
+    if (!studyProgress.weekly) studyProgress.weekly = {};
+    
+    // Update daily progress
+    if (!studyProgress.daily[today]) {
+      studyProgress.daily[today] = 0;
+    }
+    studyProgress.daily[today] += 1;
+    
+    // Update weekly progress (this week)
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    const weekKey = weekStart.toDateString();
+    
+    if (!studyProgress.weekly[weekKey]) {
+      studyProgress.weekly[weekKey] = 0;
+    }
+    studyProgress.weekly[weekKey] += 1;
+    
+    // Update session count
+    studyProgress.sessions = (studyProgress.sessions || 0) + 1;
+    studyProgress.lastSession = now.toISOString();
+    
+    localStorage.setItem('studyProgress', JSON.stringify(studyProgress));
+    updateProgressBars();
+  }
+  
+  function updateProgressBars() {
+    // Update notes progress
+    const notesLength = sharedNotes.length;
+    const notesProgress = Math.min(100, notesLength / 10); // 100% at 1000 chars
+    document.getElementById('notesProgress').style.width = `${notesProgress}%`;
+    document.getElementById('notesStats').textContent = `${sharedNotes.length} characters`;
+    
+    // Update daily progress
+    const today = new Date().toDateString();
+    const dailyProgress = studyProgress.daily && studyProgress.daily[today] ? 
+      Math.min(100, studyProgress.daily[today] * 10) : 0;
+    document.getElementById('dailyProgress').style.width = `${dailyProgress}%`;
+    document.getElementById('dailyStats').textContent = 
+      `${studyProgress.daily && studyProgress.daily[today] ? studyProgress.daily[today] : 0} study actions today`;
+    
+    // Update weekly progress
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    const weekKey = weekStart.toDateString();
+    const weeklyProgress = studyProgress.weekly && studyProgress.weekly[weekKey] ? 
+      Math.min(100, studyProgress.weekly[weekKey] * 2) : 0;
+    document.getElementById('weeklyProgress').style.width = `${weeklyProgress}%`;
+    document.getElementById('weeklyStats').textContent = 
+      `${studyProgress.weekly && studyProgress.weekly[weekKey] ? studyProgress.weekly[weekKey] : 0} study actions this week`;
+  }
+  
+  function resetProgress() {
+    if (confirm('Are you sure you want to reset all progress data?')) {
+      studyProgress = { daily: {}, weekly: {}, sessions: 0, lastSession: null };
+      localStorage.setItem('studyProgress', JSON.stringify(studyProgress));
+      updateProgressBars();
+      showNotification('Progress data reset.');
+    }
+  }
+  
+  function generateSummary() {
+    const summaryDiv = document.getElementById('sessionSummary');
+    const now = new Date();
+    const today = now.toDateString();
+    
+    let summaryHTML = `
+      <h4>Study Session Summary</h4>
+      <p><strong>Total Sessions:</strong> ${studyProgress.sessions || 0}</p>
+      <p><strong>Today's Activity:</strong> ${studyProgress.daily && studyProgress.daily[today] ? studyProgress.daily[today] : 0} actions</p>
+      <p><strong>Last Session:</strong> ${studyProgress.lastSession ? new Date(studyProgress.lastSession).toLocaleString() : 'Never'}</p>
+      <p><strong>Total Messages:</strong> ${allMessages.length}</p>
+      <p><strong>Total Media Files:</strong> ${mediaFiles.length}</p>
+      <p><strong>Total Quizzes:</strong> ${quizzes.length}</p>
+      <p><strong>Total Flashcards:</strong> ${flashcards.length}</p>
+    `;
+    
+    summaryDiv.innerHTML = summaryHTML;
+  }
+  
+  // Notes functions
+  function saveNotes() {
+    sharedNotes = document.getElementById('sharedNotes').value;
+    localStorage.setItem('sharedNotes', sharedNotes);
+    updateProgressBars();
+    showNotification('Notes saved successfully!');
+  }
+  
+  function exportNotes() {
+    const notesText = document.getElementById('sharedNotes').value;
+    const blob = new Blob([notesText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `study-notes-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showNotification('Notes exported successfully!');
+  }
+  
+  function formatNotes() {
+    const notesText = document.getElementById('sharedNotes').value;
+    
+    // Simple formatting - add bullet points to each line
+    const formatted = notesText.split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => `• ${line}`)
+      .join('\n');
+    
+    document.getElementById('sharedNotes').value = formatted;
+    saveNotes();
+  }
+  
+  // SHARING FUNCTIONS - NEW AND IMPROVED
+  function generateCode() {
+    const data = { 
+      messages: allMessages, 
+      members: members, 
+      notes: document.getElementById('sharedNotes').value, 
+      media: mediaFiles,
+      quizzes: quizzes,
+      flashcards: flashcards,
+      whiteboard: whiteboardData,
+      type: 'full'
+    };
+    
+    const code = btoa(JSON.stringify(data));
+    document.getElementById('codeOutput').value = code;
+    document.getElementById('syncStatus').textContent = 'Full share code generated! Share with others.';
+    showNotification('Full share code generated!');
+  }
+  
+  function shareNotes() {
+    const data = {
+      type: 'notes',
+      content: document.getElementById('sharedNotes').value
+    };
+    
+    const code = btoa(JSON.stringify(data));
+    document.getElementById('specificCodeOutput').value = code;
+    showNotification('Notes share code generated!');
+  }
+  
+  function shareQuizzes() {
+    const data = {
+      type: 'quizzes',
+      content: quizzes
+    };
+    
+    const code = btoa(JSON.stringify(data));
+    document.getElementById('specificCodeOutput').value = code;
+    showNotification('Quizzes share code generated!');
+  }
+  
+  function shareFlashcards() {
+    const data = {
+      type: 'flashcards',
+      content: flashcards
+    };
+    
+    const code = btoa(JSON.stringify(data));
+    document.getElementById('specificCodeOutput').value = code;
+    showNotification('Flashcards share code generated!');
+  }
+  
+  function shareWhiteboardData() {
+    saveWhiteboardData(); // Ensure we have the latest data
+    const data = {
+      type: 'whiteboard',
+      content: whiteboardData
+    };
+    
+    const code = btoa(JSON.stringify(data));
+    document.getElementById('specificCodeOutput').value = code;
+    showNotification('Whiteboard share code generated!');
+  }
+  
+  function backupData() {
+    const data = {
+      messages: allMessages,
+      members: members,
+      notes: sharedNotes,
+      media: mediaFiles,
+      quizzes: quizzes,
+      flashcards: flashcards,
+      whiteboard: whiteboardData,
+      progress: studyProgress,
+      timestamp: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `study-chat-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showNotification('Data backed up successfully!');
+  }
+  
+  function restoreData() {
+    document.getElementById('backupFile').click();
+  }
+  
+  // Handle backup file upload
+  document.getElementById('backupFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        
+        allMessages = data.messages || [];
+        members = data.members || [];
+        sharedNotes = data.notes || '';
+        mediaFiles = data.media || [];
+        quizzes = data.quizzes || [];
+        flashcards = data.flashcards || [];
+        whiteboardData = data.whiteboard || '';
+        studyProgress = data.progress || { daily: {}, weekly: {}, sessions: 0, lastSession: null };
+        
+        localStorage.setItem('chatMessages', JSON.stringify(allMessages));
+        localStorage.setItem('chatMembers', JSON.stringify(members));
+        localStorage.setItem('sharedNotes', sharedNotes);
+        localStorage.setItem('mediaFiles', JSON.stringify(mediaFiles));
+        localStorage.setItem('quizzes', JSON.stringify(quizzes));
+        localStorage.setItem('flashcards', JSON.stringify(flashcards));
+        localStorage.setItem('whiteboardData', whiteboardData);
+        localStorage.setItem('studyProgress', JSON.stringify(studyProgress));
+        
+        document.getElementById('sharedNotes').value = sharedNotes;
+        renderChat();
+        updateMemberList();
+        renderMedia();
+        renderQuizzes();
+        loadFlashcards();
+        loadWhiteboardData();
+        updateProgressBars();
+        
+        showNotification('Data restored successfully!');
+      } catch (error) {
+        showNotification('Error restoring backup: ' + error.message, 'error');
+      }
+    };
+    
+    reader.readAsText(file);
+    e.target.value = ''; // Reset file input
+  });
+  
+  // Member list
+  function updateMemberList() {
+    const list = document.getElementById('memberList');
+    list.innerHTML = '<b>Members:</b> ' + members.map(name => `<span>${name}</span>`).join(' ');
+  }
+  
+  // Notification system
+  function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    
+    // Set color based on type
+    if (type === 'error') {
+      notification.style.background = 'var(--danger)';
+    } else if (type === 'info') {
+      notification.style.background = 'var(--warning)';
+    } else {
+      notification.style.background = 'var(--success)';
+    }
+    
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+      notification.classList.remove('show');
+    }, 3000);
+  }
+  
+  // Dark mode toggle
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const button = document.querySelector('.theme-toggle');
+    button.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  }
+  
+  // Check for saved dark mode preference
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    document.querySelector('.theme-toggle').textContent = '☀️';
+  }
+  
+  // Auto-save notes every 30 seconds
+  setInterval(saveNotes, 30000);
+  
+  // Initialize pomodoro display
+  updatePomodoroDisplay();
+</script>
+</body>
+</html>
